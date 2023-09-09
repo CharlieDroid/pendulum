@@ -1,0 +1,10 @@
+buffer_size = 200_000
+    agent = Agent(alpha=0.001, beta=0.001, input_dims=env.observation_space.shape, tau=0.005, env=env, batch_size=100,
+                  layer1_size=400, layer2_size=300, noise=0.1, max_size=buffer_size, gamma=0.98,
+                  update_actor_interval=1, warmup=10_000, n_actions=env.action_space.shape[0])
+
+def __init__(self, alpha, beta, input_dims, tau, env,
+                 gamma=0.99, update_actor_interval=2, warmup=10_000,
+                 n_actions=2, max_size=1_000_000, layer1_size=400,
+                 layer2_size=300, batch_size=100, noise=0.1):
+noise clip = 0.5
