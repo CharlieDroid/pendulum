@@ -14,7 +14,7 @@ class ReplayBuffer:
         self.new_state_memory = np.zeros((self.mem_size, *input_shape))
         self.action_memory = np.zeros((self.mem_size, n_actions))
         self.reward_memory = np.zeros(self.mem_size)
-        self.terminal_memory = np.zeros(self.mem_size, dtype=np.bool)
+        self.terminal_memory = np.zeros(self.mem_size, dtype=bool)
 
     def store_transition(self, state, action, reward, state_, done):
         index = self.mem_cntr % self.mem_size
@@ -41,8 +41,9 @@ class ReplayBuffer:
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions,
-                 name, chkpt_dir="tmp/td3"):
+    def __init__(
+        self, beta, input_dims, fc1_dims, fc2_dims, n_actions, name, chkpt_dir="tmp/td3"
+    ):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -57,7 +58,7 @@ class CriticNetwork(nn.Module):
         self.q1 = nn.Linear(self.fc2_dims, 1)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
-        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
 
         self.to(self.device)
 
@@ -81,8 +82,16 @@ class CriticNetwork(nn.Module):
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, fc1_dims, fc2_dims,
-                 n_actions, name, chkpt_dir="tmp/td3"):
+    def __init__(
+        self,
+        alpha,
+        input_dims,
+        fc1_dims,
+        fc2_dims,
+        n_actions,
+        name,
+        chkpt_dir="tmp/td3",
+    ):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -97,7 +106,7 @@ class ActorNetwork(nn.Module):
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
 
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
-        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
 
         self.to(self.device)
 
@@ -122,10 +131,23 @@ class ActorNetwork(nn.Module):
 
 
 class Agent:
-    def __init__(self, alpha, beta, input_dims, tau, env,
-                 gamma=0.99, update_actor_interval=2, warmup=10_000,
-                 n_actions=2, max_size=1_000_000, layer1_size=400,
-                 layer2_size=300, batch_size=100, noise=0.1):
+    def __init__(
+        self,
+        alpha,
+        beta,
+        input_dims,
+        tau,
+        env,
+        gamma=0.99,
+        update_actor_interval=2,
+        warmup=10_000,
+        n_actions=2,
+        max_size=1_000_000,
+        layer1_size=400,
+        layer2_size=300,
+        batch_size=100,
+        noise=0.1,
+    ):
         self.gamma = gamma
         self.tau = tau
         self.max_action = env.action_space.high
@@ -138,25 +160,72 @@ class Agent:
         self.n_actions = n_actions
         self.update_actor_iter = update_actor_interval
 
-        self.actor = ActorNetwork(alpha, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='actor')
-        self.critic_1 = CriticNetwork(beta, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='critic_1')
-        self.critic_2 = CriticNetwork(beta, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='critic_2')
-        self.target_actor = ActorNetwork(alpha, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='target_actor')
-        self.target_critic_1 = CriticNetwork(beta, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='target_critic_1')
-        self.target_critic_2 = CriticNetwork(beta, input_dims, layer1_size, layer2_size, n_actions=n_actions, name='target_critic_2')
+        self.actor = ActorNetwork(
+            alpha,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="actor",
+        )
+        self.critic_1 = CriticNetwork(
+            beta,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="critic_1",
+        )
+        self.critic_2 = CriticNetwork(
+            beta,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="critic_2",
+        )
+        self.target_actor = ActorNetwork(
+            alpha,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="target_actor",
+        )
+        self.target_critic_1 = CriticNetwork(
+            beta,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="target_critic_1",
+        )
+        self.target_critic_2 = CriticNetwork(
+            beta,
+            input_dims,
+            layer1_size,
+            layer2_size,
+            n_actions=n_actions,
+            name="target_critic_2",
+        )
 
         self.noise = noise
         self.update_network_parameters(tau=1)
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, evaluate=False):
         if self.time_step < self.warmup:
             mu = T.tensor(np.random.normal(scale=self.noise, size=(self.n_actions,)))
         else:
             state = T.tensor(observation, dtype=T.float).to(self.actor.device)
             mu = self.actor.forward(state).to(self.actor.device)
-        # your choice optional shit
-        mu_prime = mu + T.tensor(np.random.normal(scale=self.noise), dtype=T.float).to(self.actor.device)
-        mu_prime = T.clamp(mu_prime, self.min_action[0], self.max_action[0])
+        # your choice optional shit, remove when moving to real world cuz we already have noise lmao
+        if not evaluate:
+            mu_prime = mu + T.tensor(
+                np.random.normal(scale=self.noise), dtype=T.float
+            ).to(self.actor.device)
+            mu_prime = T.clamp(mu_prime, self.min_action[0], self.max_action[0])
+        else:
+            mu_prime = mu
         self.time_step += 1
         # should be list if moving to real world now or like basta optional ra ang numpy
         return mu_prime.cpu().detach().numpy()
@@ -167,7 +236,9 @@ class Agent:
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
             return None, None
-        state, action, reward, new_state, done = self.memory.sample_buffer(self.batch_size)
+        state, action, reward, new_state, done = self.memory.sample_buffer(
+            self.batch_size
+        )
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
         done = T.tensor(done).to(self.critic_1.device)
         state_ = T.tensor(new_state, dtype=T.float).to(self.critic_1.device)
@@ -175,7 +246,9 @@ class Agent:
         action = T.tensor(action, dtype=T.float).to(self.critic_1.device)
 
         target_actions = self.target_actor.forward(state_)
-        target_actions = target_actions + T.clamp(T.tensor(np.random.normal(scale=0.2)), -0.5, 0.5)
+        target_actions = target_actions + T.clamp(
+            T.tensor(np.random.normal(scale=0.2)), -0.5, 0.5
+        )
         target_actions = T.clamp(target_actions, self.min_action[0], self.max_action[0])
 
         q1_ = self.target_critic_1.forward(state_, target_actions)
@@ -191,7 +264,7 @@ class Agent:
         q2_ = q2_.view(-1)
 
         critic_value_ = T.min(q1_, q2_)
-        target = reward + self.gamma*critic_value_
+        target = reward + self.gamma * critic_value_
         target = target.view(self.batch_size, 1)
 
         self.critic_1.optimizer.zero_grad()
@@ -237,13 +310,19 @@ class Agent:
         target_critic_2 = dict(target_critic_2_params)
 
         for name in critic_1:
-            critic_1[name] = tau*critic_1[name].clone() + (1 - tau)*target_critic_1[name].clone()
+            critic_1[name] = (
+                tau * critic_1[name].clone() + (1 - tau) * target_critic_1[name].clone()
+            )
 
         for name in critic_2:
-            critic_2[name] = tau*critic_2[name].clone() + (1 - tau)*target_critic_2[name].clone()
+            critic_2[name] = (
+                tau * critic_2[name].clone() + (1 - tau) * target_critic_2[name].clone()
+            )
 
         for name in actor:
-            actor[name] = tau*actor[name].clone() + (1 - tau)*target_actor[name].clone()
+            actor[name] = (
+                tau * actor[name].clone() + (1 - tau) * target_actor[name].clone()
+            )
 
         self.target_critic_1.load_state_dict(critic_1)
         self.target_critic_2.load_state_dict(critic_2)
@@ -264,4 +343,3 @@ class Agent:
         self.critic_2.load_checkpoint()
         self.target_critic_1.load_checkpoint()
         self.target_critic_2.load_checkpoint()
-
