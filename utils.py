@@ -15,7 +15,7 @@ def plot_learning_curve(x, scores, figure_file):
 
 
 def agent_play(game_id, agent, eps=3):
-    env = gym.make(game_id, render_mode="human")
+    env = gym.make(game_id, render_mode="human", g=9.80665)
     rewards = 0
     for _ in range(eps):
         observation, info = env.reset()
@@ -31,11 +31,11 @@ def agent_play(game_id, agent, eps=3):
 
 
 def testing(env):
-    for _ in range(3):
+    for _ in range(2):
         env.reset()
-        env.env.state = np.array([-np.pi / 2, 0])
         done = False
+        env.unwrapped.state = np.array([2 * np.pi, 1.0])
         while not done:
-            env.render()
-            _, _, done, _ = env.step([2.0])
+            _, _, terminated, truncated, _ = env.step([env.max_torque])
+            done = terminated or truncated
     env.close()

@@ -16,11 +16,16 @@ from utils import plot_learning_curve, agent_play
 
 if __name__ == "__main__":
     # tensorboard --logdir=runs/pendulum_sim
+    # r_coeff = 0.004 / (max_torque ** 2)
     game_id = "Pendulum-v1"
-    env = gym.make("Pendulum-v1")
+    torque = 0.071
+    p_len = 0.25
+    mass = 0.2
+    env = gym.make(
+        game_id, g=9.80665, t=torque, l=p_len, m=mass, max_s=10, r_coeff=0.793
+    )
     seed = None
     if seed is not None:
-        env.action_space.seed(seed)
         np.random.seed(seed)
         T.manual_seed(seed)
     buffer_size = 200_000
@@ -43,13 +48,14 @@ if __name__ == "__main__":
         warmup=10_000,
         n_actions=env.action_space.shape[0],
     )
-    filename = (
-        f"{seed=},{lr=},tau={agent.tau},batch_size={agent.batch_size},{fc1=},{fc2=},noise={agent.noise},"
-        f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
-        f"warmup={agent.warmup}"
-    )
+    # filename = (
+    #     f"{seed=},{lr=},tau={agent.tau},batch_size={agent.batch_size},{fc1=},{fc2=},noise={agent.noise},"
+    #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
+    #     f"warmup={agent.warmup}"
+    # )
+    filename = f"length={p_len},{torque=},{mass=}"
     writer = SummaryWriter(log_dir=f"runs/pendulum_sim/{filename}")
-    n_games = 500
+    n_games = 200
     filename = "plots/" + "PendulumContinuous_" + str(n_games) + "_games.png"
 
     best_score = env.reward_range[0]
