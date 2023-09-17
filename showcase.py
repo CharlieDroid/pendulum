@@ -2,11 +2,18 @@ import gymnasium as gym
 from td3 import Agent
 from utils import agent_play
 
+
+def inverted_pendulum_test():
+    import gymnasium as gym
+
+    env = gym.make("InvertedPendulum-v4")
+
+
 if __name__ == "__main__":
     game_id = "Pendulum-v1"
-    torque = 2.
-    p_len = 1.
-    mass = 1.
+    torque = 2.0
+    p_len = 1.0
+    mass = 1.0
     env = gym.make(
         game_id, g=9.80665, t=torque, l=p_len, m=mass, max_s=8, r_coeff=0.001
     )
@@ -29,12 +36,10 @@ if __name__ == "__main__":
         update_actor_interval=1,
         warmup=10_000,
         n_actions=env.action_space.shape[0],
+        game_id=game_id,
+        chkpt_dir=".\\tmp\\td3_learned",
     )
-    agent.actor.checkpoint_file = "./tmp/td3_learned/actor_td3"
-    agent.critic_1.checkpoint_file = "./tmp/td3_learned/critic_1_td3"
-    agent.critic_2.checkpoint_file = "./tmp/td3_learned/critic_2_td3"
-    agent.target_actor.checkpoint_file = "./tmp/td3_learned/target_actor_td3"
-    agent.target_critic_1.checkpoint_file = "./tmp/td3_learned/target_critic_1_td3"
-    agent.target_critic_2.checkpoint_file = "./tmp/td3_learned/target_critic_2_td3"
-    agent.load_models()
+    import torch as T
+
+    agent.actor.load_state_dict(T.load(".\\tmp\\td3_learned\\actor_td3"))
     agent_play(game_id, agent)

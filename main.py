@@ -18,9 +18,9 @@ if __name__ == "__main__":
     # tensorboard --logdir=runs/pendulum_sim
     # r_coeff = 0.004 / (max_torque ** 2)
     game_id = "Pendulum-v1"
-    torque = 2.
-    p_len = 1.
-    mass = 1.
+    torque = 2.0
+    p_len = 1.0
+    mass = 1.0
     env = gym.make(
         game_id, g=9.80665, t=torque, l=p_len, m=mass, max_s=8, r_coeff=0.001
     )
@@ -47,13 +47,14 @@ if __name__ == "__main__":
         update_actor_interval=1,
         warmup=10_000,
         n_actions=env.action_space.shape[0],
+        game_id=game_id,
     )
     # filename = (
     #     f"{seed=},{lr=},tau={agent.tau},batch_size={agent.batch_size},{fc1=},{fc2=},noise={agent.noise},"
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = f"length={p_len},{torque=},{mass=}"
+    filename = f"testing 2, action multiplied according to max action"
     writer = SummaryWriter(log_dir=f"runs/pendulum_sim/{filename}")
     n_games = 200
     filename = "plots/" + "PendulumContinuous_" + str(n_games) + "_games.png"

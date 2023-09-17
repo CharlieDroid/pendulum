@@ -41,17 +41,13 @@ class ReplayBuffer:
 
 
 class CriticNetwork(nn.Module):
-    def __init__(
-        self, beta, input_dims, fc1_dims, fc2_dims, n_actions, name, chkpt_dir="tmp/td3"
-    ):
+    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions, name):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
         self.name = name
-        self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, name + "_td3")
 
         self.fc1 = nn.Linear(self.input_dims[0] + n_actions, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
@@ -72,34 +68,15 @@ class CriticNetwork(nn.Module):
 
         return q1
 
-    def save_checkpoint(self):
-        print("... saving checkpoint ...")
-        T.save(self.state_dict(), self.checkpoint_file)
-
-    def load_checkpoint(self):
-        print("... loading checkpoint ...")
-        self.load_state_dict(T.load(self.checkpoint_file))
-
 
 class ActorNetwork(nn.Module):
-    def __init__(
-        self,
-        alpha,
-        input_dims,
-        fc1_dims,
-        fc2_dims,
-        n_actions,
-        name,
-        chkpt_dir="tmp/td3",
-    ):
+    def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
         self.fc2_dims = fc2_dims
         self.n_actions = n_actions
         self.name = name
-        self.checkpoint_dir = chkpt_dir
-        self.checkpoint_file = os.path.join(self.checkpoint_dir, name + "_td3")
 
         self.fc1 = nn.Linear(*self.input_dims, self.fc1_dims)
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
@@ -111,23 +88,13 @@ class ActorNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state):
-        prob = self.fc1(state)
-        prob = F.relu(prob)
-        prob = self.fc2(prob)
-        prob = F.relu(prob)
+        prob = F.relu(self.fc1(state))
+        prob = F.relu(self.fc2(prob))
 
         # activation is tanh because it bounds it between +- 1
         # just multiply this according to the maximum action of the environment
         mu = T.tanh(self.mu(prob))
         return mu
-
-    def save_checkpoint(self):
-        print("... saving checkpoint ...")
-        T.save(self.state_dict(), self.checkpoint_file)
-
-    def load_checkpoint(self):
-        print("... loading checkpoint ...")
-        self.load_state_dict(T.load(self.checkpoint_file))
 
 
 class Agent:
@@ -147,6 +114,8 @@ class Agent:
         layer2_size=300,
         batch_size=100,
         noise=0.1,
+        chkpt_dir=".\\tmp\\td3",
+        game_id="Pendulum-v2",
     ):
         self.gamma = gamma
         self.tau = tau
@@ -159,6 +128,7 @@ class Agent:
         self.warmup = warmup
         self.n_actions = n_actions
         self.update_actor_iter = update_actor_interval
+        self.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3.chkpt")
 
         self.actor = ActorNetwork(
             alpha,
@@ -213,7 +183,7 @@ class Agent:
         self.update_network_parameters(tau=1)
 
     def choose_action(self, observation, evaluate=False):
-        if self.time_step < self.warmup:
+        if (self.time_step < self.warmup) and not evaluate:
             mu = T.tensor(np.random.normal(scale=self.noise, size=(self.n_actions,)))
         else:
             state = T.tensor(observation, dtype=T.float).to(self.actor.device)
@@ -226,6 +196,9 @@ class Agent:
             mu_prime = T.clamp(mu_prime, self.min_action[0], self.max_action[0])
         else:
             mu_prime = mu
+        mu_prime = T.clamp(
+            mu_prime * self.max_action[0], self.min_action[0], self.max_action[0]
+        )
         self.time_step += 1
         # should be list if moving to real world now or like basta optional ra ang numpy
         return mu_prime.cpu().detach().numpy()
@@ -329,17 +302,48 @@ class Agent:
         self.target_actor.load_state_dict(actor)
 
     def save_models(self):
-        self.actor.save_checkpoint()
-        self.target_actor.save_checkpoint()
-        self.critic_1.save_checkpoint()
-        self.critic_2.save_checkpoint()
-        self.target_critic_1.save_checkpoint()
-        self.target_critic_2.save_checkpoint()
+        print("...saving checkpoint...")
+        T.save(
+            {
+                "actor": self.actor.state_dict(),
+                "target_actor": self.target_actor.state_dict(),
+                "critic_1": self.critic_1.state_dict(),
+                "critic_2": self.critic_2.state_dict(),
+                "target_critic_1": self.target_critic_1.state_dict(),
+                "target_critic_2": self.target_critic_2.state_dict(),
+                "actor_optimizer": self.actor.optimizer.state_dict(),
+                "target_actor_optimizer": self.target_actor.optimizer.state_dict(),
+                "critic_1_optimizer": self.critic_1.optimizer.state_dict(),
+                "critic_2_optimizer": self.critic_2.optimizer.state_dict(),
+                "target_critic_1_optimizer": self.target_critic_1.optimizer.state_dict(),
+                "target_critic_2_optimizer": self.target_critic_2.optimizer.state_dict(),
+                "timestep": self.time_step,
+            },
+            self.chkpt_file_pth,
+        )
 
     def load_models(self):
-        self.actor.load_checkpoint()
-        self.target_actor.load_checkpoint()
-        self.critic_1.load_checkpoint()
-        self.critic_2.load_checkpoint()
-        self.target_critic_1.load_checkpoint()
-        self.target_critic_2.load_checkpoint()
+        print("...loading checkpoint...")
+        checkpoint = T.load(self.chkpt_file_pth)
+        self.actor.load_state_dict(checkpoint["actor"])
+        self.target_actor.load_state_dict(checkpoint["target_actor"])
+        self.critic_1.load_state_dict(checkpoint["critic_1"])
+        self.critic_2.load_state_dict(checkpoint["critic_2"])
+        self.target_critic_1.load_state_dict(checkpoint["target_critic_1"])
+        self.target_critic_2.load_state_dict(checkpoint["target_critic_2"])
+        self.actor.optimizer.load_state_dict(checkpoint["actor_optimizer"])
+        self.target_actor.optimizer.load_state_dict(
+            checkpoint["target_actor_optimizer"]
+        )
+        self.critic_1.optimizer.load_state_dict(checkpoint["critic_1_optimizer"])
+        self.critic_2.optimizer.load_state_dict(checkpoint["critic_2_optimizer"])
+        self.target_critic_1.optimizer.load_state_dict(
+            checkpoint["target_critic_1_optimizer"]
+        )
+        self.target_critic_2.optimizer.load_state_dict(
+            checkpoint["target_critic_2_optimizer"]
+        )
+        self.time_step = checkpoint["timestep"]
+        self.actor.to(self.actor.device)
+        # self.actor.eval()
+        # self.target_actor.eval()
