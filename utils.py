@@ -1,21 +1,33 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import gymnasium as gym
 
 
-def plot_learning_curve(x, scores, figure_file):
-    running_avg = np.zeros(len(scores))
-    for i in range(len(running_avg)):
-        running_avg[i] = np.mean(scores[max(0, i - 100) : (i + 1)])
-    plt.plot(x, running_avg)
-    plt.title("Running average of previous 100 scores")
-    # plt.savefig(figure_file)
-    plt.show()
-    plt.clf()
+def run_env(game_id="InvertedPendulumModded", eps=1):
+    from gymnasium.envs.registration import register
+
+    register(
+        id="InvertedPendulumModded",
+        entry_point="mujoco_mod.envs.inverted_pendulum_mod:InvertedPendulumEnv",
+        max_episode_steps=500,
+        reward_threshold=1000.0,
+    )
+
+    env = gym.make(game_id, render_mode="human")
+    for _ in range(eps):
+        env.reset()
+        done = False
+        while not done:
+            action = env.action_space.sample()
+            observation_, reward, terminated, truncated, info = env.step(action)
+            print(f"{observation_} | {reward}")
+            done = terminated or truncated
 
 
 def agent_play(game_id, agent, eps=3):
-    env = gym.make(game_id, render_mode="human", g=9.80665)
+    if game_id == "Pendulum-v1":
+        env = gym.make(game_id, render_mode="human", g=9.80665)
+    else:
+        env = gym.make(game_id, render_mode="human")
     rewards = 0
     for _ in range(eps):
         observation, info = env.reset()

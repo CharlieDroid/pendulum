@@ -344,6 +344,3 @@ class Agent:
             checkpoint["target_critic_2_optimizer"]
         )
         self.time_step = checkpoint["timestep"]
-        self.actor.to(self.actor.device)
-        # self.actor.eval()
-        # self.target_actor.eval()
