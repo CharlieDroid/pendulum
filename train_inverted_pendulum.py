@@ -20,8 +20,8 @@ from utils import agent_play
 register(
     id="InvertedPendulumModded",
     entry_point="mujoco_mod.envs.inverted_pendulum_mod:InvertedPendulumEnv",
-    max_episode_steps=500,
-    reward_threshold=10e3,
+    max_episode_steps=1000,
+    reward_threshold=0.,
 )
 
 if __name__ == "__main__":
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "modded reward function accrd to internet changed cosine to squared 1"
+    filename = "cosine only 1"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
     n_games = 350
 
