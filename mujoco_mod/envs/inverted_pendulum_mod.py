@@ -115,7 +115,7 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         )
 
     def out_of_bound(self, x):
-        return int(np.abs(x) > 0.8)
+        return int(np.abs(x) > 0.9)
 
     def step(self, a):
         # reward = 1.0
@@ -128,7 +128,7 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         #     + 0.001 * (a[0] ** 2)
         #     + 10 * self.out_of_bound(ob[0])
         # )
-        reward = -np.cos(ob[1]) - 10 * self.out_of_bound(ob[0])
+        reward = -(np.cos(ob[1]) + 10 * self.out_of_bound(ob[0]))
         # terminated = bool(not np.isfinite(ob).all() or (np.abs(ob[1]) > 0.2))
         terminated = bool(not np.isfinite(ob).all() or False)
         if self.render_mode == "human":

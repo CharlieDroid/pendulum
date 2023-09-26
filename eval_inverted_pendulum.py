@@ -36,4 +36,4 @@ if __name__ == "__main__":
         chkpt_dir=".\\tmp\\td3_learned",
     )
     agent.load_models()
-    agent_play(game_id, agent)
+    print(agent_play(game_id, agent))

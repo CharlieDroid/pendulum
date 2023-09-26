@@ -59,15 +59,15 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "cosine only using pre trained cart velo"
+    filename = "new pendulum cosine only 4"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
-    n_games = 200
+    n_games = 350
 
     best_score = env.reward_range[0]
     score_history = []
 
-    agent.load_models()
-    agent.time_step = agent.warmup + 1
+    # agent.load_models()
+    # agent_play(game_id, agent)
 
     for i in range(n_games):
         critic_loss_count = 0
@@ -118,7 +118,7 @@ if __name__ == "__main__":
             "actor loss %.5f" % actor_loss,
         )
 
-        if score >= 850:
+        if score >= 800:
             perfect_score_count += 1
             if perfect_score_count >= 10:
                 print("...environment solved...")
