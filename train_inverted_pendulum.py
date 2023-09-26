@@ -50,7 +50,7 @@ if __name__ == "__main__":
         max_size=buffer_size,
         gamma=0.98,
         update_actor_interval=1,
-        warmup=10_000,
+        warmup=5_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
     )
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "new pendulum cosine only 4"
+    filename = "new pendulum with sphere"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
     n_games = 350
 

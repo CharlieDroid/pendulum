@@ -21,6 +21,7 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
             observation_, reward, terminated, truncated, info = env.step(action)
             print(f"{observation_} | {reward}")
             done = terminated or truncated
+    env.close()
 
 
 def agent_play(game_id, agent, eps=3):
