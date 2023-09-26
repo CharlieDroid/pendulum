@@ -1,0 +1,12 @@
+try
+pip uninstall mujoco
+pip uninstall gymnasium
+pip uninstall mujoco-py
+pip install gymnasium[mujoco]
+pip install mujoco
+
+add to path
+
+pip install "cython<3"
+needs chocolatey install in powershell admin
+install build tools for visual studio

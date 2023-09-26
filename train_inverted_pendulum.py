@@ -21,7 +21,7 @@ register(
     id="InvertedPendulumModded",
     entry_point="mujoco_mod.envs.inverted_pendulum_mod:InvertedPendulumEnv",
     max_episode_steps=1000,
-    reward_threshold=0.,
+    reward_threshold=0.0,
 )
 
 if __name__ == "__main__":
@@ -59,15 +59,15 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "cosine only 1"
+    filename = "cosine only using pre trained cart velo"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
-    n_games = 350
+    n_games = 200
 
     best_score = env.reward_range[0]
     score_history = []
 
-    # agent.load_models()
-    # agent_play(game_id, agent)
+    agent.load_models()
+    agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
         critic_loss_count = 0
@@ -118,7 +118,7 @@ if __name__ == "__main__":
             "actor loss %.5f" % actor_loss,
         )
 
-        if score >= 800:
+        if score >= 850:
             perfect_score_count += 1
             if perfect_score_count >= 10:
                 print("...environment solved...")
