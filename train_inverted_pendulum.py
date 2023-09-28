@@ -59,16 +59,15 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "new pendulum with sphere rework 2"
+    filename = "new pendulum with sphere rework 4"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
-    n_games = 350
+    n_games = 500
 
     best_score = env.reward_range[0]
     score_history = []
 
     agent.load_models()
-    agent.time_step = agent.warmup + 1
-    # agent_play(game_id, agent)
+    # agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
         critic_loss_count = 0
