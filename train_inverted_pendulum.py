@@ -59,15 +59,15 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "new pendulum with sphere rework 5"
+    filename = "new pendulum with sphere rework 6"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
-    n_games = 500
+    n_games = 1000
 
     best_score = env.reward_range[0]
     score_history = []
 
     agent.load_models()
-    # agent.time_step = agent.warmup + 1
+    agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
         critic_loss_count = 0
@@ -105,6 +105,8 @@ if __name__ == "__main__":
 
         if i % 10 == 0:
             agent.save_models()
+        elif score > 880:
+            agent.save_models()
 
         writer.add_scalar("train/reward", score, i)
         writer.add_scalar("train/critic_loss", critic_loss, i)
@@ -118,7 +120,7 @@ if __name__ == "__main__":
             "actor loss %.5f" % actor_loss,
         )
 
-        if score >= 800:
+        if score >= 880:
             perfect_score_count += 1
             if perfect_score_count >= 10:
                 print("...environment solved...")

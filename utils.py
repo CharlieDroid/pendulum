@@ -1,5 +1,6 @@
 import numpy as np
 import gymnasium as gym
+from gymnasium.wrappers import RecordVideo
 
 
 def run_env(game_id="InvertedPendulumModded", eps=1):
@@ -26,12 +27,15 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
 
 def agent_play(game_id, agent, eps=3):
     if game_id == "Pendulum-v1":
-        env = gym.make(game_id, render_mode="human", g=9.80665)
+        env = gym.make(game_id, render_mode="rgb_array", g=9.80665)
     else:
-        env = gym.make(game_id, render_mode="human")
+        env = gym.make(game_id, render_mode="rgb_array")
+    env = RecordVideo(env, "recordings", name_prefix="InvertedPendulum",
+                      episode_trigger=lambda _: True)
     rewards = 0
-    for _ in range(eps):
+    for ep in range(eps):
         observation, info = env.reset()
+        env.start_video_recorder()
         done = False
         while not done:
             action = agent.choose_action(observation, evaluate=True)
