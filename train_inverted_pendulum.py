@@ -59,7 +59,7 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "new pendulum with sphere rework 4"
+    filename = "new pendulum with sphere rework 5"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
     n_games = 500
 
