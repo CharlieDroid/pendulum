@@ -11,6 +11,7 @@ register(
 )
 
 if __name__ == "__main__":
+    save = False
     game_id = "InvertedPendulumModded"
     env = gym.make(game_id, render_mode="human")
     buffer_size = 200_000
@@ -36,4 +37,4 @@ if __name__ == "__main__":
         chkpt_dir=".\\tmp\\td3_learned",
     )
     agent.load_models()
-    print(agent_play(game_id, agent))
+    print(agent_play(game_id, agent, save=save))

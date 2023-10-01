@@ -26,6 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
+    filename = "no action noise and edited xml file to be more realistic"
     env = gym.make(game_id)
 
     seed = None
@@ -59,15 +60,15 @@ if __name__ == "__main__":
     #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
     #     f"warmup={agent.warmup}"
     # )
-    filename = "new pendulum with sphere rework 6"
     writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
     n_games = 1000
 
     best_score = env.reward_range[0]
+    best_avg_score = best_score
     score_history = []
 
-    agent.load_models()
-    agent.time_step = agent.warmup + 1
+    # agent.load_models()
+    # agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
         critic_loss_count = 0
@@ -105,7 +106,7 @@ if __name__ == "__main__":
 
         if i % 10 == 0:
             agent.save_models()
-        elif score > 880:
+        elif score > 1600:
             agent.save_models()
 
         writer.add_scalar("train/reward", score, i)
@@ -120,7 +121,7 @@ if __name__ == "__main__":
             "actor loss %.5f" % actor_loss,
         )
 
-        if score >= 880:
+        if score >= 1880:
             perfect_score_count += 1
             if perfect_score_count >= 10:
                 print("...environment solved...")
@@ -128,6 +129,15 @@ if __name__ == "__main__":
                 break
         else:
             perfect_score_count = 0
+
+        if avg_score >= best_avg_score:
+            best_avg_score = avg_score
+            early_stop_count = 0
+        else:
+            early_stop_count += 1
+            if early_stop_count >= 50:
+                print("...early stopping...")
+                break
         writer.flush()
 
     writer.close()

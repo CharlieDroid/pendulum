@@ -11,5 +11,12 @@ Ring teeth: 31
 Planet distance from center: 10 * module
 Rotate planets by multiple of: 73.63636363636364°
 
+Sun 23
+Ring 43
+Planet 10
+Number of planets 3
+2.87:1 ratio
+Write down sun and planet gear pitch diameter, move planet gear = [(s_pd / 2) + (p_pd / 2)]
+
 good paper for new reward function (must change)
 https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0280071#sec013

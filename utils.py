@@ -14,28 +14,44 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
     )
 
     env = gym.make(game_id, render_mode="human")
+    max_speed = float('-inf')
     for _ in range(eps):
+        steps = 0
         env.reset()
         done = False
         while not done:
             action = env.action_space.sample()
+            if steps > 300:
+                action = [3.]
+            else:
+                action = [-3.]
             observation_, reward, terminated, truncated, info = env.step(action)
+            if abs(observation_[2]) > max_speed:
+                max_speed = abs(observation_[2])
             print(f"{observation_} | {reward}")
             done = terminated or truncated
+            steps += 1
     env.close()
+    print(max_speed)
 
 
-def agent_play(game_id, agent, eps=3):
-    if game_id == "Pendulum-v1":
-        env = gym.make(game_id, render_mode="rgb_array", g=9.80665)
+def agent_play(game_id, agent, eps=3, save=True):
+    if save:
+        render_mode = "rgb_array"
     else:
-        env = gym.make(game_id, render_mode="rgb_array")
-    env = RecordVideo(env, "recordings", name_prefix="InvertedPendulum",
-                      episode_trigger=lambda _: True)
+        render_mode = "human"
+    if game_id == "Pendulum-v1":
+        env = gym.make(game_id, render_mode=render_mode, g=9.80665)
+    else:
+        env = gym.make(game_id, render_mode=render_mode)
+    if save:
+        env = RecordVideo(env, "recordings", name_prefix="InvertedPendulum",
+                          episode_trigger=lambda _: True)
     rewards = 0
     for ep in range(eps):
         observation, info = env.reset()
-        env.start_video_recorder()
+        if save:
+            env.start_video_recorder()
         done = False
         while not done:
             action = agent.choose_action(observation, evaluate=True)

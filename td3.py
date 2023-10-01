@@ -189,13 +189,14 @@ class Agent:
             state = T.tensor(observation, dtype=T.float).to(self.actor.device)
             mu = self.actor.forward(state).to(self.actor.device)
         # your choice optional shit, remove when moving to real world cuz we already have noise lmao
-        if not evaluate:
-            mu_prime = mu + T.tensor(
-                np.random.normal(scale=self.noise), dtype=T.float
-            ).to(self.actor.device)
-            mu_prime = T.clamp(mu_prime, self.min_action[0], self.max_action[0])
-        else:
-            mu_prime = mu
+        # if not evaluate:
+        #     mu_prime = mu + T.tensor(
+        #         np.random.normal(scale=self.noise), dtype=T.float
+        #     ).to(self.actor.device)
+        #     mu_prime = T.clamp(mu_prime, self.min_action[0], self.max_action[0])
+        # else:
+        #     mu_prime = mu
+        mu_prime = mu
         mu_prime = T.clamp(
             mu_prime * self.max_action[0], self.min_action[0], self.max_action[0]
         )
