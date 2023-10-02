@@ -67,10 +67,11 @@ if __name__ == "__main__":
     best_avg_score = best_score
     score_history = []
 
-    # agent.load_models()
+    agent.load_models()
     # agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
+        i = i + 829
         critic_loss_count = 0
         actor_loss_count = 0
         critic_loss = 0
