@@ -26,7 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "no action noise and edited xml file to be more realistic"
+    filename = "sac agent training"
     env = gym.make(game_id)
 
     seed = None
@@ -34,15 +34,16 @@ if __name__ == "__main__":
         np.random.seed(seed)
         T.manual_seed(seed)
 
-
-    train_freq = 8
-    gradient_steps = 8
+    train_freq = 1
+    gradient_steps = 1
     agent = Agent(
-        alpha=0.00073,
-        beta=0.00073,
+        alpha=0.0003,
+        beta=0.0003,
         batch_size=256,
-        max_size=300_000,
-        tau=0.02,
+        max_size=1_000_000,
+        tau=0.005,
+        layer1_size=256,
+        layer2_size=256,
         gradient_steps=gradient_steps,
         input_dims=env.observation_space.shape,
         env=env,
@@ -66,7 +67,9 @@ if __name__ == "__main__":
 
     for i in range(n_games):
         critic_loss_count = 0
+        value_loss_count = 0
         actor_loss_count = 0
+        value_loss = 0
         critic_loss = 0
         actor_loss = 0
 
@@ -80,7 +83,7 @@ if __name__ == "__main__":
             agent.remember(observation, action, reward, observation_, done)
             # add actor and critic loss
             if steps % train_freq == 0:
-                c_loss, a_loss = agent.learn()
+                c_loss, v_loss, a_loss = agent.learn()
             score += reward
             observation = observation_
             done = terminated or truncated
@@ -89,6 +92,9 @@ if __name__ == "__main__":
             if c_loss is not None:
                 critic_loss_count += 1
                 critic_loss += c_loss
+            if v_loss is not None:
+                value_loss_count += 1
+                value_loss += v_loss
             if a_loss is not None:
                 actor_loss_count += 1
                 actor_loss += a_loss
@@ -96,6 +102,8 @@ if __name__ == "__main__":
         avg_score = np.mean(score_history[-100:])
         if critic_loss_count > 0:
             critic_loss /= critic_loss_count
+        if value_loss_count > 0:
+            value_loss /= value_loss_count
         if actor_loss_count > 0:
             actor_loss /= actor_loss_count
 
@@ -104,11 +112,12 @@ if __name__ == "__main__":
 
         if i % 10 == 0:
             agent.save_models()
-        elif score > 1600:
+        elif score > 880:
             agent.save_models()
 
         writer.add_scalar("train/reward", score, i)
         writer.add_scalar("train/critic_loss", critic_loss, i)
+        writer.add_scalar("train/value_loss", value_loss, i)
         writer.add_scalar("train/actor_loss", actor_loss, i)
         print(
             "episode",
@@ -119,7 +128,7 @@ if __name__ == "__main__":
             "actor loss %.5f" % actor_loss,
         )
 
-        if score >= 1880:
+        if score >= 880:
             perfect_score_count += 1
             if perfect_score_count >= 10:
                 print("...environment solved...")

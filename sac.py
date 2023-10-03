@@ -4,7 +4,6 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 from torch.distributions.normal import Normal
-from torchsde i
 import os
 
 
@@ -98,7 +97,14 @@ class ValueNetwork(nn.Module):
 
 class ActorNetwork(nn.Module):
     def __init__(
-        self, alpha, input_dims, max_action, fc1_dims, fc2_dims, n_actions, name
+        self,
+        alpha,
+        input_dims,
+        max_action,
+        fc1_dims,
+        fc2_dims,
+        n_actions,
+        name,
     ):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
@@ -129,7 +135,7 @@ class ActorNetwork(nn.Module):
         sigma = T.clamp(sigma, min=self.reparam_noise, max=1)
         return mu, sigma
 
-    def sample_normal(self, state, reparameterize=True):
+    def sample(self, state, reparameterize=True):
         mu, sigma = self.forward(state)
         probabilities = Normal(mu, sigma)
         if reparameterize:
@@ -138,10 +144,10 @@ class ActorNetwork(nn.Module):
             actions = probabilities.sample()
 
         # take care of this in real world
-        action = T.tanh(actions) * T.tensor(self.max_action).to(self.device)
+        action = T.tanh(actions)
         log_probs = probabilities.log_prob(actions)
         log_probs -= T.log(1 - action.pow(2) + self.reparam_noise)
-        log_probs = log_probs.sum(1, keepdim=True)
+        log_probs = log_probs.sum(-1, keepdim=True)
 
         return action, log_probs
 
@@ -171,6 +177,7 @@ class Agent:
         self.batch_size = batch_size
         self.n_actions = n_actions
         self.gradient_steps = gradient_steps
+        self.time_step = 0
         self.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} sac.chkpt")
 
         self.actor = ActorNetwork(
@@ -209,12 +216,12 @@ class Agent:
         self.update_network_parameters(tau=1)
 
     def choose_action(self, observation):
-        state = T.Tensor([observation]).to(self.actor.device)
-        actions, _ = self.actor.sample_normal(state, reparameterize=False)
-
-        return actions.cpu().detach().numpy()[0]
+        state = T.tensor(observation, dtype=T.float).to(self.actor.device)
+        action, _ = self.actor.sample(state, reparameterize=False)
+        return action.cpu().detach().numpy()[0] * self.actor.max_action
 
     def remember(self, state, action, reward, new_state, done):
+        self.time_step += 1
         self.memory.store_transition(state, action, reward, new_state, done)
 
     def update_network_parameters(self, tau=None):
@@ -237,8 +244,11 @@ class Agent:
 
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
-            return
+            return None, None, None
 
+        total_critic_loss = 0
+        total_actor_loss = 0
+        total_value_loss = 0
         for _ in range(self.gradient_steps):
             state, action, reward, new_state, done = self.memory.sample_buffer(
                 self.batch_size
@@ -254,7 +264,7 @@ class Agent:
             value_ = self.target_value(state_).view(-1)
             value_[done] = 0.0
 
-            actions, log_probs = self.actor.sample_normal(state, reparameterize=False)
+            actions, log_probs = self.actor.sample(state, reparameterize=False)
             log_probs = log_probs.view(-1)
             q1_new_policy = self.critic_1.forward(state, actions)
             q2_new_policy = self.critic_2.forward(state, actions)
@@ -267,7 +277,7 @@ class Agent:
             value_loss.backward(retain_graph=True)
             self.value.optimizer.step()
 
-            actions, log_probs = self.actor.sample_normal(state, reparameterize=True)
+            actions, log_probs = self.actor.sample(state, reparameterize=True)
             log_probs = log_probs.view(-1)
             q1_new_policy = self.critic_1.forward(state, actions)
             q2_new_policy = self.critic_2.forward(state, actions)
@@ -294,6 +304,14 @@ class Agent:
             self.critic_2.optimizer.step()
 
             self.update_network_parameters()
+            total_critic_loss += critic_loss
+            total_actor_loss += actor_loss
+            total_value_loss += value_loss
+        # returns critic, value, actor loss respectively
+        return [
+            loss / self.gradient_steps
+            for loss in [total_critic_loss, total_value_loss, total_actor_loss]
+        ]
 
     def save_models(self):
         print("...saving checkpoint...")
