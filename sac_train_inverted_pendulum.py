@@ -34,7 +34,16 @@ if __name__ == "__main__":
         np.random.seed(seed)
         T.manual_seed(seed)
 
+
+    train_freq = 8
+    gradient_steps = 8
     agent = Agent(
+        alpha=0.00073,
+        beta=0.00073,
+        batch_size=256,
+        max_size=300_000,
+        tau=0.02,
+        gradient_steps=gradient_steps,
         input_dims=env.observation_space.shape,
         env=env,
         n_actions=env.action_space.shape[0],
@@ -62,6 +71,7 @@ if __name__ == "__main__":
         actor_loss = 0
 
         observation, info = env.reset(seed=seed)
+        steps = 0
         done = False
         score = 0
         while not done:
@@ -69,10 +79,12 @@ if __name__ == "__main__":
             observation_, reward, terminated, truncated, info = env.step(action)
             agent.remember(observation, action, reward, observation_, done)
             # add actor and critic loss
-            c_loss, a_loss = agent.learn()
+            if steps % train_freq == 0:
+                c_loss, a_loss = agent.learn()
             score += reward
             observation = observation_
             done = terminated or truncated
+            steps += 1
 
             if c_loss is not None:
                 critic_loss_count += 1

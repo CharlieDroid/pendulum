@@ -26,7 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "no action noise and edited xml file to be more realistic"
+    filename = "actor updates every 1 episode"
     env = gym.make(game_id)
 
     seed = None
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         noise=0.1,
         max_size=buffer_size,
         gamma=0.98,
-        update_actor_interval=1,
+        update_actor_interval=500,
         warmup=10_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
@@ -71,7 +71,6 @@ if __name__ == "__main__":
     # agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
-        i = i + 829
         critic_loss_count = 0
         actor_loss_count = 0
         critic_loss = 0

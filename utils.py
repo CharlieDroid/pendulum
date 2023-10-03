@@ -1,6 +1,7 @@
 import numpy as np
 import gymnasium as gym
 from gymnasium.wrappers import RecordVideo
+import os
 
 
 def run_env(game_id="InvertedPendulumModded", eps=1):
@@ -35,7 +36,7 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
     print(max_speed)
 
 
-def agent_play(game_id, agent, eps=3, save=True):
+def agent_play(game_id, agent, eps=3, save=True, find_best=False):
     if save:
         render_mode = "rgb_array"
     else:
@@ -47,21 +48,43 @@ def agent_play(game_id, agent, eps=3, save=True):
     if save:
         env = RecordVideo(env, "recordings", name_prefix="InvertedPendulum",
                           episode_trigger=lambda _: True)
-    rewards = 0
-    for ep in range(eps):
-        observation, info = env.reset()
-        if save:
-            env.start_video_recorder()
-        done = False
-        while not done:
-            action = agent.choose_action(observation, evaluate=True)
-            observation_, reward, terminated, truncated, info = env.step(action)
-            rewards += reward
-            observation = observation_
-            done = terminated or truncated
-    env.close()
-    return rewards / eps
-
+    if not find_best:
+        rewards = 0
+        for ep in range(eps):
+            observation, info = env.reset()
+            if save:
+                env.start_video_recorder()
+            done = False
+            while not done:
+                action = agent.choose_action(observation, evaluate=True)
+                observation_, reward, terminated, truncated, info = env.step(action)
+                rewards += reward
+                observation = observation_
+                done = terminated or truncated
+        env.close()
+        return rewards / eps
+    else:
+        trial = 0
+        while True:
+            trial += 1
+            rewards = 0
+            observation, info = env.reset()
+            if save:
+                env.start_video_recorder()
+            done = False
+            while not done:
+                action = agent.choose_action(observation, evaluate=True)
+                observation_, reward, terminated, truncated, info = env.step(action)
+                rewards += reward
+                observation = observation_
+                done = terminated or truncated
+            print(f"trial #{trial} rewards {rewards}")
+            if rewards > 888:
+                print("Found the best episode")
+                break
+            else:
+                [os.remove(os.path.join(".\\recordings", file)) for file in os.listdir(".\\recordings")]
+        env.close()
 
 def testing(env):
     for _ in range(2):
