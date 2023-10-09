@@ -167,12 +167,14 @@ class Agent:
         layer1_size=256,
         layer2_size=256,
         batch_size=256,
+            warmup=10_000,
         reward_scale=2,
         chkpt_dir=".\\tmp\\sac",
         game_id="Pendulum-v2",
     ):
         self.gamma = gamma
         self.tau = tau
+        self.warmup = warmup
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.n_actions = n_actions
@@ -215,7 +217,7 @@ class Agent:
         self.scale = reward_scale
         self.update_network_parameters(tau=1)
 
-    def choose_action(self, observation):
+    def choose_action(self, observation, evaluate=True):
         state = T.tensor(observation, dtype=T.float).to(self.actor.device)
         action, _ = self.actor.sample(state, reparameterize=False)
         return action.cpu().detach().numpy()[0] * self.actor.max_action
@@ -243,7 +245,7 @@ class Agent:
         self.target_value.load_state_dict(value_state_dict)
 
     def learn(self):
-        if self.memory.mem_cntr < self.batch_size:
+        if (self.memory.mem_cntr < self.batch_size) or (self.time_step < self.warmup):
             return None, None, None
 
         total_critic_loss = 0
@@ -327,6 +329,7 @@ class Agent:
                 "critic_2_optimizer": self.critic_2.optimizer.state_dict(),
                 "value_optimizer": self.value.optimizer.state_dict(),
                 "target_value_optimizer": self.target_value.optimizer.state_dict(),
+                "time_step": self.time_step,
             },
             self.chkpt_file_pth,
         )
@@ -346,3 +349,4 @@ class Agent:
         self.target_value.optimizer.load_state_dict(
             checkpoint["target_value_optimizer"]
         )
+        # self.time_step = checkpoint["time_step"]

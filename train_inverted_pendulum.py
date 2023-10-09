@@ -26,7 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "actor updates every 1 episode"
+    filename = "td3 normal pendulum default algo"
     env = gym.make(game_id)
 
     seed = None
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         noise=0.1,
         max_size=buffer_size,
         gamma=0.98,
-        update_actor_interval=500,
+        update_actor_interval=1,
         warmup=10_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     score_history = []
 
     agent.load_models()
-    # agent.time_step = agent.warmup + 1
+    agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
         critic_loss_count = 0
@@ -132,12 +132,12 @@ if __name__ == "__main__":
 
         if avg_score >= best_avg_score:
             best_avg_score = avg_score
-            early_stop_count = 0
-        else:
-            early_stop_count += 1
-            if early_stop_count >= 50:
-                print("...early stopping...")
-                break
+        #     early_stop_count = 0
+        # else:
+        #     early_stop_count += 1
+        #     if early_stop_count >= 50:
+        #         print("...early stopping...")
+        #         break
         writer.flush()
 
     writer.close()

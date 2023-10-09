@@ -26,7 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "sac agent training"
+    filename = "sac agent following rl zoo params w/o sde"
     env = gym.make(game_id)
 
     seed = None
@@ -34,16 +34,18 @@ if __name__ == "__main__":
         np.random.seed(seed)
         T.manual_seed(seed)
 
-    train_freq = 1
-    gradient_steps = 1
+    train_freq = 8
+    gradient_steps = 8
     agent = Agent(
-        alpha=0.0003,
-        beta=0.0003,
+        alpha=0.00073,
+        beta=0.00073,
+        gamma=0.98,
         batch_size=256,
-        max_size=1_000_000,
-        tau=0.005,
-        layer1_size=256,
-        layer2_size=256,
+        max_size=300_000,
+        tau=0.02,
+        layer1_size=400,
+        layer2_size=300,
+        warmup=10_000,
         gradient_steps=gradient_steps,
         input_dims=env.observation_space.shape,
         env=env,
@@ -62,10 +64,11 @@ if __name__ == "__main__":
     best_avg_score = best_score
     score_history = []
 
-    # agent.load_models()
-    # agent.time_step = agent.warmup + 1
+    agent.load_models()
+    agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
+        i += 409
         critic_loss_count = 0
         value_loss_count = 0
         actor_loss_count = 0
@@ -78,7 +81,10 @@ if __name__ == "__main__":
         done = False
         score = 0
         while not done:
-            action = agent.choose_action(observation)
+            if agent.time_step > agent.warmup:
+                action = agent.choose_action(observation)
+            else:
+                action = env.action_space.sample()
             observation_, reward, terminated, truncated, info = env.step(action)
             agent.remember(observation, action, reward, observation_, done)
             # add actor and critic loss
@@ -142,7 +148,7 @@ if __name__ == "__main__":
             early_stop_count = 0
         else:
             early_stop_count += 1
-            if early_stop_count >= 50:
+            if early_stop_count >= float("inf"):
                 print("...early stopping...")
                 break
         writer.flush()
