@@ -37,7 +37,7 @@ if __name__ == "__main__":
     s_range = (8, 25 + 1)
     r_range = (24, 60 + 1)
     p_range = (10, 30 + 1)
-    desired_ratio = 2.73
+    desired_ratio = 2.4
     found_combinations = []
     for np in range(*np_range):
         for s in range(*s_range):

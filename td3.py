@@ -244,8 +244,8 @@ class Agent:
         self.critic_1.optimizer.zero_grad()
         self.critic_2.optimizer.zero_grad()
 
-        q1_loss = F.mse_loss(target, q1)
-        q2_loss = F.mse_loss(target, q2)
+        q1_loss = F.mse_loss(q1, target)
+        q2_loss = F.mse_loss(q2, target)
         critic_loss = q1_loss + q2_loss
         critic_loss.backward()
         self.critic_1.optimizer.step()
