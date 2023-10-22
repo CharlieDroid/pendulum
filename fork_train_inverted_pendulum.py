@@ -1,7 +1,7 @@
 import gymnasium as gym
 from gymnasium.envs.registration import register
 import numpy as np
-from td3 import Agent
+from td3_fork import Agent
 from torch.utils.tensorboard import SummaryWriter
 import torch as T
 from utils import agent_play
@@ -26,7 +26,7 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "td3 fork initial inverted pendulum"
+    filename = "td3 fork initial inverted pendulum improved hyperparameters"
     env = gym.make(game_id)
 
     seed = None
@@ -34,13 +34,20 @@ if __name__ == "__main__":
         np.random.seed(seed)
         T.manual_seed(seed)
 
-    lr = 3e-4
+    # a warmup of 20,000 steps irl
+    lr = 0.001
     agent = Agent(
         alpha=lr,
         beta=lr,
         input_dims=env.observation_space.shape,
         tau=0.005,
         env=env,
+        gamma=0.98,
+        noise=0.1,
+        layer1_size=400,
+        layer2_size=300,
+        update_actor_interval=1,
+        max_size=200_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
     )

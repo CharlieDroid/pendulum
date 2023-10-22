@@ -186,8 +186,8 @@ class Agent:
         self.reward_lower_bound = 0
         self.reward_upper_bound = 0
 
-        if self.obs_upper_bound == float("inf"):
-            self.obs_upper_bound, self.obs_lower_bound = 0, 0
+        # if self.obs_upper_bound == float("inf"):
+        #     self.obs_upper_bound, self.obs_lower_bound = 0, 0
 
         self.system_loss = 0
         self.reward_loss = 0
@@ -339,14 +339,13 @@ class Agent:
         self.system_loss = system_loss.item()
 
         predict_reward = self.reward(state, state_, action)
-        reward_loss = F.mse_loss(predict_reward, reward.detach())
+        reward_loss = F.mse_loss(predict_reward.view(-1), reward.detach())
         self.reward.optimizer.zero_grad()
         reward_loss.backward()
         self.reward.optimizer.step()
         self.reward_loss = reward_loss.item()
 
         s_flag = 1 if system_loss.item() < self.sys_threshold else 0
-        print(system_loss.item())
 
         self.learn_step_cntr += 1
 
@@ -360,12 +359,12 @@ class Agent:
         if s_flag:
             predict_next_state = self.system.forward(state, self.actor.forward(state))
             predict_next_state = T.clamp(
-                predict_next_state, self.obs_lower_bound, self.obs_upper_bound
+                predict_next_state.detach(), self.obs_lower_bound, self.obs_upper_bound
             )
 
             # skipping to "TD3_FORK"
             predict_next_reward = self.reward.forward(
-                state, predict_next_state.detach(), self.actor.forward(state)
+                state, predict_next_state, self.actor.forward(state)
             )
             next_state = self.actor.forward(predict_next_state.detach())
             predict_next_state2 = self.system.forward(predict_next_state, next_state)
@@ -385,7 +384,7 @@ class Agent:
             )
             actor_loss3 = -T.mean(actor_loss3)
 
-        actor_loss = actor_loss + self.sys_weight * actor_loss3
+            actor_loss = actor_loss + self.sys_weight * actor_loss3
 
         self.critic_1.optimizer.zero_grad()
         self.critic_2.optimizer.zero_grad()

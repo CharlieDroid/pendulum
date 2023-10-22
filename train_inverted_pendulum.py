@@ -71,6 +71,7 @@ if __name__ == "__main__":
     agent.time_step = agent.warmup + 1
 
     for i in range(n_games):
+        i += 919
         critic_loss_count = 0
         actor_loss_count = 0
         critic_loss = 0
