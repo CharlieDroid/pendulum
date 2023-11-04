@@ -163,10 +163,11 @@ class Agent:
         r2_size=256,
         batch_size=100,
         noise=0.2,
+        policy_noise=0.2,
         sys_weight=0.5,
         sys_weight2=0.4,
         sys_threshold=0.020,
-        chkpt_dir=".\\tmp\\td3 fork",
+        chkpt_dir="./tmp/td3 fork",
         game_id="Pendulum-v2",
     ):
         self.gamma = gamma
@@ -185,9 +186,6 @@ class Agent:
 
         self.reward_lower_bound = 0
         self.reward_upper_bound = 0
-
-        # if self.obs_upper_bound == float("inf"):
-        #     self.obs_upper_bound, self.obs_lower_bound = 0, 0
 
         self.system_loss = 0
         self.reward_loss = 0
@@ -256,6 +254,7 @@ class Agent:
         )
 
         self.noise = noise
+        self.policy_noise = policy_noise
         self.update_network_parameters(tau=1)
 
     def init_weights(self, m):
@@ -282,7 +281,7 @@ class Agent:
         self.memory.store_transition(state, action, reward, new_state, done)
 
     def learn(self):
-        if self.memory.mem_cntr < self.batch_size:
+        if (self.memory.mem_cntr < self.batch_size) or (self.time_step < self.warmup):
             return None, None
         state, action, reward, new_state, done = self.memory.sample_buffer(
             self.batch_size
@@ -294,7 +293,7 @@ class Agent:
         action = T.tensor(action, dtype=T.float).to(self.critic_1.device)
 
         with T.no_grad():
-            noise = T.clamp(T.randn_like(action) * self.noise, -0.5, 0.5)
+            noise = T.clamp(T.randn_like(action) * self.policy_noise, -0.5, 0.5)
             target_actions = T.clamp(
                 self.target_actor(state_) + noise,
                 self.min_action[0],
@@ -460,7 +459,8 @@ class Agent:
 
     def load_models(self):
         print("...loading checkpoint...")
-        checkpoint = T.load(self.chkpt_file_pth)
+        device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
+        checkpoint = T.load(self.chkpt_file_pth, map_location=device)
         self.actor.load_state_dict(checkpoint["actor"])
         self.target_actor.load_state_dict(checkpoint["target_actor"])
         self.critic_1.load_state_dict(checkpoint["critic_1"])

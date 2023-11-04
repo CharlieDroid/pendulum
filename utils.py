@@ -15,25 +15,24 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
     )
 
     env = gym.make(game_id, render_mode="human")
-    max_speed = float('-inf')
+
     for _ in range(eps):
         steps = 0
-        env.reset()
+        obs, info = env.reset()
         done = False
+        action = [3.0]
         while not done:
-            action = env.action_space.sample()
-            if steps > 300:
-                action = [3.]
-            else:
-                action = [-3.]
+            # action = env.action_space.sample()
+            if steps % 100 == 0:
+                action = [-action[0]]
             observation_, reward, terminated, truncated, info = env.step(action)
-            if abs(observation_[2]) > max_speed:
-                max_speed = abs(observation_[2])
-            print(f"{observation_} | {reward}")
+            obs = observation_
+            print(
+                f"pos:{obs[0]:.2f} angle:{obs[1]:.4f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
+            )
             done = terminated or truncated
             steps += 1
     env.close()
-    print(max_speed)
 
 
 def agent_play(game_id, agent, eps=3, save=True, find_best=False):
@@ -46,8 +45,12 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
     else:
         env = gym.make(game_id, render_mode=render_mode)
     if save:
-        env = RecordVideo(env, "recordings", name_prefix="InvertedPendulum",
-                          episode_trigger=lambda _: True)
+        env = RecordVideo(
+            env,
+            "recordings",
+            name_prefix="InvertedPendulum",
+            episode_trigger=lambda _: True,
+        )
     if not find_best:
         rewards = 0
         for ep in range(eps):
@@ -58,6 +61,11 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
             while not done:
                 action = agent.choose_action(observation, evaluate=True)
                 observation_, reward, terminated, truncated, info = env.step(action)
+                if not save:
+                    obs = observation_
+                    print(
+                        f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
+                    )
                 rewards += reward
                 observation = observation_
                 done = terminated or truncated
@@ -83,8 +91,12 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
                 print("Found the best episode")
                 break
             else:
-                [os.remove(os.path.join(".\\recordings", file)) for file in os.listdir(".\\recordings")]
+                [
+                    os.remove(os.path.join(".\\recordings", file))
+                    for file in os.listdir(".\\recordings")
+                ]
         env.close()
+
 
 def testing(env):
     for _ in range(2):

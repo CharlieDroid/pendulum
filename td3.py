@@ -114,7 +114,7 @@ class Agent:
         layer2_size=300,
         batch_size=100,
         noise=0.1,
-        chkpt_dir=".\\tmp\\td3",
+        chkpt_dir="./tmp/td3",
         game_id="Pendulum-v2",
     ):
         self.gamma = gamma

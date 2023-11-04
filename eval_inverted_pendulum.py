@@ -3,20 +3,22 @@ from gymnasium.envs.registration import register
 import td3
 import sac
 import td3_fork
+import tqc
 from utils import agent_play
 
 register(
     id="InvertedPendulumModded",
     entry_point="mujoco_mod.envs.inverted_pendulum_mod:InvertedPendulumEnv",
     max_episode_steps=1000,
-    reward_threshold=0.,
+    reward_threshold=0.0,
 )
 
 if __name__ == "__main__":
     find_best = False
     save = False
-    algo = "sac"
+    algo = "td3-fork"
     game_id = "InvertedPendulumModded"
+    eps = 1
     env = gym.make(game_id, render_mode="human")
     if algo == "td3":
         buffer_size = 200_000
@@ -49,7 +51,7 @@ if __name__ == "__main__":
             env=env,
             n_actions=env.action_space.shape[0],
             game_id=game_id,
-            chkpt_dir=".\\tmp\\sac_learned"
+            chkpt_dir=".\\tmp\\sac_learned",
         )
     elif algo == "td3-fork":
         lr = 0.001
@@ -67,8 +69,16 @@ if __name__ == "__main__":
             max_size=200_000,
             n_actions=env.action_space.shape[0],
             game_id=game_id,
-            chkpt_dir=".\\tmp\\td3_fork_learned"
+            chkpt_dir=".\\tmp\\td3_fork_learned",
+        )
+    elif algo == "tqc":
+        agent = tqc.Agent(
+            input_dims=env.observation_space.shape,
+            env=env,
+            n_actions=env.action_space.shape[0],
+            game_id=game_id,
+            chkpt_dir=".\\tmp\\tqc_learned",
         )
     agent.load_models()
     agent.time_step = agent.warmup + 1
-    print(agent_play(game_id, agent, save=save, find_best=find_best))
+    print(agent_play(game_id, agent, save=save, find_best=find_best, eps=eps))

@@ -167,9 +167,9 @@ class Agent:
         layer1_size=256,
         layer2_size=256,
         batch_size=256,
-            warmup=10_000,
+        warmup=10_000,
         reward_scale=2,
-        chkpt_dir=".\\tmp\\sac",
+        chkpt_dir="./tmp/sac",
         game_id="Pendulum-v2",
     ):
         self.gamma = gamma
@@ -336,7 +336,7 @@ class Agent:
 
     def load_models(self):
         print("...loading checkpoint...")
-        checkpoint = T.load(self.chkpt_file_pth)
+        checkpoint = T.load(self.chkpt_file_pth, map_location=self.actor.device)
         self.actor.load_state_dict(checkpoint["actor"])
         self.critic_1.load_state_dict(checkpoint["critic_1"])
         self.critic_2.load_state_dict(checkpoint["critic_2"])

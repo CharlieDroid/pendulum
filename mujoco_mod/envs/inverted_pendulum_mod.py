@@ -11,6 +11,16 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 
+def simp_angle(a):
+    _2pi = 2 * np.pi
+    if a > np.pi:
+        return simp_angle(a - _2pi)
+    elif a < -np.pi:
+        return simp_angle(a + _2pi)
+    else:
+        return a
+
+
 class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
     """
     ## Description
@@ -107,30 +117,27 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         observation_space = Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float64)
         MujocoEnv.__init__(
             self,
-            r".\mujoco_mod\assets\inverted_pendulum.xml",
+            "./mujoco_mod/assets/inverted_pendulum.xml",
             2,
             observation_space=observation_space,
             default_camera_config=DEFAULT_CAMERA_CONFIG,
             **kwargs,
         )
+        self.init_qpos = np.array([0.0, np.pi])
 
     def step(self, a):
-        # reward = 1.0
         self.do_simulation(a, self.frame_skip)
         ob = self._get_obs()
-        # reward = -(
-        #     (np.abs(ob[1]) - np.pi) ** 2
-        #     + 0.1 * (ob[3] ** 2)
-        #     + 0.1 * (ob[2] ** 2)
-        #     + 0.001 * (a[0] ** 2)
-        #     + 10 * self.out_of_bound(ob[0])
-        # )
-        reward = -(np.cos(ob[1])
-                   + 10 * int(ob[0] > 0.9)
-                   + 10 * int(ob[3] > 18)
-                   )
-        # terminated = bool(not np.isfinite(ob).all() or (np.abs(ob[1]) > 0.2))
-        terminated = bool(not np.isfinite(ob).all() or False)
+        ob[1] = simp_angle(ob[1])
+
+        # -10 if cart goes beyond 0.9m on both sides and exceeds 18 rad/s
+        # follows cosine function until angle is greater than 2.9 which gives 1
+        reward = np.cos(ob[1]) - (
+            10 * int(abs(ob[0]) > 0.9) + 10 * int(abs(ob[3]) > 14)
+        )
+
+        terminate = False
+        terminated = bool(not np.isfinite(ob).all() or terminate)
         if self.render_mode == "human":
             self.render()
         return ob, reward, terminated, False, {}

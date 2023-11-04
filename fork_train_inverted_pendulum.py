@@ -4,7 +4,7 @@ import numpy as np
 from td3_fork import Agent
 from torch.utils.tensorboard import SummaryWriter
 import torch as T
-from utils import agent_play
+import os
 
 # Mujoco Modded by Charles
 # ----------------------------------------
@@ -26,7 +26,11 @@ register(
 
 if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
-    filename = "td3 fork initial inverted pendulum improved hyperparameters"
+    filename = "testing"
+    chkpt_dir = "./tmp/td3 fork"
+    log_dir = f"runs/inverted_pendulum_sim/{filename}"
+    # chkpt_dir = "./drive/MyDrive/pendulum/tmp/td3 fork"
+    # log_dir = f"./drive/MyDrive/pendulum/runs/inverted_pendulum_sim/{filename}"
     env = gym.make(game_id)
 
     seed = None
@@ -44,96 +48,90 @@ if __name__ == "__main__":
         env=env,
         gamma=0.98,
         noise=0.1,
+        policy_noise=0.2,
         layer1_size=400,
         layer2_size=300,
         update_actor_interval=1,
         max_size=200_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
+        chkpt_dir=chkpt_dir,
     )
-    # filename = (
-    #     f"{seed=},{lr=},tau={agent.tau},batch_size={agent.batch_size},{fc1=},{fc2=},noise={agent.noise},"
-    #     f"buffer_size={agent.memory.mem_size},gamma={agent.gamma},train_freq={agent.update_actor_iter},"
-    #     f"warmup={agent.warmup}"
-    # )
-    writer = SummaryWriter(log_dir=f"runs/inverted_pendulum_sim/{filename}")
-    n_games = 1000
+    writer = SummaryWriter(log_dir=log_dir)
+    n_timesteps = 1_000_000
+    episode = 1_000  # 1 episode = 1k timesteps
 
     best_score = env.reward_range[0]
     best_avg_score = best_score
     score_history = []
+    critic_loss_count = 0
+    actor_loss_count = 0
+    critic_loss = 0
+    actor_loss = 0
+    score = 0
+    done = True
 
-    # agent.load_models()
-    # agent.time_step = agent.warmup + 1
+    for step in range(n_timesteps):
+        if done:
+            observation, info = env.reset(seed=seed)
 
-    for i in range(n_games):
-        critic_loss_count = 0
-        actor_loss_count = 0
-        critic_loss = 0
-        actor_loss = 0
+        action = agent.choose_action(observation)
+        observation_, reward, terminated, truncated, info = env.step(action)
+        done = terminated or truncated
+        agent.remember(observation, action, reward, observation_, done)
+        c_loss, a_loss = agent.learn()
+        observation = observation_
+        writer.add_scalar("train/return", reward, step)
+        score += reward
 
-        observation, info = env.reset(seed=seed)
-        done = False
-        score = 0
-        while not done:
-            action = agent.choose_action(observation)
-            observation_, reward, terminated, truncated, info = env.step(action)
-            agent.remember(observation, action, reward, observation_, done)
-            c_loss, a_loss = agent.learn()
-            score += reward
-            observation = observation_
-            done = terminated or truncated
+        if c_loss is not None:
+            critic_loss_count += 1
+            critic_loss += c_loss
+        if a_loss is not None:
+            actor_loss_count += 1
+            actor_loss += a_loss
 
-            if c_loss is not None:
-                critic_loss_count += 1
-                critic_loss += c_loss
-            if a_loss is not None:
-                actor_loss_count += 1
-                actor_loss += a_loss
-        score_history.append(score)
-        avg_score = np.mean(score_history[-100:])
-        if critic_loss_count > 0:
-            critic_loss /= critic_loss_count
-        if actor_loss_count > 0:
-            actor_loss /= actor_loss_count
+        if (step + 1) % episode == 0:
+            i = int(step / episode)
+            score_history.append(score)
+            avg_score = np.mean(score_history[-100:])
+            if critic_loss_count > 0:
+                critic_loss /= critic_loss_count
+            if actor_loss_count > 0:
+                actor_loss /= actor_loss_count
 
-        if avg_score > best_score:
-            best_score = avg_score
+            if avg_score > best_score:
+                best_score = avg_score
 
-        if i % 10 == 0:
-            agent.save_models()
-        elif score > 1600:
-            agent.save_models()
+            writer.add_scalar("train/reward", score, i)
+            writer.add_scalar("train/critic_loss", critic_loss, i)
+            writer.add_scalar("train/actor_loss", actor_loss, i)
+            print(
+                "episode",
+                i,
+                "score %.1f" % score,
+                "avg score %.1f" % avg_score,
+                "critic loss %.5f" % critic_loss,
+                "actor loss %.5f" % actor_loss,
+            )
 
-        writer.add_scalar("train/reward", score, i)
-        writer.add_scalar("train/critic_loss", critic_loss, i)
-        writer.add_scalar("train/actor_loss", actor_loss, i)
-        print(
-            "episode",
-            i,
-            "score %.1f" % score,
-            "avg score %.1f" % avg_score,
-            "critic loss %.5f" % critic_loss,
-            "actor loss %.5f" % actor_loss,
-        )
+            if score >= 990:
+                perfect_score_count += 1
+                if perfect_score_count >= 10:
+                    print("...environment solved...")
+                    agent.save_models()
+                    break
+            else:
+                perfect_score_count = 0
 
-        if score >= 880:
-            perfect_score_count += 1
-            if perfect_score_count >= 10:
-                print("...environment solved...")
+            if avg_score >= best_avg_score:
+                best_avg_score = avg_score
                 agent.save_models()
-                break
-        else:
-            perfect_score_count = 0
-
-        if avg_score >= best_avg_score:
-            best_avg_score = avg_score
-        #     early_stop_count = 0
-        # else:
-        #     early_stop_count += 1
-        #     if early_stop_count >= 50:
-        #         print("...early stopping...")
-        #         break
-        writer.flush()
+            critic_loss_count = 0
+            actor_loss_count = 0
+            critic_loss = 0
+            actor_loss = 0
+            score = 0
+            writer.flush()
 
     writer.close()
