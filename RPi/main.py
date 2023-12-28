@@ -3,7 +3,6 @@ import pickle
 import platform
 import time
 import traceback
-import paramiko
 import shutil
 
 import numpy as np
@@ -11,20 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from environment import Pendulum, DummyPendulum
 from td3_fork import Agent, AgentActor
-
-
-class RPIConnect:
-    def __init__(self, username="charles", hostname="raspberrypi"):
-        self.ssh = paramiko.SSHClient()
-        self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.ssh.connect(hostname=hostname, username=username)
-
-    def ssh_command(self, command_):
-        _, stdout, _ = self.ssh.exec_command(command_)
-        return stdout.read().decode()
-
-    def sys_command(self, command_):
-        return os.system(command_)
+from utils import RPIConnect, get_pins, get_paths
 
 
 class Episode:
@@ -149,19 +135,12 @@ if __name__ == "__main__":
     """
     filename = "testing run"
     log_dir = f"runs/{filename}"
-    pc_pth = (
-        r"C:\Users\Charles\Documents\Python Scripts\Personal\Artificial "
-        r"Intelligence\pendulum\RPi"
-    )
-    pi_pth = "~/pendulum"
+    pc_pth, pi_pth = get_paths()
     evaluate = False
 
     if platform.node() == "raspberrypi":
-        cart_pins = [21, 20]
-        button_pin = 26
-        motor_pins = [13, 6]
-        pendulum_pins = [12, 16]
-        env = Pendulum(*cart_pins, *pendulum_pins, *motor_pins, button_pin)
+        pins = get_pins()
+        env = Pendulum(*pins)
         agent = AgentActor(env=env)
         agent.load_model()
         n_episodes = 1000

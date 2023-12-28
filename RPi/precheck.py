@@ -1,5 +1,7 @@
-from environment import Pendulum
 import time
+
+from environment import Pendulum
+from utils import get_pins
 
 
 class PendulumTest(Pendulum):
@@ -41,8 +43,8 @@ class PendulumTest(Pendulum):
 
     def print_values(self):
         pos = self.cart_obs.val
-        angle = self.pendulum_obs.val
-        print(f"{pos=}\t{angle=}")
+        angle_ = self.pendulum_obs.val
+        print(f"{pos=}\t{angle_=}")
 
     def print_actual(self):
         pos = self.cart_obs.pos()
@@ -53,11 +55,8 @@ class PendulumTest(Pendulum):
 
 
 if __name__ == "__main__":
-    cart_pins = [21, 20]
-    button_pin = 26
-    motor_pins = [13, 6]
-    pendulum_pins = [12, 16]
-    pendulum = PendulumTest(*cart_pins, *pendulum_pins, *motor_pins, button_pin, dt=0.1)
+    pins = get_pins()
+    pendulum = PendulumTest(*pins, dt=0.1)
     direction_test = True
     find_end_val = False
     pendulum_orientation_test = False
