@@ -4,6 +4,7 @@ import platform
 import time
 import traceback
 import paramiko
+import shutil
 
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
@@ -228,7 +229,10 @@ if __name__ == "__main__":
                 files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
                 if agent.memory_file_name in files:
                     score = episode.pre_process()
-                    # TODO: rename memory file to episode_i_data.pkl
+                    shutil.copy(
+                        agent.memory_file_pth,
+                        os.path.join(agent.memory_dir, f"episode_{i}_data.pkl"),
+                    )
                     os.remove(agent.memory_file_pth)
                     break
                 time.sleep(0.01)
