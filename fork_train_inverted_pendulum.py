@@ -39,6 +39,7 @@ if __name__ == "__main__":
         T.manual_seed(seed)
 
     # a warmup of 20,000 steps irl
+    # don't forget to change max action back to 3.
     lr = 0.001
     agent = Agent(
         alpha=lr,
@@ -49,14 +50,15 @@ if __name__ == "__main__":
         gamma=0.98,
         noise=0.1,
         policy_noise=0.2,
-        layer1_size=400,
-        layer2_size=300,
+        layer1_size=256,
+        layer2_size=256,
         update_actor_interval=1,
-        max_size=200_000,
+        max_size=1_000_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
         chkpt_dir=chkpt_dir,
     )
+    # agent.partial_load_models()
     writer = SummaryWriter(log_dir=log_dir)
     n_timesteps = 1_000_000
     episode = 1_000  # 1 episode = 1k timesteps
@@ -69,27 +71,39 @@ if __name__ == "__main__":
     critic_loss = 0
     actor_loss = 0
     score = 0
+    steps = 0
     done = True
 
     for step in range(n_timesteps):
         if done:
+            for _ in range(steps):
+                c_loss, a_loss = agent.learn()
+
+                if c_loss is not None:
+                    critic_loss_count += 1
+                    critic_loss += c_loss
+                if a_loss is not None:
+                    actor_loss_count += 1
+                    actor_loss += a_loss
+            steps = 0
             observation, info = env.reset(seed=seed)
 
         action = agent.choose_action(observation)
         observation_, reward, terminated, truncated, info = env.step(action)
         done = terminated or truncated
         agent.remember(observation, action, reward, observation_, done)
-        c_loss, a_loss = agent.learn()
+        steps += 1
+        # c_loss, a_loss = agent.learn()
         observation = observation_
         writer.add_scalar("train/return", reward, step)
         score += reward
 
-        if c_loss is not None:
-            critic_loss_count += 1
-            critic_loss += c_loss
-        if a_loss is not None:
-            actor_loss_count += 1
-            actor_loss += a_loss
+        # if c_loss is not None:
+        #     critic_loss_count += 1
+        #     critic_loss += c_loss
+        # if a_loss is not None:
+        #     actor_loss_count += 1
+        #     actor_loss += a_loss
 
         if (step + 1) % episode == 0:
             i = int(step / episode)
@@ -99,7 +113,6 @@ if __name__ == "__main__":
                 critic_loss /= critic_loss_count
             if actor_loss_count > 0:
                 actor_loss /= actor_loss_count
-
             if avg_score > best_score:
                 best_score = avg_score
 

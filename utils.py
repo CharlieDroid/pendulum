@@ -21,6 +21,7 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
         obs, info = env.reset()
         done = False
         action = [3.0]
+        max_speed = float("-inf")
         while not done:
             # action = env.action_space.sample()
             if steps % 100 == 0:
@@ -30,8 +31,11 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
             print(
                 f"pos:{obs[0]:.2f} angle:{obs[1]:.4f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
             )
+            if abs(obs[2]) > max_speed:
+                max_speed = abs(obs[2])
             done = terminated or truncated
             steps += 1
+    print(max_speed)
     env.close()
 
 
@@ -58,6 +62,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
             if save:
                 env.start_video_recorder()
             done = False
+            max_speed = float("-inf")
             while not done:
                 action = agent.choose_action(observation, evaluate=True)
                 observation_, reward, terminated, truncated, info = env.step(action)
@@ -66,10 +71,13 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
                     print(
                         f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
                     )
+                    if abs(obs[2]) > max_speed:
+                        max_speed = abs(obs[2])
                 rewards += reward
                 observation = observation_
                 done = terminated or truncated
         env.close()
+        print(max_speed)
         return rewards / eps
     else:
         trial = 0

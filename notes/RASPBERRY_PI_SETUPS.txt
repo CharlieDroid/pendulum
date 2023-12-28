@@ -1,0 +1,86 @@
+Step 1:
+Setup wireless network SSID (name of wifi) and password.
+Make sure 4G wifi cuz stupid.
+Delete `~/.ssh` in main PC
+Enable SSH in settings.
+
+Step 2:
+test connecting to raspberrypi, connect everything with Ethernet cable.
+`ssh charles@raspberrypi.local`
+
+Step 3: passwordless ssh
+Run `ssh-keygen` in main PC to generate keys
+make .ssh directory in RPi
+`mkdir ~/.ssh`
+Exit RPi and copy keys to RPi
+`scp C:\Users\Charles\.ssh\id_rsa.pub charles@raspberrypi.local:~/.ssh/authorized_keys`
+
+Step 4: test passwordless ssh
+`ssh charles@raspberrypi.local`
+
+Step 5: get internet
+login and type `sudo raspi-config`
+Enable VNC in interface options
+
+Step 6:
+Download realvnc viewer
+install and connect to raspberrypi.local
+Then input username and password
+
+Step 7: important step for some reason no internet if not
+sudo date -s '2023-12-05 8:33:20'
+
+Step 8:
+`sudo apt-get update`
+`sudo apt-get upgrade`
+takes long ass time wtf like an hr or 2
+`sudo reboot now`
+
+Step 9: get latest python
+make installation smoother
+`sudo apt-get install -y build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev libffi-dev`
+get python 3.11.5 and extract and install it
+`cd ~/Downloads`
+`wget https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz && sudo tar zxf Python-3.11.5.tgz && cd Python-3.11.5`
+`sudo ./configure --enable-optimizations`
+check how many cores with `lscpu` then put that number below
+`sudo make -j 4`
+(Optional) `sudo apt install htop` then `htop` to get nice gui :))
+`sudo make altinstall`
+check if installation successful
+`python3.11 -V`
+
+Step 9.1:
+`mkdir PROJECTNAME`
+`cd pendulum`
+`python3 -m venv ./venv`
+TO ACTIVATE
+`source ./venv/bin/activate`
+TO DEACTIVATE
+`deactivate`
+
+Step 9.2:
+`sudo apt-get install libopenblas-dev libblas-dev m4 cmake cython python3-dev python3-yaml python3-setuptools`
+`pip install torch==2.0.1`
+
+Step 9.3: sending files
+`scp './for rpi/measure_speed.py' charles@raspberrypi:~/pendulum/`
+
+Step 9.4: File synchronization
+run command in terminal of pycharm
+`rsync -a "C:/Users/Charles/Documents/Python Scripts/Personal/Artificial Intelligence/pendulum/for rpi/" charles@raspberrypi.local:~/pendulum/`
+doesn't work on windows
+
+Step 9.5: maximum niceness
+`cd pendulum ; source ./venv/bin/activate`
+`sudo nice -n -20 ./pendulum/venv/bin/python ./pendulum/main.py`
+
+Step 9.5:
+off hdmi
+`tvservice -o`
+on hdmi
+`tvservice -p`
+
+Step 10: change default version of text editor
+in Thonny or Geany or smth
+go to Tools > Options > Interpreter then select /usr/local/bin/python3.11

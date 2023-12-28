@@ -172,8 +172,8 @@ class Agent:
     ):
         self.gamma = gamma
         self.tau = tau
-        self.max_action = env.action_space.high
-        self.min_action = env.action_space.low
+        self.max_action = [3]
+        self.min_action = [-3]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.learn_step_cntr = 0
@@ -181,11 +181,6 @@ class Agent:
         self.warmup = warmup
         self.n_actions = n_actions
         self.update_actor_iter = update_actor_interval
-        self.obs_upper_bound = float(env.observation_space.high[0])
-        self.obs_lower_bound = float(env.observation_space.low[0])
-
-        self.reward_lower_bound = 0
-        self.reward_upper_bound = 0
 
         self.system_loss = 0
         self.reward_loss = 0
@@ -253,6 +248,12 @@ class Agent:
             beta, input_dims, r1_size, r2_size, n_actions=n_actions
         )
 
+        self.obs_upper_bound = T.tensor([1.0, np.pi * 1.1, 17.0, 524.0]).to(
+            self.actor.device
+        )
+        self.obs_lower_bound = T.tensor([-1.0, -np.pi * 1.1, -17.0, -524.0]).to(
+            self.actor.device
+        )
         self.noise = noise
         self.policy_noise = policy_noise
         self.update_network_parameters(tau=1)
@@ -283,6 +284,9 @@ class Agent:
     def learn(self):
         if (self.memory.mem_cntr < self.batch_size) or (self.time_step < self.warmup):
             return None, None
+
+        self.learn_step_cntr += 1
+
         state, action, reward, new_state, done = self.memory.sample_buffer(
             self.batch_size
         )
@@ -346,32 +350,29 @@ class Agent:
 
         s_flag = 1 if system_loss.item() < self.sys_threshold else 0
 
-        self.learn_step_cntr += 1
-
         if self.learn_step_cntr % self.update_actor_iter != 0:
             return critic_loss, None
 
-        self.actor.optimizer.zero_grad()
         actor_q1_loss = self.critic_1.forward(state, self.actor.forward(state))
         actor_loss = -T.mean(actor_q1_loss)
 
         if s_flag:
             predict_next_state = self.system.forward(state, self.actor.forward(state))
             predict_next_state = T.clamp(
-                predict_next_state.detach(), self.obs_lower_bound, self.obs_upper_bound
+                predict_next_state, self.obs_lower_bound, self.obs_upper_bound
             )
+            actions2 = self.actor.forward(predict_next_state.detach())
 
             # skipping to "TD3_FORK"
             predict_next_reward = self.reward.forward(
-                state, predict_next_state, self.actor.forward(state)
+                state, predict_next_state.detach(), self.actor.forward(state)
             )
-            next_state = self.actor.forward(predict_next_state.detach())
-            predict_next_state2 = self.system.forward(predict_next_state, next_state)
+            predict_next_state2 = self.system.forward(predict_next_state, actions2)
             predict_next_state2 = T.clamp(
                 predict_next_state2, self.obs_lower_bound, self.obs_upper_bound
             )
             predict_next_reward2 = self.reward(
-                predict_next_state.detach(), predict_next_state2.detach(), next_state
+                predict_next_state.detach(), predict_next_state2.detach(), actions2
             )
             actions3 = self.actor.forward(predict_next_state2.detach())
 
@@ -484,3 +485,12 @@ class Agent:
         self.reward.load_state_dict(checkpoint["reward"])
         self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
         self.time_step = checkpoint["timestep"]
+
+    def partial_load_models(self):
+        print("...partial loading checkpoint...")
+        device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
+        checkpoint = T.load(self.chkpt_file_pth, map_location=device)
+        self.system.load_state_dict(checkpoint["system"])
+        self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
+        self.reward.load_state_dict(checkpoint["reward"])
+        self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
