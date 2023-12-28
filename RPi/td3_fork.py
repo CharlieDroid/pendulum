@@ -164,6 +164,7 @@ class AgentActor:
         env,
         layer1_size=256,
         layer2_size=256,
+            warmup=10_000,
         chkpt_dir="./models",
         memory_dir="./memory",
     ):
@@ -172,6 +173,7 @@ class AgentActor:
         self.max_action = env.action_space.high
         self.chkpt_dir = chkpt_dir
         self.memory_dir = memory_dir
+        self.warmup = warmup
         self.chkpt_file_name = "td3_fork.chkpt"
         self.actor_file_name = "td3_fork_actor.chkpt"
         self.memory_file_name = "td3_fork_memory.pkl"
@@ -197,11 +199,11 @@ class AgentActor:
     def save_model(self):
         print("...saving actor...")
         data = {"actor": self.actor.state_dict()}
-        T.save(data, self.chkpt_file_pth)
+        T.save(data, self.actor_file_pth)
 
     def load_model(self):
         print("...loading actor...")
-        checkpoint = T.load(self.chkpt_file_pth, map_location=self.device)
+        checkpoint = T.load(self.actor_file_pth, map_location=self.device)
         self.actor.load_state_dict(checkpoint["actor"])
 
 
@@ -213,7 +215,6 @@ class Agent(AgentActor):
         tau=0.005,
         gamma=0.98,
         update_actor_interval=1,
-        warmup=10_000,
         max_size=1_000_000,
         sys1_size=400,
         sys2_size=300,
@@ -232,7 +233,6 @@ class Agent(AgentActor):
         input_dims = env.observation_space.shape
         self.gamma = gamma
         self.tau = tau
-        self.warmup = warmup
         self.min_action = env.action_space.low
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size

@@ -219,6 +219,7 @@ class Pendulum:
         self.pi = pigpio.pi()
         self.reset_flag = False
         self.dt = dt
+        self.time_step = 0
         freq = 50
         self.bound = 0.8
         self.reward_range = (float("-inf"), float("inf"))
@@ -237,7 +238,7 @@ class Pendulum:
         # there might be error here, if so, just add _ in parameters/args
         self.cart_obs.reset_values()
         self.limit_switch.off()
-        self.motor.rotate(-150.0)
+        self.motor.rotate(-200.0)
         time.sleep(0.5)
         self.motor.rotate(0.0)
         self.reset_flag = True
@@ -245,7 +246,7 @@ class Pendulum:
     def reset_zero(self):
         # go back to -1. or find 0 val or leftmost side
         self.limit_switch.on(callback=self.end_limit_pressed)
-        self.motor.rotate(-400.0)
+        self.motor.rotate(-500.0)
         start = time.time()
         while not self.reset_flag:
             assert (
@@ -256,7 +257,7 @@ class Pendulum:
     def reset(self):
         self.reset_zero()
         # go to center-ish
-        self.motor.rotate(300.0)
+        self.motor.rotate(600.0)
         while self.cart_obs.pos() < 0.05:
             pass
         self.motor.rotate(0.0)

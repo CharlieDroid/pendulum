@@ -87,9 +87,10 @@ class Episode:
         bound = 0.7
         actions = np.zeros((self.episode_time_steps, 1))
         rewards = np.zeros((self.episode_time_steps, 1))
-        for j, obs, action, obs_ in enumerate(
+        for j, data in enumerate(
             zip(self.observations, self.actions, self.observations_)
         ):
+            obs, action, obs_ = data
             # from 0. to 1000.
             # to 0. to 1.
             actions[j] = action[0] * 0.001
@@ -164,7 +165,7 @@ if __name__ == "__main__":
                     while True:
                         if agent.actor_file_name in os.listdir(agent.chkpt_dir):
                             agent.load_model()
-                            os.remove(agent.chkpt_file_pth)
+                            os.remove(agent.actor_file_pth)
                             break
                         time.sleep(0.5)
         except Exception:
@@ -178,14 +179,15 @@ if __name__ == "__main__":
         # send initialized actor parameters to rpi
         agent.save_model()
         print("...sending actor params...")
-        command = f"scp {agent.actor_file_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
-        rpi.sys_command(command)
+        send_actor_command = f"scp {agent.actor_file_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
+        get_memory_command = f"scp charles@raspberrypi:{os.path.join(pi_pth, agent.memory_file_pth)} {agent.memory_dir}"
+        rpi.sys_command(send_actor_command)
 
         # check if there is memory file in pi then delete
         files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
         if agent.memory_file_name in files:
             print("...deleting data file in pi...")
-            rpi.ssh_command(f"cd pendulum ; rm {agent.memory_file_pth}")
+            rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
 
         # setup data logging
         writer = SummaryWriter(log_dir=log_dir)
@@ -207,6 +209,8 @@ if __name__ == "__main__":
             while True:
                 files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
                 if agent.memory_file_name in files:
+                    print(get_memory_command)
+                    rpi.sys_command(get_memory_command)
                     score = episode.pre_process()
                     shutil.copy(
                         agent.memory_file_pth,
@@ -230,7 +234,7 @@ if __name__ == "__main__":
 
             # send new agent
             agent.save_model()
-            rpi.sys_command(command)
+            rpi.sys_command(send_actor_command)
 
             # log training data
             score_history.append(score)

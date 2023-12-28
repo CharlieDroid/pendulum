@@ -136,8 +136,8 @@ def do_every(period, f, max_time, *args):
 if __name__ == "__main__":
     pi = pigpio.pi()
     print("running")
-    pendulum = PendulumEncoder(pi, 21, 20, 0.02)
-    cart = CartEncoder(pi, 13, 6, 0.02)
+    pendulum = PendulumEncoder(pi, 6, 5, 0.02)
+    cart = CartEncoder(pi, 26, 19, 0.02)
     try:
         do_every(0.02, printer, 300)
         pendulum.off()

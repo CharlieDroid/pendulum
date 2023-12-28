@@ -9,13 +9,14 @@ class PendulumTest(Pendulum):
         super().__init__(ceg, cew, peg, pew, ml, mr, bt, dt)
 
     def direction_test(self):
+        speed_ = 400.
         self.print_values()
-        self.motor.rotate(-300.0)
+        self.motor.rotate(-speed_)
         print("Moving left")
         time.sleep(2)
 
         self.print_values()
-        self.motor.rotate(300.0)
+        self.motor.rotate(speed_)
         print("Moving right")
         time.sleep(4)
 
@@ -27,7 +28,7 @@ class PendulumTest(Pendulum):
         self.print_values()
         self.motor.rotate(0.0)
 
-    def goto(self, pos, speed_=300.0):
+    def goto(self, pos, speed_=600.):
         current_pos = self.cart_obs.pos()
         direction = -1
         if pos - current_pos > 0:
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     pendulum = PendulumTest(*pins, dt=0.1)
     direction_test = True
     find_end_val = False
-    pendulum_orientation_test = False
+    pendulum_orientation_test = True
     goto_test = False
     drift_test = False
     try:

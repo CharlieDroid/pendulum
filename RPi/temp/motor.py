@@ -145,9 +145,9 @@ class CartEncoder(Encoder):
 if __name__ == "__main__":
     raspberry_pi = pigpio.pi()
     print("running...")
-    pendulum = PendulumEncoder(raspberry_pi, 21, 20, 0.02)
+    pendulum = PendulumEncoder(raspberry_pi, 6, 5, 0.02)
     # cart = CartEncoder(raspberry_pi, 13, 6, 0.02)
-    motor = Motor(raspberry_pi, 13, 6)
+    motor = Motor(raspberry_pi, 21, 20)
     try:
         while True:
             # 1000 / 600

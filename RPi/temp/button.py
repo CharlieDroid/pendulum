@@ -11,7 +11,7 @@ def button_pressed(gpio, level, tick):
 if __name__ == "__main__":
     pi = pigpio.pi()
 
-    button_pin = 26
+    button_pin = 12
 
     pi.set_mode(button_pin, pigpio.INPUT)
 
