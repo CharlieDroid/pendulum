@@ -4,6 +4,7 @@ import platform
 import time
 import traceback
 import shutil
+import argparse
 
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
@@ -133,11 +134,24 @@ if __name__ == "__main__":
     """
     --- ensure connection between PC and raspberry first ---
     --- main() should be run first in PC ---
+    --- set --log_file_name before running ---
     """
-    filename = "testing run"
-    log_dir = f"runs/{filename}"
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log_file_name",
+        help="file name of the log file",
+        default="testing run",
+        type=str,
+    )
+    parser.add_argument(
+        "--evaluate",
+        help="if true then it will evaluate current actor model",
+        default=False,
+        type=bool,
+    )
+    args = parser.parse_args()
+    log_dir = f"runs/{args.log_file_name}"
     pc_pth, pi_pth = get_paths()
-    evaluate = False
 
     if platform.node() == "raspberrypi":
         pins = get_pins()
@@ -146,8 +160,7 @@ if __name__ == "__main__":
         agent.load_model()
         n_episodes = 1000
         try:
-            input("Start?")
-            if evaluate:
+            if args.evaluate:
                 for i in range(5):
                     env.reset()
                     Episode(-5, 1_000, agent, env).eval_start()
@@ -209,8 +222,8 @@ if __name__ == "__main__":
             while True:
                 files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
                 if agent.memory_file_name in files:
-                    print(get_memory_command)
                     rpi.sys_command(get_memory_command)
+                    rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
                     score = episode.pre_process()
                     shutil.copy(
                         agent.memory_file_pth,

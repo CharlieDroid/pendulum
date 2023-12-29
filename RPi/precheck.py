@@ -1,4 +1,5 @@
 import time
+import argparse
 
 from environment import Pendulum
 from utils import get_pins
@@ -9,26 +10,27 @@ class PendulumTest(Pendulum):
         super().__init__(ceg, cew, peg, pew, ml, mr, bt, dt)
 
     def direction_test(self):
-        speed_ = 400.
         self.print_values()
-        self.motor.rotate(-speed_)
+        self.motor.rotate(-self.usual_speed * 0.8)
         print("Moving left")
         time.sleep(2)
 
         self.print_values()
-        self.motor.rotate(speed_)
+        self.motor.rotate(self.usual_speed * 0.8)
         print("Moving right")
         time.sleep(4)
 
         self.print_values()
-        self.motor.rotate(-300)
+        self.motor.rotate(-self.usual_speed * 0.8)
         print("Moving left")
         time.sleep(2)
 
         self.print_values()
         self.motor.rotate(0.0)
 
-    def goto(self, pos, speed_=600.):
+    def goto(self, pos, speed_=None):
+        if not speed_:
+            speed_ = self.usual_speed * 1.2
         current_pos = self.cart_obs.pos()
         direction = -1
         if pos - current_pos > 0:
@@ -56,33 +58,58 @@ class PendulumTest(Pendulum):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--direction_test",
+        help="figure out if the cart pin and motor pin is correctly configured",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--find_end_val",
+        help="find end value of the track length",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--pendulum_orientation_test",
+        help="find out orientation of the pendulum, left side negative, right side positive",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--goto_test",
+        help="goes to different points along the track specifically -.9 -.5 0 .5 .9",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--drift_test",
+        help="oscillates between the two boundaries of the track to see how much the drift affects its accuracy",
+        default=False,
+        type=bool,
+    )
+    args = parser.parse_args()
+
     pins = get_pins()
     pendulum = PendulumTest(*pins, dt=0.1)
-    direction_test = True
-    find_end_val = False
-    pendulum_orientation_test = True
-    goto_test = False
-    drift_test = False
     try:
-        print(
-            f"{direction_test=} {find_end_val=} {pendulum_orientation_test=} {goto_test=} {drift_test=}"
-        )
-        if direction_test:
+        if args.direction_test:
             input("Continue?")
             print("Starting direction test")
             pendulum.direction_test()
 
-        if find_end_val:
+        if args.find_end_val:
             input("Continue?")
             print("Finding end value")
             pendulum.reset_zero()
-            pendulum.motor.rotate(500.0)
+            pendulum.motor.rotate(pendulum.usual_speed * 0.8)
             time.sleep(12)
             pendulum.motor.rotate(0.0)
             input("Press enter if at the end of the pendulum.")
             print(pendulum.cart_obs.val)
 
-        if pendulum_orientation_test:
+        if args.pendulum_orientation_test:
             input("Continue?")
             print("Starting pendulum orientation test")
             pendulum.reset()
@@ -94,7 +121,7 @@ if __name__ == "__main__":
                 print(f"{val=}\t{angle=:.4f}\t{velo=:.2f}")
                 time.sleep(pendulum.dt)
 
-        if goto_test:
+        if args.goto_test:
             input("Continue?")
             print("Zeroing out")
             pendulum.reset_zero()
@@ -113,16 +140,16 @@ if __name__ == "__main__":
                 print(f"Arrived at {point}")
                 time.sleep(1.0)
 
-        if drift_test:
+        if args.drift_test:
             speed = 800.0
             input(f"Continue at {speed=}?")
             print("Zeroing out")
             pendulum.reset_zero()
             print(f"Oscillating between -.9 and .9 at {speed=}")
             for _ in range(10):
-                pendulum.goto(-0.9, speed_=speed)
+                pendulum.goto(-0.8, speed_=speed)
                 time.sleep(2.0)
-                pendulum.goto(0.9, speed_=speed)
+                pendulum.goto(0.8, speed_=speed)
                 time.sleep(2.0)
     except KeyboardInterrupt:
         pass

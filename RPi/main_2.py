@@ -4,7 +4,8 @@ run main in PC
     check if there is memory file in pi then delete
     loop:
         wait for memory file in pi
-        get memory file and delete it
+        get memory file
+        delete memory file in pi
         learn and then send actor file
         rename memory file to episode_i_data.pkl (optional)
 run main in raspberry pi

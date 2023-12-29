@@ -4,29 +4,30 @@ import time
 
 
 class Motor:
-    def __init__(self, pi: pigpio.pi, pin1, pin2, freq):
-        self.pin1 = pin1
-        self.pin2 = pin2
+    def __init__(self, pi: pigpio.pi, in1, in2, en, freq):
+        self.in1 = in1
+        self.in2 = in2
+        self.en = en
         self.pi = pi
         range_ = 1000
-        self.pi.set_mode(pin1, pigpio.OUTPUT)
-        self.pi.set_PWM_frequency(pin1, freq)
-        self.pi.set_PWM_range(pin1, range_)
+        self.pi.set_mode(en, pigpio.OUTPUT)
+        self.pi.set_PWM_frequency(en, freq)
+        self.pi.set_PWM_range(en, range_)
 
-        self.pi.set_mode(pin2, pigpio.OUTPUT)
-        self.pi.set_PWM_frequency(pin2, freq)
-        self.pi.set_PWM_range(pin2, range_)
-
+        self.pi.write(in1, 0)
+        self.pi.write(in2, 0)
         self.rotate(0.0)
         self.duty_cycle = 0.0
 
     def forward(self, duty_cycle):
-        self.pi.set_PWM_dutycycle(self.pin2, 0.0)
-        self.pi.set_PWM_dutycycle(self.pin1, duty_cycle)
+        self.pi.write(self.in1, 1)
+        self.pi.write(self.in2, 0)
+        self.pi.set_PWM_dutycycle(self.en, duty_cycle)
 
     def backward(self, duty_cycle):
-        self.pi.set_PWM_dutycycle(self.pin1, 0.0)
-        self.pi.set_PWM_dutycycle(self.pin2, duty_cycle)
+        self.pi.write(self.in1, 0)
+        self.pi.write(self.in2, 1)
+        self.pi.set_PWM_dutycycle(self.en, duty_cycle)
 
     def rotate(self, duty_cycle):
         # duty_cycle is in float 0. to 1000.
@@ -220,7 +221,7 @@ class Pendulum:
         self.reset_flag = False
         self.dt = dt
         self.time_step = 0
-        freq = 50
+        freq = 75
         self.bound = 0.8
         self.reward_range = (float("-inf"), float("inf"))
 
@@ -230,6 +231,7 @@ class Pendulum:
         self.pendulum_obs = PendulumEncoder(self.pi, peg, pew, self.dt)
         self.motor = Motor(self.pi, ml, mr, freq)
         self.limit_switch = Button(self.pi, bt)
+        self.usual_speed = 500.0
 
         # 0 should be at the top
         self.pendulum_obs.set_value(300)
@@ -238,7 +240,7 @@ class Pendulum:
         # there might be error here, if so, just add _ in parameters/args
         self.cart_obs.reset_values()
         self.limit_switch.off()
-        self.motor.rotate(-200.0)
+        self.motor.rotate(-self.usual_speed * 0.5)
         time.sleep(0.5)
         self.motor.rotate(0.0)
         self.reset_flag = True
@@ -246,7 +248,7 @@ class Pendulum:
     def reset_zero(self):
         # go back to -1. or find 0 val or leftmost side
         self.limit_switch.on(callback=self.end_limit_pressed)
-        self.motor.rotate(-500.0)
+        self.motor.rotate(-self.usual_speed)
         start = time.time()
         while not self.reset_flag:
             assert (
@@ -257,7 +259,7 @@ class Pendulum:
     def reset(self):
         self.reset_zero()
         # go to center-ish
-        self.motor.rotate(600.0)
+        self.motor.rotate(self.usual_speed * 1.2)
         while self.cart_obs.pos() < 0.05:
             pass
         self.motor.rotate(0.0)
@@ -265,9 +267,9 @@ class Pendulum:
     def step(self, action):
         # can put extra less bounds
         if self.cart_obs.pos() < -self.bound:
-            action = 200.0
+            action = self.usual_speed * 0.6
         elif self.cart_obs.pos() > self.bound:
-            action = -200.0
+            action = -self.usual_speed * 0.6
         self.motor.rotate(action)
 
     def get_obs(self):
