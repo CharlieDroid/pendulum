@@ -177,9 +177,9 @@ class AgentActor:
         self.chkpt_file_name = "td3_fork.chkpt"
         self.actor_file_name = "td3_fork_actor.chkpt"
         self.memory_file_name = "td3_fork_memory.pkl"
-        self.actor_file_pth = os.path.join(chkpt_dir, self.actor_file_name)
-        self.chkpt_file_pth = os.path.join(chkpt_dir, self.chkpt_file_name)
-        self.memory_file_pth = os.path.join(memory_dir, self.memory_file_name)
+        self.actor_file_pth = os.path.join(chkpt_dir, self.actor_file_name).replace("\\", "/")
+        self.chkpt_file_pth = os.path.join(chkpt_dir, self.chkpt_file_name).replace("\\", "/")
+        self.memory_file_pth = os.path.join(memory_dir, self.memory_file_name).replace("\\", "/")
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.actor = ActorNetwork(
             0.001,

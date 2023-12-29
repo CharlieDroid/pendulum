@@ -215,7 +215,7 @@ class DummyPendulum:
 
 
 class Pendulum:
-    def __init__(self, ceg, cew, peg, pew, ml, mr, bt, dt=0.02):
+    def __init__(self, ceg, cew, peg, pew, ml, mr, me, bt, dt=0.02):
         # cart encoder green, pendulum encoder white, motor left, motor right, etc.
         self.pi = pigpio.pi()
         self.reset_flag = False
@@ -229,7 +229,7 @@ class Pendulum:
         self.action_space = ActionSpace()
         self.cart_obs = CartEncoder(self.pi, ceg, cew, self.dt)
         self.pendulum_obs = PendulumEncoder(self.pi, peg, pew, self.dt)
-        self.motor = Motor(self.pi, ml, mr, freq)
+        self.motor = Motor(self.pi, ml, mr, me, freq)
         self.limit_switch = Button(self.pi, bt)
         self.usual_speed = 500.0
 

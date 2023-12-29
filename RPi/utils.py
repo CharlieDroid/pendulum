@@ -4,10 +4,11 @@ import configparser
 
 
 class RPIConnect:
-    def __init__(self, username="charles", hostname="raspberrypi"):
+    def __init__(self, username="charles", hostname="raspberrypi", password="charlesraspberrypi"):
         self.ssh = paramiko.SSHClient()
+        self.ssh.load_system_host_keys()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.ssh.connect(hostname=hostname, username=username)
+        self.ssh.connect(hostname=hostname, username=username, password=password)
 
     def ssh_command(self, command_):
         _, stdout, _ = self.ssh.exec_command(command_)
