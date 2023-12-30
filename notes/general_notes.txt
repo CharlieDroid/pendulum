@@ -1,0 +1,1 @@
+- I tried training the AI without looking at the data it was learning, stupid mistake, all the reward arrays were zero

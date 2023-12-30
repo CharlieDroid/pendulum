@@ -20,19 +20,19 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
         steps = 0
         obs, info = env.reset()
         done = False
-        action = [3.0]
+        action = [2.0]
         max_speed = float("-inf")
         while not done:
             # action = env.action_space.sample()
-            if steps % 100 == 0:
+            if steps % 250 == 0:
                 action = [-action[0]]
             observation_, reward, terminated, truncated, info = env.step(action)
             obs = observation_
             print(
                 f"pos:{obs[0]:.2f} angle:{obs[1]:.4f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
             )
-            if abs(obs[2]) > max_speed:
-                max_speed = abs(obs[2])
+            if abs(obs[1]) < max_speed:
+                max_speed = abs(obs[1])
             done = terminated or truncated
             steps += 1
     print(max_speed)

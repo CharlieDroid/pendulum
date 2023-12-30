@@ -41,21 +41,19 @@ class ReplayBuffer:
 
         return states, actions, rewards, states_, dones
 
-    def save(self, data, file_pth):
+    def save(self, file_pth):
         print("...saving memory...")
         memory = (
             self.state_memory,
             self.new_state_memory,
             self.action_memory,
             self.terminal_memory,
+            self.mem_cntr,
         )
         with open(file_pth, "wb") as outfile:
             pickle.dump(memory, outfile, pickle.HIGHEST_PROTOCOL)
 
-        data["cntr"] = self.mem_cntr
-        return data
-
-    def load(self, checkpoint, file_pth):
+    def load(self, file_pth):
         print("...loading memory...")
         with open(file_pth, "rb") as infile:
             result = pickle.load(infile)
@@ -64,9 +62,8 @@ class ReplayBuffer:
             self.new_state_memory,
             self.action_memory,
             self.terminal_memory,
+            self.mem_cntr,
         ) = result
-
-        self.mem_cntr = checkpoint["cntr"]
 
 
 class RewardNetwork(nn.Module):
@@ -164,7 +161,7 @@ class AgentActor:
         env,
         layer1_size=256,
         layer2_size=256,
-            warmup=10_000,
+        warmup=10_000,
         chkpt_dir="./models",
         memory_dir="./memory",
     ):
@@ -177,9 +174,19 @@ class AgentActor:
         self.chkpt_file_name = "td3_fork.chkpt"
         self.actor_file_name = "td3_fork_actor.chkpt"
         self.memory_file_name = "td3_fork_memory.pkl"
-        self.actor_file_pth = os.path.join(chkpt_dir, self.actor_file_name).replace("\\", "/")
-        self.chkpt_file_pth = os.path.join(chkpt_dir, self.chkpt_file_name).replace("\\", "/")
-        self.memory_file_pth = os.path.join(memory_dir, self.memory_file_name).replace("\\", "/")
+        self.buffer_file_name = "td3_fork_buffer.pkl"
+        self.actor_file_pth = os.path.join(chkpt_dir, self.actor_file_name).replace(
+            "\\", "/"
+        )
+        self.chkpt_file_pth = os.path.join(chkpt_dir, self.chkpt_file_name).replace(
+            "\\", "/"
+        )
+        self.memory_file_pth = os.path.join(memory_dir, self.memory_file_name).replace(
+            "\\", "/"
+        )
+        self.buffer_file_pth = os.path.join(memory_dir, self.buffer_file_name).replace(
+            "\\", "/"
+        )
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         self.actor = ActorNetwork(
             0.001,
@@ -225,7 +232,8 @@ class Agent(AgentActor):
         policy_noise=0.2,
         sys_weight=0.6,
         sys_threshold=0.02,
-        save_load_memory=False,
+        save_buffer=False,
+        load_buffer=False,
     ):
         super().__init__(env)
         layer1_size, layer2_size = self.actor.fc1_dims, self.actor.fc2_dims
@@ -245,7 +253,8 @@ class Agent(AgentActor):
         self.reward_loss = 0
         self.sys_weight = sys_weight
         self.sys_threshold = sys_threshold
-        self.save_load_memory = save_load_memory
+        self.save_buffer = save_buffer
+        self.load_buffer = load_buffer
         self.obs_upper_bound = T.tensor(env.observation_space.high).to(self.device)
         self.obs_lower_bound = T.tensor(env.observation_space.low).to(self.device)
 
@@ -450,8 +459,8 @@ class Agent(AgentActor):
             "reward": self.reward.state_dict(),
             "reward_optimizer": self.reward.optimizer.state_dict(),
         }
-        if self.save_load_memory:
-            data = self.memory.save(data, self.memory_file_pth)
+        if self.save_buffer:
+            self.memory.save(self.buffer_file_pth)
         T.save(data, self.chkpt_file_pth)
 
     def load_models(self):
@@ -479,13 +488,12 @@ class Agent(AgentActor):
         self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
         self.reward.load_state_dict(checkpoint["reward"])
         self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
-        if self.save_load_memory:
-            self.memory.load(checkpoint, self.memory_file_pth)
+        if self.load_buffer:
+            self.memory.load(self.buffer_file_pth)
 
-    def partial_load_models(self):
-        print("...partial loading checkpoint...")
-        checkpoint = T.load(self.chkpt_file_pth, map_location=self.device)
-        self.system.load_state_dict(checkpoint["system"])
-        self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
-        self.reward.load_state_dict(checkpoint["reward"])
-        self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
+    def preload_buffer(self):
+        print("...preloading buffer...")
+        if self.load_buffer:
+            self.memory.load(
+                os.path.join(self.memory_dir, "buffer_warmup.pkl").replace("\\", "/")
+            )

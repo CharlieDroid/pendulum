@@ -6,8 +6,8 @@ from utils import get_pins
 
 
 class PendulumTest(Pendulum):
-    def __init__(self, ceg, cew, peg, pew, ml, mr, bt, dt):
-        super().__init__(ceg, cew, peg, pew, ml, mr, bt, dt)
+    def __init__(self, ceg, cew, peg, pew, ml, mr, me, bt, dt):
+        super().__init__(ceg, cew, peg, pew, ml, mr, me, bt, dt)
 
     def direction_test(self):
         self.print_values()
@@ -89,10 +89,16 @@ if __name__ == "__main__":
         default=False,
         type=bool,
     )
+    parser.add_argument(
+        "--random_test",
+        help="for random stuffs",
+        default=False,
+        type=bool,
+    )
     args = parser.parse_args()
 
     pins = get_pins()
-    pendulum = PendulumTest(*pins, dt=0.1)
+    pendulum = PendulumTest(*pins, dt=0.02)
     try:
         if args.direction_test:
             input("Continue?")
@@ -102,7 +108,7 @@ if __name__ == "__main__":
         if args.find_end_val:
             input("Continue?")
             print("Finding end value")
-            pendulum.reset_zero()
+            pendulum.reset_cart()
             pendulum.motor.rotate(pendulum.usual_speed * 0.8)
             time.sleep(12)
             pendulum.motor.rotate(0.0)
@@ -124,7 +130,7 @@ if __name__ == "__main__":
         if args.goto_test:
             input("Continue?")
             print("Zeroing out")
-            pendulum.reset_zero()
+            pendulum.reset_cart()
             print("Going to positions -.9 -.5 0 .5 .9")
             points = (-0.9, -0.5, 0, 0.5, 0.9)
             speed = 600.0
@@ -141,16 +147,21 @@ if __name__ == "__main__":
                 time.sleep(1.0)
 
         if args.drift_test:
-            speed = 800.0
+            speed = 1000.0
             input(f"Continue at {speed=}?")
             print("Zeroing out")
-            pendulum.reset_zero()
-            print(f"Oscillating between -.9 and .9 at {speed=}")
-            for _ in range(10):
-                pendulum.goto(-0.8, speed_=speed)
+            pendulum.reset_cart()
+            bounds = 0.6
+            print(f"Oscillating between -{bounds} and {bounds} at {speed=}")
+            for _ in range(5):
+                pendulum.goto(-bounds, speed_=speed)
                 time.sleep(2.0)
-                pendulum.goto(0.8, speed_=speed)
+                pendulum.goto(bounds, speed_=speed)
                 time.sleep(2.0)
+
+        if args.random_test:
+            print("Starting random test")
+            pendulum.reset()
     except KeyboardInterrupt:
         pass
     pendulum.kill()

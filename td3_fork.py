@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 import torch as T
 import torch.nn.functional as F
 import torch.nn as nn
@@ -172,8 +173,8 @@ class Agent:
     ):
         self.gamma = gamma
         self.tau = tau
-        self.max_action = [3]
-        self.min_action = [-3]
+        self.max_action = [2.0]
+        self.min_action = [-2.0]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.learn_step_cntr = 0
@@ -214,30 +215,9 @@ class Agent:
             n_actions=n_actions,
             name="critic_2",
         )
-        self.target_actor = ActorNetwork(
-            alpha,
-            input_dims,
-            layer1_size,
-            layer2_size,
-            n_actions=n_actions,
-            name="target_actor",
-        )
-        self.target_critic_1 = CriticNetwork(
-            beta,
-            input_dims,
-            layer1_size,
-            layer2_size,
-            n_actions=n_actions,
-            name="target_critic_1",
-        )
-        self.target_critic_2 = CriticNetwork(
-            beta,
-            input_dims,
-            layer1_size,
-            layer2_size,
-            n_actions=n_actions,
-            name="target_critic_2",
-        )
+        self.target_actor = copy.deepcopy(self.actor)
+        self.target_critic_1 = copy.deepcopy(self.critic_1)
+        self.target_critic_2 = copy.deepcopy(self.critic_2)
 
         self.system = SystemNetwork(
             beta, input_dims, sys1_size, sys2_size, n_actions=n_actions
@@ -256,7 +236,6 @@ class Agent:
         )
         self.noise = noise
         self.policy_noise = policy_noise
-        self.update_network_parameters(tau=1)
 
     def init_weights(self, m):
         if type(m) == nn.Linear:
@@ -393,45 +372,25 @@ class Agent:
         actor_loss.backward()
         self.actor.optimizer.step()
 
-        self.update_network_parameters()
+        for param, target_param in zip(
+            self.critic_1.parameters(), self.target_critic_1.parameters()
+        ):
+            target_param.data.copy_(
+                self.tau * param.data + (1 - self.tau) * target_param.data
+            )
+        for param, target_param in zip(
+            self.critic_2.parameters(), self.target_critic_2.parameters()
+        ):
+            target_param.data.copy_(
+                self.tau * param.data + (1 - self.tau) * target_param.data
+            )
+        for param, target_param in zip(
+            self.actor.parameters(), self.target_actor.parameters()
+        ):
+            target_param.data.copy_(
+                self.tau * param.data + (1 - self.tau) * target_param.data
+            )
         return critic_loss, actor_loss
-
-    def update_network_parameters(self, tau=None):
-        if tau is None:
-            tau = self.tau
-
-        actor_params = self.actor.named_parameters()
-        critic_1_params = self.critic_1.named_parameters()
-        critic_2_params = self.critic_2.named_parameters()
-        target_actor_params = self.target_actor.named_parameters()
-        target_critic_1_params = self.target_critic_1.named_parameters()
-        target_critic_2_params = self.target_critic_2.named_parameters()
-
-        critic_1 = dict(critic_1_params)
-        critic_2 = dict(critic_2_params)
-        actor = dict(actor_params)
-        target_actor = dict(target_actor_params)
-        target_critic_1 = dict(target_critic_1_params)
-        target_critic_2 = dict(target_critic_2_params)
-
-        for name in critic_1:
-            critic_1[name] = (
-                tau * critic_1[name].clone() + (1 - tau) * target_critic_1[name].clone()
-            )
-
-        for name in critic_2:
-            critic_2[name] = (
-                tau * critic_2[name].clone() + (1 - tau) * target_critic_2[name].clone()
-            )
-
-        for name in actor:
-            actor[name] = (
-                tau * actor[name].clone() + (1 - tau) * target_actor[name].clone()
-            )
-
-        self.target_critic_1.load_state_dict(critic_1)
-        self.target_critic_2.load_state_dict(critic_2)
-        self.target_actor.load_state_dict(actor)
 
     def save_models(self):
         print("...saving checkpoint...")

@@ -133,7 +133,7 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         # -10 if cart goes beyond 0.9m on both sides and exceeds 18 rad/s
         # follows cosine function until angle is greater than 2.9 which gives 1
         reward = np.cos(ob[1]) - (
-            10 * int(abs(ob[0]) > 0.9) + 10 * int(abs(ob[3]) > 14)
+            10 * int(abs(ob[0]) > 0.7) + 10 * int(abs(ob[3]) > 14)
         )
 
         terminate = False

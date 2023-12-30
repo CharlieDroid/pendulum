@@ -94,12 +94,12 @@ class Encoder:
                     self.val -= 1
 
     def reset_values(self):
+        self.val = 0  # val now
+        self.val_ = 0  # last value
+
         self.levA = 0
         self.levB = 0
         self.lastGpio = None
-
-        self.val = 0  # val now
-        self.val_ = 0  # last value
 
     def set_value(self, val):
         self.val = val
@@ -207,6 +207,9 @@ def simp_angle(a):
 
 class DummyPendulum:
     def __init__(self):
+        # physical bound = self.bound
+        # reward bound = self.bound - .15 (in main.py)
+        self.bound = 0.9
         self.time_step = 0
         self.reward_range = (float("-inf"), float("inf"))
 
@@ -214,27 +217,36 @@ class DummyPendulum:
         self.action_space = ActionSpace()
 
 
-class Pendulum:
+class Pendulum(DummyPendulum):
     def __init__(self, ceg, cew, peg, pew, ml, mr, me, bt, dt=0.02):
+        super().__init__()
         # cart encoder green, pendulum encoder white, motor left, motor right, etc.
         self.pi = pigpio.pi()
         self.reset_flag = False
         self.dt = dt
-        self.time_step = 0
         freq = 75
-        self.bound = 0.8
-        self.reward_range = (float("-inf"), float("inf"))
 
-        self.observation_space = ObservationSpace()
-        self.action_space = ActionSpace()
         self.cart_obs = CartEncoder(self.pi, ceg, cew, self.dt)
         self.pendulum_obs = PendulumEncoder(self.pi, peg, pew, self.dt)
         self.motor = Motor(self.pi, ml, mr, me, freq)
         self.limit_switch = Button(self.pi, bt)
+        self.cntr = 0
         self.usual_speed = 500.0
 
         # 0 should be at the top
         self.pendulum_obs.set_value(300)
+
+    def do_every(self, period, f, *args):
+        def g_tick():
+            t = time.time()
+            while True:
+                t += period
+                yield max(t - time.time(), 0)
+
+        g = g_tick()
+        while not self.reset_flag:
+            time.sleep(next(g))
+            f(*args)
 
     def end_limit_pressed(self, *_):
         # there might be error here, if so, just add _ in parameters/args
@@ -245,7 +257,17 @@ class Pendulum:
         self.motor.rotate(0.0)
         self.reset_flag = True
 
-    def reset_zero(self):
+    def check_pendulum(self):
+        # check if pendulum has zero velocity
+        if self.pendulum_obs.velo() < 0.001:
+            self.cntr += 1
+        else:
+            self.cntr = 0
+        # if it has been zero velocity for 1 second then reset
+        if self.cntr > int(1.0 / self.dt):
+            self.reset_flag = True
+
+    def reset_cart(self):
         # go back to -1. or find 0 val or leftmost side
         self.limit_switch.on(callback=self.end_limit_pressed)
         self.motor.rotate(-self.usual_speed)
@@ -253,16 +275,26 @@ class Pendulum:
         while not self.reset_flag:
             assert (
                 time.time() - start
-            ) < 30.0, "Limit has not been found for more than 30 seconds"
+            ) < 40.0, "Limit has not been found for more than 40 seconds"
         self.reset_flag = False
 
-    def reset(self):
-        self.reset_zero()
         # go to center-ish
         self.motor.rotate(self.usual_speed * 1.2)
-        while self.cart_obs.pos() < 0.05:
+        while self.cart_obs.pos() < -0.05:
             pass
         self.motor.rotate(0.0)
+
+    def reset_pendulum(self):
+        self.do_every(self.dt, self.check_pendulum)
+        self.reset_flag = False
+        self.cntr = 0
+        self.pendulum_obs.reset_values()
+        self.pendulum_obs.set_value(300)
+
+    def reset(self):
+        print("...resetting...")
+        self.reset_cart()
+        self.reset_pendulum()
 
     def step(self, action):
         # can put extra less bounds

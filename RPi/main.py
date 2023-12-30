@@ -14,11 +14,58 @@ from td3_fork import Agent, AgentActor
 from utils import RPIConnect, get_pins, get_paths
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--log_file_name",
+        help="file name of the log file",
+        default="fixed memory, 0.9 bounds",
+        type=str,
+    )
+    parser.add_argument(
+        "--evaluate",
+        help="if true it will evaluate current actor model",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--preload_buffer",
+        help="if true it will preload 10,000 time steps of warmup data",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--save_episode_data",
+        help="if true it will save each episode data",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--continue_training",
+        help="if true it will save each episode data",
+        default=True,
+        type=bool,
+    )
+    parser.add_argument(
+        "--preload_trained_sim_agent",
+        help="if true it will load simulation trained agent (will use td3_fork.chkpt)",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--cooldown",
+        help="if true it will take extra COOLDOWN seconds to start running again",
+        default=60.0,
+        type=float,
+    )
+    return parser.parse_args()
+
+
 class Episode:
     def __init__(
         self,
         steps,
-        episode_time_steps,
+        episode_time_steps_,
         _agent: (Agent, AgentActor),
         _env: (Pendulum, DummyPendulum),
     ):
@@ -26,7 +73,7 @@ class Episode:
         self.steps = steps
         # number of time steps in an episode
         # 1 episode = 1k time steps
-        self.episode_time_steps = episode_time_steps
+        self.episode_time_steps = episode_time_steps_
         self.env = _env
         self.agent = _agent
 
@@ -39,7 +86,7 @@ class Episode:
         )
         self.actions = np.zeros((self.episode_time_steps, env.action_space.shape[0]))
 
-    def do_every(self, period, f, *args):
+    def do_every(self, period, f, *args_):
         def g_tick():
             t = time.time()
             while True:
@@ -47,9 +94,9 @@ class Episode:
                 yield max(t - time.time(), 0)
 
         g = g_tick()
-        while self.steps < self.episode_time_steps:
+        while self.steps < (self.episode_time_steps + 1):
             time.sleep(next(g))
-            f(*args)
+            f(*args_)
 
     def run(self):
         if self.steps > 0:
@@ -81,40 +128,33 @@ class Episode:
         self.steps += 1
 
     def post_process(self):
-        # create fake dones cuz it'll always be like this anyway
-        dones = np.zeros((self.episode_time_steps, 1), dtype=np.bool_)
-        dones[-1] = [True]
-        # bounds for reward
-        bound = 0.7
-        actions = np.zeros((self.episode_time_steps, 1))
-        rewards = np.zeros((self.episode_time_steps, 1))
-        for j, data in enumerate(
-            zip(self.observations, self.actions, self.observations_)
-        ):
-            obs, action, obs_ = data
-            # from 0. to 1000.
-            # to 0. to 1.
-            actions[j] = action[0] * 0.001
-            # compute for reward
-            rewards[j] = np.cos(obs[1]) - (
-                10 * int(abs(obs[0]) > bound) + 10 * int(abs(obs[3]) > 13)
-            )
-        memory = (self.observations, actions, rewards, self.observations_, dones)
+        memory = (self.observations, self.actions, self.observations_)
         with open(self.agent.memory_file_pth, "wb") as outfile:
             pickle.dump(memory, outfile, pickle.HIGHEST_PROTOCOL)
 
     def pre_process(self):
+        # bounds for reward, change in environment.py
+        bound = self.env.bound - 0.15
+
         with open(self.agent.memory_file_pth, "rb") as infile:
             result = pickle.load(infile)
-        (observations, actions, rewards, observations_, dones) = result
+        (observations, actions, observations_) = result
+        # create fake dones cuz it'll always be like this anyway
+        dones = np.zeros((self.episode_time_steps, 1), dtype=np.bool_)
+        dones[-1] = [True]
         score_ = 0
-        for obs, action, reward, obs_, done in zip(
-            observations, actions, rewards, observations_, dones
-        ):
+        for obs, action, obs_, done in zip(observations, actions, observations_, dones):
+            # from 0. to 1000.
+            # to 0. to 1.
+            action *= 0.001
+            # compute for reward
+            reward = np.cos(obs[1]) - (
+                10 * int(abs(obs[0]) > bound) + 10 * int(abs(obs[3]) > 13)
+            )
             self.agent.remember(obs, action, reward, obs_, done)
             self.env.time_step += 1
             score_ += reward
-        return score_
+        return score_.item()
 
     def train_start(self):
         self.do_every(self.env.dt, self.run)
@@ -136,20 +176,7 @@ if __name__ == "__main__":
     --- main() should be run first in PC ---
     --- set --log_file_name before running ---
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--log_file_name",
-        help="file name of the log file",
-        default="testing run",
-        type=str,
-    )
-    parser.add_argument(
-        "--evaluate",
-        help="if true then it will evaluate current actor model",
-        default=False,
-        type=bool,
-    )
-    args = parser.parse_args()
+    args = parse_args()
     log_dir = f"runs/{args.log_file_name}"
     pc_pth, pi_pth = get_paths()
 
@@ -166,7 +193,7 @@ if __name__ == "__main__":
                     Episode(-5, 1_000, agent, env).eval_start()
                     print(f"episode {i + 1}/5")
             else:
-                os.remove(agent.chkpt_file_pth)
+                os.remove(agent.actor_file_pth)
                 for i in range(n_episodes):
                     # reset episode
                     env.reset()
@@ -177,17 +204,40 @@ if __name__ == "__main__":
 
                     while True:
                         if agent.actor_file_name in os.listdir(agent.chkpt_dir):
-                            agent.load_model()
+                            # try and try again until you succeed :))
+                            # mag bonakid preschool three plus
+                            try:
+                                # cool the motors and drivers
+                                time.sleep(args.cooldown)
+                                agent.load_model()
+                            except (RuntimeError, OSError, EOFError):
+                                continue
                             os.remove(agent.actor_file_pth)
                             break
-                        time.sleep(0.5)
+                        time.sleep(1.0)
+                    print("episode", i)
         except Exception:
             traceback.print_exc()
         env.kill()
     else:  # if PC or laptop
         env = DummyPendulum()
-        agent = Agent(env=env)
+        # loads buffer and it gets override by args.continue_training parameter
+        agent = Agent(
+            env=env, save_buffer=True, load_buffer=(True or args.continue_training)
+        )
         rpi = RPIConnect()
+        episode_time_steps = 1000
+
+        # preload warmup data to replay buffer
+        if args.preload_buffer:
+            agent.preload_buffer()
+            env.time_step = agent.memory.mem_cntr
+
+        episode_jump_start = 0
+        if args.continue_training:
+            agent.load_models()
+            env.time_step = agent.memory.mem_cntr
+            episode_jump_start = int(agent.memory.mem_cntr / episode_time_steps)
 
         # send initialized actor parameters to rpi
         agent.save_model()
@@ -217,7 +267,7 @@ if __name__ == "__main__":
             critic_loss = 0
             actor_loss = 0
 
-            episode = Episode(-5, 1_000, agent, env)
+            episode = Episode(-5, episode_time_steps, agent, env)
             # wait for pre-processing
             while True:
                 files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
@@ -225,17 +275,18 @@ if __name__ == "__main__":
                     rpi.sys_command(get_memory_command)
                     rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
                     score = episode.pre_process()
-                    shutil.copy(
-                        agent.memory_file_pth,
-                        os.path.join(agent.memory_dir, f"episode_{i}_data.pkl"),
-                    )
+                    if args.save_episode_data:
+                        shutil.copy(
+                            agent.memory_file_pth,
+                            os.path.join(agent.memory_dir, f"episode_{i}_data.pkl"),
+                        )
                     os.remove(agent.memory_file_pth)
                     break
-                time.sleep(0.01)
+                time.sleep(0.1)
 
             # learn the episode (monte carlo)
             if env.time_step > agent.warmup:
-                for step in range(episode.episode_time_steps):
+                for step in range(episode_time_steps):
                     c_loss, a_loss = agent.learn()
 
                     if c_loss is not None:
@@ -260,6 +311,8 @@ if __name__ == "__main__":
                 best_score = avg_score
             if avg_score > best_avg_score:
                 best_avg_score = avg_score
+                agent.save_models()
+            if i % 10 == 0:
                 agent.save_models()
 
             writer.add_scalar("train/reward", score, i)

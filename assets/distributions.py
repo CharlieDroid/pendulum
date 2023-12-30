@@ -147,7 +147,6 @@ class DiagGaussianDistribution(Distribution):
         :return:
         """
         mean_actions = nn.Linear(latent_dim, self.action_dim)
-        # TODO: allow action dependent std
         log_std = nn.Parameter(
             T.ones(self.action_dim) * log_std_init, requires_grad=True
         )

@@ -7,19 +7,29 @@ from utils import get_paths, RPIConnect
 
 if __name__ == "__main__":
     print("...running...")
+    ignored_files = (
+        "rpi_push.py",
+        "rpi.zip",
+        "__pycache__",
+        "td3_fork_buffer.pkl",
+        "buffer_warmup.pkl",
+        "td3_fork_actor",
+        "td3_fork",
+        "runs",
+    )
     if "rpi.zip" in os.listdir():
         os.remove("./rpi.zip")
 
     files = os.listdir()
     with zipfile.ZipFile("rpi.zip", "w") as zipf:
         for file in files:
-            if file not in ["rpi_push.py", "rpi.zip", "__pycache__"]:
+            if file not in ignored_files:
                 if "." not in file:
                     zipf.write(file)
                     print(file)
                     files_ = os.listdir(file)
                     for file_ in files_:
-                        if file_ not in ["rpi_push.py", "rpi.zip", "__pycache__"]:
+                        if file_ not in ignored_files:
                             zipf.write(f"./{file}/{file_}")
                             print(file_)
                 else:

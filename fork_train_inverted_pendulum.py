@@ -52,6 +52,7 @@ if __name__ == "__main__":
         policy_noise=0.2,
         layer1_size=256,
         layer2_size=256,
+        sys_weight=0.6,
         update_actor_interval=1,
         max_size=1_000_000,
         n_actions=env.action_space.shape[0],
