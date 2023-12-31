@@ -48,6 +48,7 @@ class ReplayBuffer:
             self.new_state_memory,
             self.action_memory,
             self.terminal_memory,
+            self.reward_memory,
             self.mem_cntr,
         )
         with open(file_pth, "wb") as outfile:
@@ -62,6 +63,7 @@ class ReplayBuffer:
             self.new_state_memory,
             self.action_memory,
             self.terminal_memory,
+            self.reward_memory,
             self.mem_cntr,
         ) = result
 

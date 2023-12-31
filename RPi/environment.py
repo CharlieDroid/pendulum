@@ -209,7 +209,7 @@ class DummyPendulum:
     def __init__(self):
         # physical bound = self.bound
         # reward bound = self.bound - .15 (in main.py)
-        self.bound = 0.9
+        self.bound = 0.85
         self.time_step = 0
         self.reward_range = (float("-inf"), float("inf"))
 
