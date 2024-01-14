@@ -163,7 +163,6 @@ class AgentActor:
         env,
         layer1_size=256,
         layer2_size=256,
-        warmup=10_000,
         chkpt_dir="./models",
         memory_dir="./memory",
     ):
@@ -172,7 +171,6 @@ class AgentActor:
         self.max_action = env.action_space.high
         self.chkpt_dir = chkpt_dir
         self.memory_dir = memory_dir
-        self.warmup = warmup
         self.chkpt_file_name = "td3_fork.chkpt"
         self.actor_file_name = "td3_fork_actor.chkpt"
         self.memory_file_name = "td3_fork_memory.pkl"
@@ -204,6 +202,8 @@ class AgentActor:
         state = T.tensor(observation, dtype=T.float).to(self.device)
         mu = self.actor.forward(state).to(self.device)
         return mu.cpu().detach().numpy() * self.max_action[0]
+        # print(mu.cpu().detach().numpy(), mu.cpu().detach().numpy() * 500. + 500.)
+        # return mu.cpu().detach().numpy() * 500. + 500.
 
     def save_model(self):
         print("...saving actor...")
@@ -441,6 +441,25 @@ class Agent(AgentActor):
             )
         return critic_loss, actor_loss
 
+    def freeze_bottom_layer(self):
+        self.actor.fc1.requires_grad_(False)
+        self.critic_1.fc1.requires_grad_(False)
+        self.critic_2.fc1.requires_grad_(False)
+        self.target_actor.fc1.requires_grad_(False)
+        self.target_critic_1.fc1.requires_grad_(False)
+        self.target_critic_2.fc1.requires_grad_(False)
+        self.system.fc1.requires_grad_(False)
+        self.reward.fc1.requires_grad_(False)
+
+        # self.actor.fc2.requires_grad_(False)
+        # self.critic_1.fc2.requires_grad_(False)
+        # self.critic_2.fc2.requires_grad_(False)
+        # self.target_actor.fc2.requires_grad_(False)
+        # self.target_critic_1.fc2.requires_grad_(False)
+        # self.target_critic_2.fc2.requires_grad_(False)
+        # self.system.fc2.requires_grad_(False)
+        # self.reward.fc2.requires_grad_(False)
+
     def save_models(self):
         print("...saving checkpoint...")
         data = {
@@ -465,7 +484,7 @@ class Agent(AgentActor):
             self.memory.save(self.buffer_file_pth)
         T.save(data, self.chkpt_file_pth)
 
-    def load_models(self):
+    def load_models(self, reset=False, freeze=False):
         print("...loading checkpoint...")
         checkpoint = T.load(self.chkpt_file_pth, map_location=self.device)
         self.actor.load_state_dict(checkpoint["actor"])
@@ -474,28 +493,33 @@ class Agent(AgentActor):
         self.critic_2.load_state_dict(checkpoint["critic_2"])
         self.target_critic_1.load_state_dict(checkpoint["target_critic_1"])
         self.target_critic_2.load_state_dict(checkpoint["target_critic_2"])
-        self.actor.optimizer.load_state_dict(checkpoint["actor_optimizer"])
-        self.target_actor.optimizer.load_state_dict(
-            checkpoint["target_actor_optimizer"]
-        )
-        self.critic_1.optimizer.load_state_dict(checkpoint["critic_1_optimizer"])
-        self.critic_2.optimizer.load_state_dict(checkpoint["critic_2_optimizer"])
-        self.target_critic_1.optimizer.load_state_dict(
-            checkpoint["target_critic_1_optimizer"]
-        )
-        self.target_critic_2.optimizer.load_state_dict(
-            checkpoint["target_critic_2_optimizer"]
-        )
         self.system.load_state_dict(checkpoint["system"])
-        self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
         self.reward.load_state_dict(checkpoint["reward"])
-        self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
+        if not reset:
+            print("...loading optimizer weights...")
+            self.actor.optimizer.load_state_dict(checkpoint["actor_optimizer"])
+            self.target_actor.optimizer.load_state_dict(
+                checkpoint["target_actor_optimizer"]
+            )
+            self.critic_1.optimizer.load_state_dict(checkpoint["critic_1_optimizer"])
+            self.critic_2.optimizer.load_state_dict(checkpoint["critic_2_optimizer"])
+            self.target_critic_1.optimizer.load_state_dict(
+                checkpoint["target_critic_1_optimizer"]
+            )
+            self.target_critic_2.optimizer.load_state_dict(
+                checkpoint["target_critic_2_optimizer"]
+            )
+            self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
+            self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
+        if freeze:
+            print("...freezing bottom layer...")
+            self.freeze_bottom_layer()
         if self.load_buffer:
+            print("...loading last saved buffer...")
             self.memory.load(self.buffer_file_pth)
 
     def preload_buffer(self):
         print("...preloading buffer...")
-        if self.load_buffer:
-            self.memory.load(
-                os.path.join(self.memory_dir, "buffer_warmup.pkl").replace("\\", "/")
-            )
+        self.memory.load(
+            os.path.join(self.memory_dir, "buffer_warmup.pkl").replace("\\", "/")
+        )

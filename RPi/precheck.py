@@ -1,8 +1,10 @@
 import time
 import argparse
+import numpy as np
 
 from environment import Pendulum
 from utils import get_pins
+
 
 
 class PendulumTest(Pendulum):
@@ -57,6 +59,63 @@ class PendulumTest(Pendulum):
         print(f"{pos=:.3f} {pos_dot=:.3f}\t{theta=:.4f} {theta_dot=:.3f}")
 
 
+class EpisodeTest:
+    def __init__(self, steps_, episode_time_steps_, env: PendulumTest):
+        self.cntr = 0
+        self.steps = steps_
+        self.episode_time_steps = episode_time_steps_
+        self.env = env
+        self.observation = None
+        self.total_reward = 0
+        self.var = float("inf")
+
+    def do_every(self, period, f, *args_):
+        def g_tick():
+            t = time.time()
+            while True:
+                t += period
+                yield max(t - time.time(), 0)
+
+        g = g_tick()
+        while self.steps < (self.episode_time_steps + 1):
+            time.sleep(next(g))
+            f(*args_)
+
+    def run_env(self):
+        if self.steps > 0:
+            obs = self.observation
+            if self.steps < 400:
+                action = 1000.
+            elif self.steps > 400:
+                action = -1000.
+            else:
+                action = 0.
+            self.env.step(action)
+            bound = self.env.bound[1]
+            obs_ = self.env.get_obs()
+            reward = np.cos(obs_[1]) - (
+                    10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 20)
+            )
+
+            print(
+                f"pos:{obs[0]:.2f} angle:{obs[1]:.4f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
+            )
+            if abs(obs[1]) < self.var:
+                self.var = abs(obs[1])
+            self.total_reward += reward
+            self.observation = obs_
+        else:
+            self.observation = self.env.get_obs()
+        self.steps += 1
+
+    def env_start(self):
+        self.env.bound = (0.8, 0.9)
+        self.do_every(self.env.dt, self.run_env)
+        print(self.total_reward)
+        print(self.var)
+        self.env.motor.rotate(0.)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -92,6 +151,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--random_test",
         help="for random stuffs",
+        default=False,
+        type=bool,
+    )
+    parser.add_argument(
+        "--run_env_test",
+        help="running environment random actions",
         default=False,
         type=bool,
     )
@@ -158,6 +223,11 @@ if __name__ == "__main__":
                 time.sleep(2.0)
                 pendulum.goto(bounds, speed_=speed)
                 time.sleep(2.0)
+
+        if args.run_env_test:
+            pendulum.reset()
+            episode = EpisodeTest(-5, 1_000, pendulum)
+            episode.env_start()
 
         if args.random_test:
             print("Starting random test")

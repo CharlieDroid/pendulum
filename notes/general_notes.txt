@@ -1,1 +1,6 @@
+1st problem tried to think of it as a pendulum but thought it would become like a servo instead
+2nd problem ai didn't learn because the 0 degree was at the bottom
+3rd problem the rails/tracks weren't strong enough to hold a weight greater than ~50g else it would rock forwards and backwards
 - I tried training the AI without looking at the data it was learning, stupid mistake, all the reward arrays were zero
+- retraining ai made it get 100 loss not like in the simulations and it seemed to get larger very stupid, trying to freeze bottom layers
+- increasing update actor interval can constitute as lowering the learning rate

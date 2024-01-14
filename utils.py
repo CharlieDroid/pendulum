@@ -20,12 +20,23 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
         steps = 0
         obs, info = env.reset()
         done = False
-        action = [2.0]
-        max_speed = float("-inf")
+        max_action = [1.6]
+        max_speed = float("inf")
         while not done:
             # action = env.action_space.sample()
-            if steps % 250 == 0:
-                action = [-action[0]]
+            if steps < 200:
+                action = max_action
+                if obs[0] < -.8:
+                    action = [max_action[0]/2 * 0.6]
+                elif obs[0] > .8:
+                    action = [-max_action[0]/2 * 0.6]
+            elif steps > 200:
+                action = [-max_action[0]]
+                if obs[0] < -.8:
+                    action = [max_action[0]/2 * 0.6]
+                elif obs[0] > .8:
+                    action = [-max_action[0]/2 * 0.6]
+
             observation_, reward, terminated, truncated, info = env.step(action)
             obs = observation_
             print(
@@ -43,7 +54,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
     if save:
         render_mode = "rgb_array"
     else:
-        render_mode = "human"
+        render_mode = None
     if game_id == "Pendulum-v1":
         env = gym.make(game_id, render_mode=render_mode, g=9.80665)
     else:
@@ -69,15 +80,12 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
                 if not save:
                     obs = observation_
                     print(
-                        f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f}"
+                        f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f} action:{action.item():.2f}"
                     )
-                    if abs(obs[2]) > max_speed:
-                        max_speed = abs(obs[2])
                 rewards += reward
                 observation = observation_
                 done = terminated or truncated
         env.close()
-        print(max_speed)
         return rewards / eps
     else:
         trial = 0

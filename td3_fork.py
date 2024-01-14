@@ -173,8 +173,8 @@ class Agent:
     ):
         self.gamma = gamma
         self.tau = tau
-        self.max_action = [2.0]
-        self.min_action = [-2.0]
+        self.max_action = [2.]
+        self.min_action = [-2.]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.learn_step_cntr = 0
@@ -228,10 +228,10 @@ class Agent:
             beta, input_dims, r1_size, r2_size, n_actions=n_actions
         )
 
-        self.obs_upper_bound = T.tensor([1.0, np.pi * 1.1, 17.0, 524.0]).to(
+        self.obs_upper_bound = T.tensor([1.0, np.pi, 18.0, 100.0]).to(
             self.actor.device
         )
-        self.obs_lower_bound = T.tensor([-1.0, -np.pi * 1.1, -17.0, -524.0]).to(
+        self.obs_lower_bound = T.tensor([-1.0, -np.pi, -18.0, -100.0]).to(
             self.actor.device
         )
         self.noise = noise

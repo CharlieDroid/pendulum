@@ -167,21 +167,21 @@ class Button:
 class ObservationSpace:
     def __init__(self):
         # pos, angle, pos_velo, angle_velo
-        # velo is max mechanical rpm of encoder which is 5000 rpm
+        # velo is max mechanical rpm of encoder which is 5000 rpm * 10%
         self.shape = (4,)
-        belt_pulley_radius = 6e-3
-        max_rad_sec = (500 * np.pi) / 3
+        # max_horizontal_speed = according to testing is 18.
+        # max_rad_sec = (500 * np.pi) / 3 = 104.7197551 ~ 100.
         self.high = (
             1.0,
             np.pi,
-            belt_pulley_radius * max_rad_sec,
-            max_rad_sec,
+            18,
+            100.,
         )
         self.low = (
             -1.0,
             -np.pi,
-            -belt_pulley_radius * max_rad_sec,
-            -max_rad_sec,
+            -18,
+            -100.,
         )
 
 
@@ -195,21 +195,10 @@ class ActionSpace:
         return np.random.uniform(low=self.low[0], high=self.high[0])
 
 
-def simp_angle(a):
-    _2pi = 2 * np.pi
-    if a > np.pi:
-        return simp_angle(a - _2pi)
-    elif a < -np.pi:
-        return simp_angle(a + _2pi)
-    else:
-        return a
-
-
 class DummyPendulum:
     def __init__(self):
-        # physical bound = self.bound
-        # reward bound = self.bound - .15 (in main.py)
-        self.bound = 0.85
+        # self.bound = (physical bound, reward bound)
+        self.bound = (0.93, 0.9)
         self.time_step = 0
         self.reward_range = (float("-inf"), float("inf"))
 
@@ -224,17 +213,18 @@ class Pendulum(DummyPendulum):
         self.pi = pigpio.pi()
         self.reset_flag = False
         self.dt = dt
-        freq = 75
+        # just save it in memory to not calculate it every step
+        self._2pi = 2 * np.pi
+        # frequency is limited to https://abyz.me.uk/rpi/pigpio/python.html#set_PWM_frequency
+        freq = 50
 
         self.cart_obs = CartEncoder(self.pi, ceg, cew, self.dt)
         self.pendulum_obs = PendulumEncoder(self.pi, peg, pew, self.dt)
         self.motor = Motor(self.pi, ml, mr, me, freq)
+        print(f"PWM Freq:{self.pi.get_PWM_frequency(me)}")
         self.limit_switch = Button(self.pi, bt)
         self.cntr = 0
-        self.usual_speed = 500.0
-
-        # 0 should be at the top
-        self.pendulum_obs.set_value(300)
+        self.usual_speed = 600.0
 
     def do_every(self, period, f, *args):
         def g_tick():
@@ -270,7 +260,7 @@ class Pendulum(DummyPendulum):
     def reset_cart(self):
         # go back to -1. or find 0 val or leftmost side
         self.limit_switch.on(callback=self.end_limit_pressed)
-        self.motor.rotate(-self.usual_speed)
+        self.motor.rotate(-self.usual_speed*1.2)
         start = time.time()
         while not self.reset_flag:
             assert (
@@ -297,15 +287,21 @@ class Pendulum(DummyPendulum):
         self.reset_pendulum()
 
     def step(self, action):
-        # can put extra less bounds
-        if self.cart_obs.pos() < -self.bound:
+        if self.cart_obs.pos() < -self.bound[0]:
             action = self.usual_speed * 0.6
-        elif self.cart_obs.pos() > self.bound:
+        elif self.cart_obs.pos() > self.bound[0]:
             action = -self.usual_speed * 0.6
         self.motor.rotate(action)
 
+    def simp_angle(self, a):
+        if a > np.pi:
+            return self.simp_angle(a - self._2pi)
+        elif a < -np.pi:
+            return self.simp_angle(a + self._2pi)
+        return a
+
     def get_obs(self):
-        angle = simp_angle(self.pendulum_obs.angle())
+        angle = self.simp_angle(self.pendulum_obs.angle())
         ob = (
             self.cart_obs.pos(),
             angle,
