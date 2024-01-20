@@ -12,11 +12,10 @@ if __name__ == "__main__":
         "__pycache__",
         "td3_fork_buffer.pkl",
         "buffer_warmup.pkl",
-        "td3_fork_actor.chkpt",
         "td3_fork.chkpt",
         "td3_fork_good.chkpt",
         "td3_fork_sim.chkpt",
-        "td3_fork_sim_og.chkpt",
+        "td3_fork_sim_25Hz.chkpt",
         "runs",
         "backup_warmup_data",
     )

@@ -4,30 +4,29 @@ import time
 
 
 class Motor:
-    def __init__(self, pi: pigpio.pi, in1, in2, en, freq):
+    def __init__(self, pi: pigpio.pi, in1, in2, freq):
         self.in1 = in1
         self.in2 = in2
-        self.en = en
         self.pi = pi
         range_ = 1000
-        self.pi.set_mode(en, pigpio.OUTPUT)
-        self.pi.set_PWM_frequency(en, freq)
-        self.pi.set_PWM_range(en, range_)
+        self.pi.set_mode(in1, pigpio.OUTPUT)
+        self.pi.set_PWM_frequency(in1, freq)
+        self.pi.set_PWM_range(in1, range_)
 
-        self.pi.write(in1, 0)
-        self.pi.write(in2, 0)
+        self.pi.set_mode(in2, pigpio.OUTPUT)
+        self.pi.set_PWM_frequency(in2, freq)
+        self.pi.set_PWM_range(in2, range_)
+
+        self.duty_cycle = None
         self.rotate(0.0)
-        self.duty_cycle = 0.0
 
     def forward(self, duty_cycle):
-        self.pi.write(self.in1, 1)
-        self.pi.write(self.in2, 0)
-        self.pi.set_PWM_dutycycle(self.en, duty_cycle)
+        self.pi.set_PWM_dutycycle(self.in2, 0.)
+        self.pi.set_PWM_dutycycle(self.in1, duty_cycle)
 
     def backward(self, duty_cycle):
-        self.pi.write(self.in1, 0)
-        self.pi.write(self.in2, 1)
-        self.pi.set_PWM_dutycycle(self.en, duty_cycle)
+        self.pi.set_PWM_dutycycle(self.in1, 0.)
+        self.pi.set_PWM_dutycycle(self.in2, duty_cycle)
 
     def rotate(self, duty_cycle):
         # duty_cycle is in float 0. to 1000.
@@ -207,7 +206,7 @@ class DummyPendulum:
 
 
 class Pendulum(DummyPendulum):
-    def __init__(self, ceg, cew, peg, pew, ml, mr, me, bt, dt=0.02):
+    def __init__(self, ceg, cew, peg, pew, ml, mr, bt, dt=0.04):
         super().__init__()
         # cart encoder green, pendulum encoder white, motor left, motor right, etc.
         self.pi = pigpio.pi()
@@ -216,15 +215,15 @@ class Pendulum(DummyPendulum):
         # just save it in memory to not calculate it every step
         self._2pi = 2 * np.pi
         # frequency is limited to https://abyz.me.uk/rpi/pigpio/python.html#set_PWM_frequency
-        freq = 50
+        freq = 20_000
 
         self.cart_obs = CartEncoder(self.pi, ceg, cew, self.dt)
         self.pendulum_obs = PendulumEncoder(self.pi, peg, pew, self.dt)
-        self.motor = Motor(self.pi, ml, mr, me, freq)
-        print(f"PWM Freq:{self.pi.get_PWM_frequency(me)}")
+        self.motor = Motor(self.pi, ml, mr, freq)
+        print(f"PWM Freq:{self.pi.get_PWM_frequency(mr)}")
         self.limit_switch = Button(self.pi, bt)
         self.cntr = 0
-        self.usual_speed = 600.0
+        self.usual_speed = 160.0
 
     def do_every(self, period, f, *args):
         def g_tick():
@@ -242,7 +241,7 @@ class Pendulum(DummyPendulum):
         # there might be error here, if so, just add _ in parameters/args
         self.cart_obs.reset_values()
         self.limit_switch.off()
-        self.motor.rotate(-self.usual_speed * 0.5)
+        self.motor.rotate(-self.usual_speed)
         time.sleep(0.5)
         self.motor.rotate(0.0)
         self.reset_flag = True
@@ -260,7 +259,7 @@ class Pendulum(DummyPendulum):
     def reset_cart(self):
         # go back to -1. or find 0 val or leftmost side
         self.limit_switch.on(callback=self.end_limit_pressed)
-        self.motor.rotate(-self.usual_speed*1.2)
+        self.motor.rotate(-self.usual_speed)
         start = time.time()
         while not self.reset_flag:
             assert (
@@ -269,7 +268,7 @@ class Pendulum(DummyPendulum):
         self.reset_flag = False
 
         # go to center-ish
-        self.motor.rotate(self.usual_speed * 1.2)
+        self.motor.rotate(self.usual_speed*1.2)
         while self.cart_obs.pos() < -0.05:
             pass
         self.motor.rotate(0.0)
@@ -288,9 +287,9 @@ class Pendulum(DummyPendulum):
 
     def step(self, action):
         if self.cart_obs.pos() < -self.bound[0]:
-            action = self.usual_speed * 0.6
+            action = self.usual_speed * 1.2
         elif self.cart_obs.pos() > self.bound[0]:
-            action = -self.usual_speed * 0.6
+            action = -self.usual_speed * 1.2
         self.motor.rotate(action)
 
     def simp_angle(self, a):

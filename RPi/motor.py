@@ -31,7 +31,7 @@ if __name__ == "__main__":
     print("...running...")
     pendulum = PendulumEncoder(raspberry_pi, *pendulum_pins, dt=0.02)
     # cart = CartEncoder(raspberry_pi, *cart_pins, dt=0.02)
-    motor = Motor(raspberry_pi, *motor_pins, freq=50)
+    motor = Motor(raspberry_pi, *motor_pins, freq=20_000)
     if args.motor_control:
         try:
             while True:

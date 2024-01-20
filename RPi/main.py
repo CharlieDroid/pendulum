@@ -13,18 +13,22 @@ from td3_fork import Agent, AgentActor
 from utils import RPIConnect, Episode, get_pins, get_paths
 
 
+# TODO: lower the sampling frequency
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--log_file_name",
         help="file name of the log file",
-        default="21st run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz",
+        # default="25th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor",
+        default="testing run",
         type=str,
     )
     parser.add_argument(
         "--evaluate",
         help="if true it will evaluate current actor model",
-        default=True,
+        default=False,
         type=bool,
     )
     parser.add_argument(
@@ -36,25 +40,25 @@ def parse_args():
     parser.add_argument(
         "--save_episode_data",
         help="if true it will save each episode data",
-        default=False,
+        default=True,
         type=bool,
     )
     parser.add_argument(
         "--continue_training",
-        help="if true it will save each episode data",
-        default=True,
+        help="if true it will continue training",
+        default=False,
         type=bool,
     )
     parser.add_argument(
         "--start_retraining",
         help="if true it will start retraining without loading optimizer weights",
-        default=False,
+        default=True,
         type=bool,
     )
     parser.add_argument(
         "--cooldown",
         help="it will take extra COOLDOWN seconds to start an episode",
-        default=150.,
+        default=0.0,
         type=float,
     )
     parser.add_argument(
@@ -109,7 +113,9 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
     # so that I can save when I stop main
     global agent
     # choose whether to save or load buffer
-    agent = Agent(lr=1e-6, env=env, update_actor_interval=5, save_buffer=True, load_buffer=True)
+    agent = Agent(
+        lr=1e-8, env=env, update_actor_interval=4, save_buffer=True, load_buffer=False
+    )
     rpi = RPIConnect()
     send_actor_command = f"scp {agent.actor_file_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
     get_memory_command = f"scp charles@raspberrypi:{os.path.join(pi_pth, agent.memory_file_pth)} {agent.memory_dir}"
@@ -213,8 +219,6 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
             if avg_score > best_avg_score:
                 best_avg_score = avg_score
                 agent.save_models()
-            if score > 150.:
-                agent.save_models()
 
             writer.add_scalar("train/reward", score, i)
             writer.add_scalar("train/critic_loss", critic_loss, i)
@@ -226,7 +230,7 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
                 "avg score %.1f" % avg_score,
                 "critic loss %.5f" % critic_loss,
                 "actor loss %.5f" % actor_loss,
-                )
+            )
             writer.flush()
 
 
@@ -238,7 +242,7 @@ if __name__ == "__main__":
     --- main() should be run first in PC ---
     --- set --log_file_name before running ---
     raspberry pi commands:
-    >>> cd pendulum ; source ./venv/bin/activate ; sudo pigpiod -s 5
+    >>> cd pendulum ; source ./venv/bin/activate ; sudo pigpiod -s 1
     >>> sudo nice -n -20 ./venv/bin/python main.py
     """
     args_ = parse_args()

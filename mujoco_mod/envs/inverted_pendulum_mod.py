@@ -133,8 +133,8 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         # -(theta^2 + 10*cart^2 + 0.1*theta_dt^2 + 0.1*cart_dt^2 + 0.001*torque^2)
         # reward = np.cos(obs_[1]) - (10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17))
         reward = np.cos(ob[1]) - (
-            10 * int(abs(ob[0]) > 0.9) + 0.1*ob[3]*ob[2] + 0.1*ob[2]*ob[2] + 0.001*a[0]*a[0]
-        )
+                10 * int(abs(ob[0]) > 0.9) +
+                10 * int(abs(ob[3]) > 17))
 
         terminate = False
         terminated = bool(not np.isfinite(ob).all() or terminate)

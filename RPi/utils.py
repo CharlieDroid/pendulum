@@ -179,9 +179,9 @@ class Episode:
         plt.clf()
 
 
-def reprocess_warmup(episode_time_steps, reward_bound, max_size=1_000_000, input_shape=(4,), n_actions=1):
+def reprocess_warmup(episode_time_steps, reward_bound, episodes=20, max_size=1_000_000, input_shape=(4,), n_actions=1):
     memory = ReplayBuffer(max_size, input_shape, n_actions)
-    for i in range(20):
+    for i in range(episodes):
         bound = reward_bound
 
         with open(f"./memory/episode_{i}_data.pkl", "rb") as infile:
@@ -200,3 +200,19 @@ def reprocess_warmup(episode_time_steps, reward_bound, max_size=1_000_000, input
             )
             memory.store_transition(obs, action, reward, obs_, done)
     return memory
+
+
+def process_data_console():
+    import pickle
+    import numpy as np
+    import os
+    from td3_fork import ReplayBuffer
+    import matplotlib.pyplot as plt
+    os.chdir("RPi")
+    memory = reprocess_warmup(1_000, 0.9, episodes=6)
+    # plt.hist(memory.action_memory[:10, :])
+    memory.action_memory[:10, :]
+    memory.reward_memory[:10]
+    memory.state_memory[:10]
+    memory.state_memory[:10, 0]
+

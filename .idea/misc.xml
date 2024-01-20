@@ -3,6 +3,7 @@
   <component name="Black">
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
+    <option name="sdkName" value="C:\ProgramData\anaconda3" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="C:\ProgramData\anaconda3" project-jdk-type="Python SDK" />
 </project>

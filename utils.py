@@ -54,7 +54,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
     if save:
         render_mode = "rgb_array"
     else:
-        render_mode = None
+        render_mode = "human"
     if game_id == "Pendulum-v1":
         env = gym.make(game_id, render_mode=render_mode, g=9.80665)
     else:
