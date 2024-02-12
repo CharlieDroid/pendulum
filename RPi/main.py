@@ -21,8 +21,8 @@ def parse_args():
     parser.add_argument(
         "--log_file_name",
         help="file name of the log file",
-        # default="25th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor",
-        default="testing run",
+        default="32nd run, c++ code, removed physical boundary",
+        # default="testing run",
         type=str,
     )
     parser.add_argument(
@@ -40,7 +40,7 @@ def parse_args():
     parser.add_argument(
         "--save_episode_data",
         help="if true it will save each episode data",
-        default=True,
+        default=False,
         type=bool,
     )
     parser.add_argument(
@@ -64,7 +64,7 @@ def parse_args():
     parser.add_argument(
         "--warmup",
         help="warmup before learning starts",
-        default=10_000,
+        default=5_000,
         type=int,
     )
     return parser.parse_args()
@@ -113,15 +113,13 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
     # so that I can save when I stop main
     global agent
     # choose whether to save or load buffer
-    agent = Agent(
-        lr=1e-8, env=env, update_actor_interval=4, save_buffer=True, load_buffer=False
-    )
+    agent = Agent(lr=0.001, env=env, save_buffer=True, load_buffer=True)
     rpi = RPIConnect()
-    send_actor_command = f"scp {agent.actor_file_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
-    get_memory_command = f"scp charles@raspberrypi:{os.path.join(pi_pth, agent.memory_file_pth)} {agent.memory_dir}"
+    send_actor_command = f"scp {agent.actor_zipfile_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
+    get_memory_command = f"scp charles@raspberrypi:{os.path.join(pi_pth, agent.memory_zipfile_pth)} {agent.memory_dir}"
     if args.evaluate:
         agent.load_models()
-        agent.save_model()
+        agent.save_model_txt()
         rpi.sys_command(send_actor_command)
         print("...finished sending trained actor...")
     else:
@@ -141,23 +139,18 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
         if args.start_retraining:
             print("...starting transfer learning...")
             agent.load_models(reset=True, freeze=False)
-            env.time_step = agent.memory.mem_cntr
-            # print("...training warmup steps might take awhile...")
-            # for i in range(episode_time_steps * 20):
-            #     if i % 1000:
-            #         print("step", i)
-            #     agent.learn()
+            # env.time_step = agent.memory.mem_cntr
 
         # send initialized actor parameters to rpi
-        agent.save_model()
+        agent.save_model_txt()
         print("...sending actor params...")
         rpi.sys_command(send_actor_command)
 
         # check if there is memory file in pi then delete
         files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
-        if agent.memory_file_name in files:
+        if agent.memory_file_zip in files:
             print("...deleting data file in pi...")
-            rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
+            rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_zipfile_pth}")
 
         # setup data logging
         writer = SummaryWriter(log_dir=log_dir)
@@ -171,30 +164,43 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
             # reset values before episode
             critic_loss_count = 0
             actor_loss_count = 0
+            system_loss_count = 0
+            reward_loss_count = 0
             critic_loss = 0
             actor_loss = 0
+            system_loss = 0
+            reward_loss = 0
 
             episode = Episode(-5, episode_time_steps, args.warmup, agent, env)
             # wait for pre-processing
             while True:
                 files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
-                if agent.memory_file_name in files:
-                    rpi.sys_command(get_memory_command)
-                    rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
+                if agent.memory_file_zip in files:
+                    time.sleep(0.2)
+                    while True:  # runs until receiving 0 which means ok
+                        if not rpi.sys_command(get_memory_command):
+                            break
+                    rpi.ssh_command(
+                        f"cd pendulum ; sudo rm -f {agent.memory_zipfile_pth}"
+                    )
                     score = episode.pre_process()
                     if args.save_episode_data:
                         shutil.copy(
                             agent.memory_file_pth,
                             os.path.join(agent.memory_dir, f"episode_{i}_data.pkl"),
                         )
-                    os.remove(agent.memory_file_pth)
                     break
                 time.sleep(0.1)
 
             # learn the episode (monte carlo)
             if env.time_step > args.warmup:
-                for step in range(episode_time_steps):
-                    c_loss, a_loss = agent.learn()
+                if env.time_step == args.warmup:
+                    print("...training all warmup steps...")
+                    steps = args.warmup
+                else:
+                    steps = episode_time_steps
+                for step in range(steps):
+                    c_loss, a_loss, s_loss, r_loss = agent.learn()
 
                     if c_loss is not None:
                         critic_loss_count += 1
@@ -202,9 +208,15 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
                     if a_loss is not None:
                         actor_loss_count += 1
                         actor_loss += a_loss
+                    if s_loss is not None:
+                        system_loss_count += 1
+                        system_loss += s_loss
+                    if r_loss is not None:
+                        reward_loss_count += 1
+                        reward_loss += r_loss
 
             # send new agent
-            agent.save_model()
+            agent.save_model_txt()
             rpi.sys_command(send_actor_command)
 
             # log training data
@@ -214,6 +226,10 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
                 critic_loss /= critic_loss_count
             if actor_loss_count > 0:
                 actor_loss /= actor_loss_count
+            if system_loss_count > 0:
+                system_loss /= system_loss_count
+            if reward_loss_count > 0:
+                reward_loss /= reward_loss_count
             if avg_score > best_score:
                 best_score = avg_score
             if avg_score > best_avg_score:
@@ -223,6 +239,8 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
             writer.add_scalar("train/reward", score, i)
             writer.add_scalar("train/critic_loss", critic_loss, i)
             writer.add_scalar("train/actor_loss", actor_loss, i)
+            writer.add_scalar("train/system_loss", system_loss, i)
+            writer.add_scalar("train/reward_loss", reward_loss, i)
             print(
                 "episode",
                 i,
@@ -230,6 +248,8 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
                 "avg score %.1f" % avg_score,
                 "critic loss %.5f" % critic_loss,
                 "actor loss %.5f" % actor_loss,
+                "system loss %.5f" % system_loss,
+                "reward loss %.5f" % reward_loss,
             )
             writer.flush()
 
@@ -244,6 +264,7 @@ if __name__ == "__main__":
     raspberry pi commands:
     >>> cd pendulum ; source ./venv/bin/activate ; sudo pigpiod -s 1
     >>> sudo nice -n -20 ./venv/bin/python main.py
+    >>> sudo nice -n -20 ./main
     """
     args_ = parse_args()
     log_dir_ = f"runs/{args_.log_file_name}"

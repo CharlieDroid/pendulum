@@ -81,6 +81,19 @@ off hdmi
 on hdmi
 `tvservice -p`
 
+Step 9.6:
+Build > Set Build Commands
+In build put this to allow openmp:
+`gcc -Wall -o "%e" -fopenmp "%f"`
+
+Step 9.7:  build command recently
+Build > Set Build Commands
+`g++ -Wall -I /usr/include/eigen3 -lstdc++fs -pthread -O2 -o "%e" "%f" "agent.cpp" "environment.cpp" -lpigpio -lrt`
+
+Step 9.8: Install libraries
+in terminal
+`sudo apt-get install -y libzip-dev`
+
 Step 10: change default version of text editor
 in Thonny or Geany or smth
 go to Tools > Options > Interpreter then select /usr/local/bin/python3.11

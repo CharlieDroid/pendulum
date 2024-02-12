@@ -158,6 +158,8 @@ class Agent:
         max_size=1_000_000,
         layer1_size=256,
         layer2_size=256,
+        critic1_size=256,
+        critic2_size=256,
         sys1_size=400,
         sys2_size=300,
         r1_size=256,
@@ -173,8 +175,8 @@ class Agent:
     ):
         self.gamma = gamma
         self.tau = tau
-        self.max_action = [2.]
-        self.min_action = [-2.]
+        self.max_action = [2.0]
+        self.min_action = [-2.0]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.learn_step_cntr = 0
@@ -202,16 +204,16 @@ class Agent:
         self.critic_1 = CriticNetwork(
             beta,
             input_dims,
-            layer1_size,
-            layer2_size,
+            critic1_size,
+            critic2_size,
             n_actions=n_actions,
             name="critic_1",
         )
         self.critic_2 = CriticNetwork(
             beta,
             input_dims,
-            layer1_size,
-            layer2_size,
+            critic1_size,
+            critic2_size,
             n_actions=n_actions,
             name="critic_2",
         )
@@ -228,9 +230,7 @@ class Agent:
             beta, input_dims, r1_size, r2_size, n_actions=n_actions
         )
 
-        self.obs_upper_bound = T.tensor([1.0, np.pi, 18.0, 100.0]).to(
-            self.actor.device
-        )
+        self.obs_upper_bound = T.tensor([1.0, np.pi, 18.0, 100.0]).to(self.actor.device)
         self.obs_lower_bound = T.tensor([-1.0, -np.pi, -18.0, -100.0]).to(
             self.actor.device
         )
@@ -244,7 +244,9 @@ class Agent:
 
     def choose_action(self, observation, evaluate=False):
         if (self.time_step < self.warmup) and not evaluate:
-            mu = T.tensor(np.random.normal(scale=self.noise, size=(self.n_actions,)))
+            # mu = T.tensor(np.random.normal(scale=self.noise, size=(self.n_actions,)))
+            state = T.tensor(observation, dtype=T.float).to(self.actor.device)
+            mu = self.actor.forward(state).to(self.actor.device)
         else:
             state = T.tensor(observation, dtype=T.float).to(self.actor.device)
             mu = self.actor.forward(state).to(self.actor.device)
@@ -262,7 +264,7 @@ class Agent:
 
     def learn(self):
         if (self.memory.mem_cntr < self.batch_size) or (self.time_step < self.warmup):
-            return None, None
+            return None, None, None, None
 
         self.learn_step_cntr += 1
 
@@ -330,7 +332,7 @@ class Agent:
         s_flag = 1 if system_loss.item() < self.sys_threshold else 0
 
         if self.learn_step_cntr % self.update_actor_iter != 0:
-            return critic_loss, None
+            return critic_loss, None, system_loss, reward_loss
 
         actor_q1_loss = self.critic_1.forward(state, self.actor.forward(state))
         actor_loss = -T.mean(actor_q1_loss)
@@ -390,7 +392,7 @@ class Agent:
             target_param.data.copy_(
                 self.tau * param.data + (1 - self.tau) * target_param.data
             )
-        return critic_loss, actor_loss
+        return critic_loss, actor_loss, system_loss, reward_loss
 
     def save_models(self):
         print("...saving checkpoint...")
@@ -417,33 +419,60 @@ class Agent:
             self.chkpt_file_pth,
         )
 
-    def load_models(self):
+    def freeze_layer(self, first_layer=True, second_layer=False):
+        if first_layer:
+            print("...freezing first layer...")
+            self.actor.fc1.requires_grad_(False)
+            self.critic_1.fc1.requires_grad_(False)
+            self.critic_2.fc1.requires_grad_(False)
+            self.target_actor.fc1.requires_grad_(False)
+            self.target_critic_1.fc1.requires_grad_(False)
+            self.target_critic_2.fc1.requires_grad_(False)
+            self.system.fc1.requires_grad_(False)
+            self.reward.fc1.requires_grad_(False)
+        if second_layer:
+            print("...freezing second layer...")
+            self.actor.fc2.requires_grad_(False)
+            self.critic_1.fc2.requires_grad_(False)
+            self.critic_2.fc2.requires_grad_(False)
+            self.target_actor.fc2.requires_grad_(False)
+            self.target_critic_1.fc2.requires_grad_(False)
+            self.target_critic_2.fc2.requires_grad_(False)
+            self.system.fc2.requires_grad_(False)
+            self.reward.fc2.requires_grad_(False)
+
+    def load_models(self, load_all_weights=True, load_optimizers=False):
         print("...loading checkpoint...")
         device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
         checkpoint = T.load(self.chkpt_file_pth, map_location=device)
         self.actor.load_state_dict(checkpoint["actor"])
-        self.target_actor.load_state_dict(checkpoint["target_actor"])
-        self.critic_1.load_state_dict(checkpoint["critic_1"])
-        self.critic_2.load_state_dict(checkpoint["critic_2"])
-        self.target_critic_1.load_state_dict(checkpoint["target_critic_1"])
-        self.target_critic_2.load_state_dict(checkpoint["target_critic_2"])
-        self.actor.optimizer.load_state_dict(checkpoint["actor_optimizer"])
-        self.target_actor.optimizer.load_state_dict(
-            checkpoint["target_actor_optimizer"]
-        )
-        self.critic_1.optimizer.load_state_dict(checkpoint["critic_1_optimizer"])
-        self.critic_2.optimizer.load_state_dict(checkpoint["critic_2_optimizer"])
-        self.target_critic_1.optimizer.load_state_dict(
-            checkpoint["target_critic_1_optimizer"]
-        )
-        self.target_critic_2.optimizer.load_state_dict(
-            checkpoint["target_critic_2_optimizer"]
-        )
-        self.system.load_state_dict(checkpoint["system"])
-        self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
-        self.reward.load_state_dict(checkpoint["reward"])
-        self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
-        self.time_step = checkpoint["timestep"]
+        if load_all_weights:
+            print("...loading all weights...")
+            self.target_actor.load_state_dict(checkpoint["target_actor"])
+            self.critic_1.load_state_dict(checkpoint["critic_1"])
+            self.critic_2.load_state_dict(checkpoint["critic_2"])
+            self.target_critic_1.load_state_dict(checkpoint["target_critic_1"])
+            self.target_critic_2.load_state_dict(checkpoint["target_critic_2"])
+            self.system.load_state_dict(checkpoint["system"])
+            self.reward.load_state_dict(checkpoint["reward"])
+        if load_optimizers:
+            print("...loading optimizer weights...")
+            self.actor.optimizer.load_state_dict(checkpoint["actor_optimizer"])
+            self.target_actor.optimizer.load_state_dict(
+                checkpoint["target_actor_optimizer"]
+            )
+            self.critic_1.optimizer.load_state_dict(checkpoint["critic_1_optimizer"])
+            self.critic_2.optimizer.load_state_dict(checkpoint["critic_2_optimizer"])
+            self.target_critic_1.optimizer.load_state_dict(
+                checkpoint["target_critic_1_optimizer"]
+            )
+            self.target_critic_2.optimizer.load_state_dict(
+                checkpoint["target_critic_2_optimizer"]
+            )
+            self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
+            self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
+        # self.time_step = checkpoint["timestep"]  # orig
+        self.time_step = 0
 
     def partial_load_models(self):
         print("...partial loading checkpoint...")

@@ -15,7 +15,8 @@ register(
 
 if __name__ == "__main__":
     find_best = False
-    save = False
+    save = True
+    save_data = True
     algo = "td3-fork"
     game_id = "InvertedPendulumModded"
     eps = 1
@@ -63,8 +64,8 @@ if __name__ == "__main__":
             env=env,
             gamma=0.98,
             noise=0.1,
-            layer1_size=128,
-            layer2_size=128,
+            layer1_size=16,
+            layer2_size=16,
             update_actor_interval=1,
             max_size=200_000,
             n_actions=env.action_space.shape[0],
@@ -81,4 +82,8 @@ if __name__ == "__main__":
         )
     agent.load_models()
     agent.time_step = agent.warmup + 1
-    print(agent_play(game_id, agent, save=save, find_best=find_best, eps=eps))
+    print(
+        agent_play(
+            game_id, agent, save=save, find_best=find_best, eps=eps, save_data=save_data
+        )
+    )

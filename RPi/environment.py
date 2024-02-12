@@ -21,11 +21,11 @@ class Motor:
         self.rotate(0.0)
 
     def forward(self, duty_cycle):
-        self.pi.set_PWM_dutycycle(self.in2, 0.)
+        self.pi.set_PWM_dutycycle(self.in2, 0.0)
         self.pi.set_PWM_dutycycle(self.in1, duty_cycle)
 
     def backward(self, duty_cycle):
-        self.pi.set_PWM_dutycycle(self.in1, 0.)
+        self.pi.set_PWM_dutycycle(self.in1, 0.0)
         self.pi.set_PWM_dutycycle(self.in2, duty_cycle)
 
     def rotate(self, duty_cycle):
@@ -171,16 +171,16 @@ class ObservationSpace:
         # max_horizontal_speed = according to testing is 18.
         # max_rad_sec = (500 * np.pi) / 3 = 104.7197551 ~ 100.
         self.high = (
-            1.0,
+            1.1,
             np.pi,
             18,
-            100.,
+            100.0,
         )
         self.low = (
-            -1.0,
+            -1.1,
             -np.pi,
             -18,
-            -100.,
+            -100.0,
         )
 
 
@@ -206,7 +206,7 @@ class DummyPendulum:
 
 
 class Pendulum(DummyPendulum):
-    def __init__(self, ceg, cew, peg, pew, ml, mr, bt, dt=0.04):
+    def __init__(self, ceg, cew, peg, pew, ml, mr, bt, dt=0.02):
         super().__init__()
         # cart encoder green, pendulum encoder white, motor left, motor right, etc.
         self.pi = pigpio.pi()
@@ -268,7 +268,7 @@ class Pendulum(DummyPendulum):
         self.reset_flag = False
 
         # go to center-ish
-        self.motor.rotate(self.usual_speed*1.2)
+        self.motor.rotate(self.usual_speed * 1.2)
         while self.cart_obs.pos() < -0.05:
             pass
         self.motor.rotate(0.0)

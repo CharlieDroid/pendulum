@@ -2,6 +2,7 @@ import numpy as np
 import gymnasium as gym
 from gymnasium.wrappers import RecordVideo
 import os
+import csv
 
 
 def run_env(game_id="InvertedPendulumModded", eps=1):
@@ -26,16 +27,16 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
             # action = env.action_space.sample()
             if steps < 200:
                 action = max_action
-                if obs[0] < -.8:
-                    action = [max_action[0]/2 * 0.6]
-                elif obs[0] > .8:
-                    action = [-max_action[0]/2 * 0.6]
+                if obs[0] < -0.8:
+                    action = [max_action[0] / 2 * 0.6]
+                elif obs[0] > 0.8:
+                    action = [-max_action[0] / 2 * 0.6]
             elif steps > 200:
                 action = [-max_action[0]]
-                if obs[0] < -.8:
-                    action = [max_action[0]/2 * 0.6]
-                elif obs[0] > .8:
-                    action = [-max_action[0]/2 * 0.6]
+                if obs[0] < -0.8:
+                    action = [max_action[0] / 2 * 0.6]
+                elif obs[0] > 0.8:
+                    action = [-max_action[0] / 2 * 0.6]
 
             observation_, reward, terminated, truncated, info = env.step(action)
             obs = observation_
@@ -50,7 +51,7 @@ def run_env(game_id="InvertedPendulumModded", eps=1):
     env.close()
 
 
-def agent_play(game_id, agent, eps=3, save=True, find_best=False):
+def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=False):
     if save:
         render_mode = "rgb_array"
     else:
@@ -66,14 +67,22 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
             name_prefix="InvertedPendulum",
             episode_trigger=lambda _: True,
         )
+    if save_data:
+        eps = 1
+        data = []
     if not find_best:
         rewards = 0
         for ep in range(eps):
             observation, info = env.reset()
+            obs = observation
+            print(
+                f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f}"
+            )
             if save:
                 env.start_video_recorder()
             done = False
             max_speed = float("-inf")
+            time_steps = 0
             while not done:
                 action = agent.choose_action(observation, evaluate=True)
                 observation_, reward, terminated, truncated, info = env.step(action)
@@ -82,10 +91,30 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False):
                     print(
                         f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f} reward:{reward:.2f} action:{action.item():.2f}"
                     )
+                if save_data:
+                    data.append(
+                        [
+                            observation[0],
+                            observation[1],
+                            observation[2],
+                            observation[3],
+                            reward,
+                            action.item(),
+                        ]
+                    )
                 rewards += reward
                 observation = observation_
                 done = terminated or truncated
+                time_steps += 1
+            print(time_steps)
         env.close()
+
+        if save_data:
+            with open("recordings/sample_data_16x16.csv", "w") as file:
+                writer = csv.writer(file)
+                for d in data:
+                    writer.writerow(d)
+
         return rewards / eps
     else:
         trial = 0

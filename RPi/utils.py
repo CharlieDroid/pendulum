@@ -3,6 +3,9 @@ import os
 import configparser
 import pickle
 import time
+import socket
+import zipfile
+import csv
 
 import numpy as np
 
@@ -17,7 +20,23 @@ class RPIConnect:
         self.ssh = paramiko.SSHClient()
         self.ssh.load_system_host_keys()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.ssh.connect(hostname=hostname, username=username, password=password)
+        tries = 0
+        while True:
+            connected = True
+            try:
+                self.ssh.connect(
+                    hostname=hostname, username=username, password=password
+                )
+            except socket.gaierror as error:
+                print(f"ERROR: {error}")
+                connected = False
+                tries += 1
+            if connected:
+                print("Connected to Raspberry PI!")
+                break
+            elif tries > 100:
+                print("ERROR: Couldn't connect to Raspberry PI after 100 tries!")
+                break
 
     def ssh_command(self, command_):
         _, stdout, _ = self.ssh.exec_command(command_)
@@ -143,9 +162,21 @@ class Episode:
         # bounds for reward, change in environment.py
         bound = self.env.bound[1]
 
-        with open(self.agent.memory_file_pth, "rb") as infile:
-            result = pickle.load(infile)
-        (observations, actions, observations_) = result
+        # unzip memory and delete the original zip file
+        with zipfile.ZipFile(self.agent.memory_zipfile_pth, "r") as infile:
+            infile.extractall(self.agent.memory_dir)
+        os.remove(self.agent.memory_zipfile_pth)
+
+        with open(os.path.join(self.agent.memory_dir, "observations.csv"), "r") as f:
+            observations = np.array(list(csv.reader(f)), dtype=np.float32)
+        os.remove(os.path.join(self.agent.memory_dir, "observations.csv"))
+
+        with open(os.path.join(self.agent.memory_dir, "actions.csv"), "r") as f:
+            actions = np.array(list(csv.reader(f)), dtype=np.float32)
+        os.remove(os.path.join(self.agent.memory_dir, "actions.csv"))
+
+        observations_ = observations[1:]
+        observations = observations[:-1]
         # create fake dones cuz it'll always be like this anyway
         dones = np.zeros((self.episode_time_steps, 1), dtype=np.bool_)
         dones[-1] = [True]
@@ -153,7 +184,6 @@ class Episode:
         for obs, action, obs_, done in zip(observations, actions, observations_, dones):
             # from 0. to 1000.
             # to 0. to 1.
-            action *= 0.001
             # compute for reward
             reward = np.cos(obs_[1]) - (
                 10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17)
@@ -171,7 +201,12 @@ class Episode:
     def eval_start(self):
         self.do_every(self.env.dt, self.run_eval)
         self.env.motor.rotate(0.0)
+        for obs, action, obs_ in zip(
+            self.observations, self.actions, self.observations_
+        ):
+            print(obs, action, obs_)
         import matplotlib.pyplot as plt
+
         # print(self.actions)
         plt.hist(self.actions)
         plt.title("Actions")
@@ -179,7 +214,14 @@ class Episode:
         plt.clf()
 
 
-def reprocess_warmup(episode_time_steps, reward_bound, episodes=20, max_size=1_000_000, input_shape=(4,), n_actions=1):
+def reprocess_warmup(
+    episode_time_steps,
+    reward_bound,
+    episodes=20,
+    max_size=1_000_000,
+    input_shape=(4,),
+    n_actions=1,
+):
     memory = ReplayBuffer(max_size, input_shape, n_actions)
     for i in range(episodes):
         bound = reward_bound
@@ -196,7 +238,7 @@ def reprocess_warmup(episode_time_steps, reward_bound, episodes=20, max_size=1_0
             action *= 0.001
             # compute for reward
             reward = np.cos(obs_[1]) - (
-                    10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17)
+                10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17)
             )
             memory.store_transition(obs, action, reward, obs_, done)
     return memory
@@ -208,6 +250,7 @@ def process_data_console():
     import os
     from td3_fork import ReplayBuffer
     import matplotlib.pyplot as plt
+
     os.chdir("RPi")
     memory = reprocess_warmup(1_000, 0.9, episodes=6)
     # plt.hist(memory.action_memory[:10, :])
@@ -216,3 +259,13 @@ def process_data_console():
     memory.state_memory[:10]
     memory.state_memory[:10, 0]
 
+
+def open_agent_console():
+    from RPi.td3_fork import Agent
+    from RPi.environment import DummyPendulum
+    import os
+
+    os.chdir("RPi")
+
+    env = DummyPendulum()
+    agent = Agent(env)

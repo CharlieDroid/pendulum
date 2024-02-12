@@ -4,3 +4,30 @@
 - I tried training the AI without looking at the data it was learning, stupid mistake, all the reward arrays were zero
 - retraining ai made it get 100 loss not like in the simulations and it seemed to get larger very stupid, trying to freeze bottom layers
 - increasing update actor interval can constitute as lowering the learning rate
+
+The code to open sample_data_16x16.csv
+with open("recordings/sample_data_16x16.csv", 'r') as file:
+    reader = csv.reader(file)
+    for row in reader:
+        print(row)
+
+episode = Episode(-5, episode_time_steps, args.warmup, agent, env)
+# wait for pre-processing
+while True:
+    files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
+    # change agent.memory_file_name and agent.memory_file_pth
+    # change cpp code to zip files using OS command `zip memory.zip observations.csv actions.csv`
+    # test the OS command above
+    # also delete the memory files after OS zip
+    if agent.memory_file_name in files:
+        rpi.sys_command(get_memory_command)
+        rpi.ssh_command(f"cd pendulum ; sudo rm -f {agent.memory_file_pth}")
+        score = episode.pre_process()
+        if args.save_episode_data:
+            shutil.copy(
+                agent.memory_file_pth,
+                os.path.join(agent.memory_dir, f"episode_{i}_data.pkl"),
+            )
+        os.remove(agent.memory_file_pth)
+        break
+    time.sleep(0.1)

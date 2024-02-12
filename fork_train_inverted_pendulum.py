@@ -39,30 +39,38 @@ if __name__ == "__main__":
         T.manual_seed(seed)
 
     # a warmup of 20,000 steps irl
-    # don't forget to change max action back to 3.
-    lr = 0.001
+    lr = 0.005
     agent = Agent(
         alpha=lr,
         beta=lr,
+        warmup=10000,  # can be changed now
         input_dims=env.observation_space.shape,
         tau=0.005,
         env=env,
         gamma=0.98,
         noise=0.1,
         policy_noise=0.2,
-        layer1_size=256,
-        layer2_size=256,
+        layer1_size=16,  # constant don't change
+        layer2_size=16,
         sys1_size=400,
         sys2_size=300,
         r1_size=256,
         r2_size=256,
         sys_weight=0.6,
         update_actor_interval=1,
-        max_size=1_000_000,
+        max_size=500_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
         chkpt_dir=chkpt_dir,
     )
+    # remove this after transfer learning
+    agent.chkpt_file_pth = (
+        f"./drive/MyDrive/pendulum/tmp/td3_fork_learned/{game_id} td3_fork.chkpt"
+    )
+    agent.load_models(load_all_weights=True, load_optimizers=False)
+    agent.freeze_layer(first_layer=False, second_layer=False)
+    agent.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
+
     # agent.partial_load_models()
     writer = SummaryWriter(log_dir=log_dir)
     n_timesteps = 1_000_000
@@ -73,8 +81,12 @@ if __name__ == "__main__":
     score_history = []
     critic_loss_count = 0
     actor_loss_count = 0
+    system_loss_count = 0
+    reward_loss_count = 0
     critic_loss = 0
     actor_loss = 0
+    system_loss = 0
+    reward_loss = 0
     score = 0
     steps = 0
     done = True
@@ -82,7 +94,7 @@ if __name__ == "__main__":
     for step in range(n_timesteps):
         if done:
             for _ in range(steps):
-                c_loss, a_loss = agent.learn()
+                c_loss, a_loss, s_loss, r_loss = agent.learn()
 
                 if c_loss is not None:
                     critic_loss_count += 1
@@ -90,6 +102,12 @@ if __name__ == "__main__":
                 if a_loss is not None:
                     actor_loss_count += 1
                     actor_loss += a_loss
+                if s_loss is not None:
+                    system_loss_count += 1
+                    system_loss += s_loss
+                if r_loss is not None:
+                    reward_loss_count += 1
+                    reward_loss += r_loss
             steps = 0
             observation, info = env.reset(seed=seed)
 
@@ -103,13 +121,6 @@ if __name__ == "__main__":
         writer.add_scalar("train/return", reward, step)
         score += reward
 
-        # if c_loss is not None:
-        #     critic_loss_count += 1
-        #     critic_loss += c_loss
-        # if a_loss is not None:
-        #     actor_loss_count += 1
-        #     actor_loss += a_loss
-
         if (step + 1) % episode == 0:
             i = int(step / episode)
             score_history.append(score)
@@ -118,12 +129,18 @@ if __name__ == "__main__":
                 critic_loss /= critic_loss_count
             if actor_loss_count > 0:
                 actor_loss /= actor_loss_count
+            if system_loss_count > 0:
+                system_loss /= system_loss_count
+            if reward_loss_count > 0:
+                reward_loss /= reward_loss_count
             if avg_score > best_score:
                 best_score = avg_score
 
             writer.add_scalar("train/reward", score, i)
             writer.add_scalar("train/critic_loss", critic_loss, i)
             writer.add_scalar("train/actor_loss", actor_loss, i)
+            writer.add_scalar("train/system_loss", system_loss, i)
+            writer.add_scalar("train/reward_loss", reward_loss, i)
             print(
                 "episode",
                 i,
@@ -131,6 +148,8 @@ if __name__ == "__main__":
                 "avg score %.1f" % avg_score,
                 "critic loss %.5f" % critic_loss,
                 "actor loss %.5f" % actor_loss,
+                "system loss %.5f" % system_loss,
+                "reward loss %.5f" % reward_loss,
             )
 
             if score >= 990:
@@ -147,8 +166,12 @@ if __name__ == "__main__":
                 agent.save_models()
             critic_loss_count = 0
             actor_loss_count = 0
+            system_loss_count = 0
+            reward_loss_count = 0
             critic_loss = 0
             actor_loss = 0
+            system_loss = 0
+            reward_loss = 0
             score = 0
             writer.flush()
 

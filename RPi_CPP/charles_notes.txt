@@ -1,0 +1,19 @@
+mlpack lib needs armadillo, cereal, and ensmallen
+check here for mlpack dependencies: https://github.com/mlpack/mlpack
+
+CMAKE script:
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/mlpack-4.3.0/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/ensmallen-2.21.0/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/cereal-1.3.2/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/armadillo-12.6.7/include)
+
+The code for the RL algorithm should be clear
+get observation
+done = false
+do action from actor with observation (time step should be after action
+while not done
+    *step* time (critical line)
+    get new observation
+    do action from actor with new observation
+
+g++ -Wall -O2 -I /usr/include/eigen3 -pthread -o "%e" "%f" "agent.cpp" "environment.cpp" -lpigpio -lrt

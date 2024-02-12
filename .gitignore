@@ -1,0 +1,4 @@
+libtorch-win-shared-with-deps-2.1.2+cpu.zip
+*.zip
+/RPi_CPP/libs/
+/RPi_CPP/cmake-build-debug/

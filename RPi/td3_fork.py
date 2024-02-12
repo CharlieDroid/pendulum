@@ -6,6 +6,7 @@ import torch.optim as optim
 import copy
 import pickle
 import os
+import zipfile
 
 
 class ReplayBuffer:
@@ -161,8 +162,8 @@ class AgentActor:
     def __init__(
         self,
         env,
-        layer1_size=256,
-        layer2_size=256,
+        layer1_size=16,
+        layer2_size=16,
         chkpt_dir="./models",
         memory_dir="./memory",
     ):
@@ -173,9 +174,14 @@ class AgentActor:
         self.memory_dir = memory_dir
         self.chkpt_file_name = "td3_fork.chkpt"
         self.actor_file_name = "td3_fork_actor.chkpt"
+        self.actor_file_zip = "td3_fork_actor.zip"
         self.memory_file_name = "td3_fork_memory.pkl"
+        self.memory_file_zip = "td3_fork_memory.zip"
         self.buffer_file_name = "td3_fork_buffer.pkl"
         self.actor_file_pth = os.path.join(chkpt_dir, self.actor_file_name).replace(
+            "\\", "/"
+        )
+        self.actor_zipfile_pth = os.path.join(chkpt_dir, self.actor_file_zip).replace(
             "\\", "/"
         )
         self.chkpt_file_pth = os.path.join(chkpt_dir, self.chkpt_file_name).replace(
@@ -184,6 +190,9 @@ class AgentActor:
         self.memory_file_pth = os.path.join(memory_dir, self.memory_file_name).replace(
             "\\", "/"
         )
+        self.memory_zipfile_pth = os.path.join(
+            memory_dir, self.memory_file_zip
+        ).replace("\\", "/")
         self.buffer_file_pth = os.path.join(memory_dir, self.buffer_file_name).replace(
             "\\", "/"
         )
@@ -210,6 +219,36 @@ class AgentActor:
         data = {"actor": self.actor.state_dict()}
         T.save(data, self.actor_file_pth)
 
+    def save_model_txt(self):
+        print("...saving actor...")
+        fc1_w = self.actor.fc1.weight.detach().numpy()
+        fc1_b = self.actor.fc1.bias.detach().numpy()
+        fc2_w = self.actor.fc2.weight.detach().numpy()
+        fc2_b = self.actor.fc2.bias.detach().numpy()
+        mu_w = self.actor.mu.weight.detach().numpy()
+        mu_b = self.actor.mu.bias.detach().numpy()
+        files = (fc1_w, fc1_b, fc2_w, fc2_b, mu_w, mu_b)
+        filenames = (
+            "models/fc1_weights.csv",
+            "models/fc1_biases.csv",
+            "models/fc2_weights.csv",
+            "models/fc2_biases.csv",
+            "models/mu_weights.csv",
+            "models/mu_biases.csv",
+        )
+        for name, file in zip(filenames, files):
+            np.savetxt(name, file, delimiter=",")
+        if self.actor_file_zip in os.listdir(self.chkpt_dir):
+            os.remove(self.actor_zipfile_pth)
+        with zipfile.ZipFile(self.actor_zipfile_pth, "w") as zipf:
+            os.chdir(self.chkpt_dir)
+            for file in filenames:
+                zipf.write(file[7:])
+        zipf.close()
+        os.chdir("..")
+        for file in filenames:
+            os.remove(file)
+
     def load_model(self):
         print("...loading actor...")
         checkpoint = T.load(self.actor_file_pth, map_location=self.device)
@@ -225,6 +264,8 @@ class Agent(AgentActor):
         gamma=0.98,
         update_actor_interval=1,
         max_size=1_000_000,
+        critic1_size=256,
+        critic2_size=256,
         sys1_size=400,
         sys2_size=300,
         r1_size=256,
@@ -271,16 +312,16 @@ class Agent(AgentActor):
         self.critic_1 = CriticNetwork(
             lr,
             input_dims,
-            layer1_size,
-            layer2_size,
+            critic1_size,
+            critic2_size,
             n_actions=n_actions,
             device=self.device,
         )
         self.critic_2 = CriticNetwork(
             lr,
             input_dims,
-            layer1_size,
-            layer2_size,
+            critic1_size,
+            critic2_size,
             n_actions=n_actions,
             device=self.device,
         )
@@ -311,7 +352,7 @@ class Agent(AgentActor):
 
     def learn(self):
         if self.memory.mem_cntr < self.batch_size:
-            return None, None
+            return None, None, None, None
 
         self.learn_step_cntr += 1
 
@@ -379,7 +420,7 @@ class Agent(AgentActor):
         s_flag = 1 if system_loss.item() < self.sys_threshold else 0
 
         if self.learn_step_cntr % self.update_actor_iter != 0:
-            return critic_loss, None
+            return critic_loss, None, system_loss, reward_loss
 
         actor_q1_loss = self.critic_1.forward(state, self.actor.forward(state))
         actor_loss = -T.mean(actor_q1_loss)
@@ -439,17 +480,17 @@ class Agent(AgentActor):
             target_param.data.copy_(
                 self.tau * param.data + (1 - self.tau) * target_param.data
             )
-        return critic_loss, actor_loss
+        return critic_loss, actor_loss, system_loss, reward_loss
 
     def freeze_bottom_layer(self):
         self.actor.fc1.requires_grad_(False)
-        self.critic_1.fc1.requires_grad_(False)
-        self.critic_2.fc1.requires_grad_(False)
-        self.target_actor.fc1.requires_grad_(False)
-        self.target_critic_1.fc1.requires_grad_(False)
-        self.target_critic_2.fc1.requires_grad_(False)
-        self.system.fc1.requires_grad_(False)
-        self.reward.fc1.requires_grad_(False)
+        # self.critic_1.fc1.requires_grad_(False)
+        # self.critic_2.fc1.requires_grad_(False)
+        # self.target_actor.fc1.requires_grad_(False)
+        # self.target_critic_1.fc1.requires_grad_(False)
+        # self.target_critic_2.fc1.requires_grad_(False)
+        # self.system.fc1.requires_grad_(False)
+        # self.reward.fc1.requires_grad_(False)
 
         # self.actor.fc2.requires_grad_(False)
         # self.critic_1.fc2.requires_grad_(False)
