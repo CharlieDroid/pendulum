@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 import os
+import pickle
 
 
 class ReplayBuffer:
@@ -40,14 +41,46 @@ class ReplayBuffer:
 
         return states, actions, rewards, states_, dones
 
+    def save(self, file_pth):
+        print("...saving memory...")
+        memory = (
+            self.state_memory,
+            self.new_state_memory,
+            self.action_memory,
+            self.terminal_memory,
+            self.reward_memory,
+            self.mem_cntr,
+        )
+        with open(file_pth, "wb") as outfile:
+            pickle.dump(memory, outfile, pickle.HIGHEST_PROTOCOL)
+
+    def load(self, file_pth):
+        print("...loading memory...")
+        with open(file_pth, "rb") as infile:
+            result = pickle.load(infile)
+        (
+            self.state_memory,
+            self.new_state_memory,
+            self.action_memory,
+            self.terminal_memory,
+            self.reward_memory,
+            self.mem_cntr,
+        ) = result
+
 
 class RewardNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions):
+    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions, ln=False):
         super(RewardNetwork, self).__init__()
 
         self.fc1 = nn.Linear(2 * input_dims[0] + n_actions, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.fc3 = nn.Linear(fc2_dims, 1)
+
+        self.ln1 = None
+        self.ln2 = None
+        if ln:
+            self.ln1 = nn.LayerNorm(fc1_dims)
+            self.ln2 = nn.LayerNorm(fc2_dims)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
@@ -58,18 +91,28 @@ class RewardNetwork(nn.Module):
         sa = T.cat([state, state_, action], dim=1)
 
         q1 = F.relu(self.fc1(sa))
+        if self.ln1:
+            q1 = self.ln1(q1)
         q1 = F.relu(self.fc2(q1))
+        if self.ln2:
+            q1 = self.ln2(q1)
         q1 = self.fc3(q1)
         return q1
 
 
 class SystemNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions):
+    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions, ln=False):
         super(SystemNetwork, self).__init__()
 
         self.fc1 = nn.Linear(input_dims[0] + n_actions, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.fc3 = nn.Linear(fc2_dims, input_dims[0])
+
+        self.ln1 = None
+        self.ln2 = None
+        if ln:
+            self.ln1 = nn.LayerNorm(fc1_dims)
+            self.ln2 = nn.LayerNorm(fc2_dims)
 
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
@@ -81,13 +124,17 @@ class SystemNetwork(nn.Module):
         xa = T.cat([state, action], dim=1)
 
         x1 = F.relu(self.fc1(xa))
+        if self.ln1:
+            x1 = self.ln1(x1)
         x1 = F.relu(self.fc2(x1))
+        if self.ln2:
+            x1 = self.ln2(x1)
         x1 = self.fc3(x1)
         return x1
 
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions, name):
+    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_actions, name, ln=False):
         super(CriticNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -99,6 +146,12 @@ class CriticNetwork(nn.Module):
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.q1 = nn.Linear(self.fc2_dims, 1)
 
+        self.ln1 = None
+        self.ln2 = None
+        if ln:
+            self.ln1 = nn.LayerNorm(self.fc1_dims)
+            self.ln2 = nn.LayerNorm(self.fc2_dims)
+
         self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
 
@@ -107,8 +160,13 @@ class CriticNetwork(nn.Module):
     def forward(self, state, action):
         q1_action_value = self.fc1(T.cat([state, action], dim=1))
         q1_action_value = F.relu(q1_action_value)
+        if self.ln1:
+            q1_action_value = self.ln1(q1_action_value)
+
         q1_action_value = self.fc2(q1_action_value)
         q1_action_value = F.relu(q1_action_value)
+        if self.ln2:
+            q1_action_value = self.ln2(q1_action_value)
 
         q1 = self.q1(q1_action_value)
 
@@ -116,7 +174,9 @@ class CriticNetwork(nn.Module):
 
 
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name):
+    def __init__(
+        self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name, ln=False
+    ):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
         self.fc1_dims = fc1_dims
@@ -128,6 +188,12 @@ class ActorNetwork(nn.Module):
         self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
         self.mu = nn.Linear(self.fc2_dims, self.n_actions)
 
+        self.ln1 = None
+        self.ln2 = None
+        if ln:
+            self.ln1 = nn.LayerNorm(self.fc1_dims)
+            self.ln2 = nn.LayerNorm(self.fc2_dims)
+
         self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
 
@@ -135,7 +201,12 @@ class ActorNetwork(nn.Module):
 
     def forward(self, state):
         a = F.relu(self.fc1(state))
+        if self.ln1:
+            a = self.ln1(a)
+
         a = F.relu(self.fc2(a))
+        if self.ln2:
+            a = self.ln2(a)
 
         # activation is tanh because it bounds it between +- 1
         # just multiply this according to the maximum action of the environment
@@ -170,12 +241,13 @@ class Agent:
         sys_weight=0.5,
         sys_weight2=0.4,
         sys_threshold=0.020,
+        ln=False,
         chkpt_dir="./tmp/td3 fork",
         game_id="Pendulum-v2",
     ):
         self.gamma = gamma
         self.tau = tau
-        self.max_action = [2.0]
+        self.max_action = [2.0]  # change these in environment
         self.min_action = [-2.0]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
@@ -192,6 +264,7 @@ class Agent:
         self.sys_weight2 = sys_weight2
         self.sys_threshold = sys_threshold
         self.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
+        self.buffer_file_pth = os.path.join(chkpt_dir, f"buffer td3 fork.pkl")
 
         self.actor = ActorNetwork(
             alpha,
@@ -200,6 +273,7 @@ class Agent:
             layer2_size,
             n_actions=n_actions,
             name="actor",
+            ln=ln,
         )
         self.critic_1 = CriticNetwork(
             beta,
@@ -208,6 +282,7 @@ class Agent:
             critic2_size,
             n_actions=n_actions,
             name="critic_1",
+            ln=ln,
         )
         self.critic_2 = CriticNetwork(
             beta,
@@ -216,22 +291,23 @@ class Agent:
             critic2_size,
             n_actions=n_actions,
             name="critic_2",
+            ln=ln,
         )
         self.target_actor = copy.deepcopy(self.actor)
         self.target_critic_1 = copy.deepcopy(self.critic_1)
         self.target_critic_2 = copy.deepcopy(self.critic_2)
 
         self.system = SystemNetwork(
-            beta, input_dims, sys1_size, sys2_size, n_actions=n_actions
+            beta, input_dims, sys1_size, sys2_size, n_actions=n_actions, ln=ln
         )
         self.system.apply(self.init_weights)
 
         self.reward = RewardNetwork(
-            beta, input_dims, r1_size, r2_size, n_actions=n_actions
+            beta, input_dims, r1_size, r2_size, n_actions=n_actions, ln=ln
         )
 
-        self.obs_upper_bound = T.tensor([1.0, np.pi, 18.0, 100.0]).to(self.actor.device)
-        self.obs_lower_bound = T.tensor([-1.0, -np.pi, -18.0, -100.0]).to(
+        self.obs_upper_bound = T.tensor([1.1, np.pi, 20.0, 100.0]).to(self.actor.device)
+        self.obs_lower_bound = T.tensor([-1.1, -np.pi, -20.0, -100.0]).to(
             self.actor.device
         )
         self.noise = noise
@@ -252,9 +328,11 @@ class Agent:
             mu = self.actor.forward(state).to(self.actor.device)
 
         mu_prime = mu
-        mu_prime = T.clamp(
-            mu_prime * self.max_action[0], self.min_action[0], self.max_action[0]
-        )
+        # decided to remove this since my input is bounded in [-1, 1] I'll
+        # multiply max action inside environment
+        # mu_prime = T.clamp(
+        #     mu_prime * self.max_action[0], self.min_action[0], self.max_action[0]
+        # )
         self.time_step += 1
         # should be list if moving to real world now or like basta optional ra ang numpy
         return mu_prime.cpu().detach().numpy()
@@ -418,6 +496,7 @@ class Agent:
             },
             self.chkpt_file_pth,
         )
+        self.memory.save(self.buffer_file_pth)
 
     def freeze_layer(self, first_layer=True, second_layer=False):
         if first_layer:

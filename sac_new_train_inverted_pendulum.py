@@ -3,6 +3,7 @@ from gymnasium.envs.registration import register
 import numpy as np
 from sac_new import Agent
 from torch.utils.tensorboard import SummaryWriter
+from mujoco_mod.envs.domain_randomization import DomainRandomization, simp_angle
 import torch as T
 from utils import agent_play
 
@@ -28,6 +29,7 @@ if __name__ == "__main__":
     game_id = "InvertedPendulumModded"
     filename = "new sac agent"
     env = gym.make(game_id)
+    domain_randomizer = DomainRandomization()
 
     seed = None
     if seed is not None:
@@ -66,7 +68,7 @@ if __name__ == "__main__":
         actor_loss = 0
 
         observation, info = env.reset(seed=seed)
-        episode = []
+        steps = 0
         done = False
         score = 0
         while not done:
@@ -79,8 +81,9 @@ if __name__ == "__main__":
             agent.remember(observation, action, reward, observation_, done)
             score += reward
             observation = observation_
+            steps += 1
 
-        for step in episode:
+        for _ in range(steps):
             c_loss, a_loss = agent.learn()
             if c_loss is not None:
                 critic_loss_count += 1

@@ -24,7 +24,7 @@ constexpr int MOTOR_FREQUENCY{ 20000 };
 constexpr int MOTOR_RANGE { 1000 };
 constexpr int BUTTON_PIN{ 12 };
 // for x and x_dot computation
-constexpr float MAX_POS_VAL{ 13421.0f };
+constexpr float MAX_POS_VAL{ 13491.0f };
 constexpr float POS_FACTOR{ 2.0f / MAX_POS_VAL };
 constexpr float POS_BIAS{ -1.0f };
 constexpr float POS_VELO_FACTOR{ 2.0f / (MAX_POS_VAL * DT) };

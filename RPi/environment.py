@@ -173,13 +173,13 @@ class ObservationSpace:
         self.high = (
             1.1,
             np.pi,
-            18,
+            20,
             100.0,
         )
         self.low = (
             -1.1,
             -np.pi,
-            -18,
+            -20,
             -100.0,
         )
 

@@ -1,7 +1,7 @@
 import gymnasium as gym
 from gymnasium.envs.registration import register
 import td3
-import sac
+import sac_new as sac
 import td3_fork
 import tqc
 from utils import agent_play
@@ -14,9 +14,10 @@ register(
 )
 
 if __name__ == "__main__":
-    find_best = False
-    save = True
-    save_data = True
+    find_best = False  # find best video (not needed now)
+    save = False  # save video
+    # obs, reward, action
+    save_data = False  # save episode data
     algo = "td3-fork"
     game_id = "InvertedPendulumModded"
     eps = 1
@@ -46,8 +47,10 @@ if __name__ == "__main__":
         )
     elif algo == "sac":
         agent = sac.Agent(
-            layer1_size=400,
-            layer2_size=300,
+            q_lr=0.00073,
+            a_lr=0.00073,
+            layer1_size=16,
+            layer2_size=16,
             input_dims=env.observation_space.shape,
             env=env,
             n_actions=env.action_space.shape[0],
@@ -59,6 +62,7 @@ if __name__ == "__main__":
         agent = td3_fork.Agent(
             alpha=lr,
             beta=lr,
+            ln=True,
             input_dims=env.observation_space.shape,
             tau=0.005,
             env=env,
@@ -67,7 +71,7 @@ if __name__ == "__main__":
             layer1_size=16,
             layer2_size=16,
             update_actor_interval=1,
-            max_size=200_000,
+            max_size=10_000,
             n_actions=env.action_space.shape[0],
             game_id=game_id,
             chkpt_dir=".\\tmp\\td3_fork_learned",

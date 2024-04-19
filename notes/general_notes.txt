@@ -1,9 +1,24 @@
 1st problem tried to think of it as a pendulum but thought it would become like a servo instead
+    Upon consideration, I found that the weight of the pendulum and the torque needed to move it, would be similar to a servo
+    which would fail to capture the non-linearity of the classical inverted pendulum. I feel that it would be possible to
+    do this if we used some kind of gear but we do not know a lot about gears and I think it would require tools that
+    are not at our disposal.
 2nd problem ai didn't learn because the 0 degree was at the bottom
 3rd problem the rails/tracks weren't strong enough to hold a weight greater than ~50g else it would rock forwards and backwards
 - I tried training the AI without looking at the data it was learning, stupid mistake, all the reward arrays were zero
 - retraining ai made it get 100 loss not like in the simulations and it seemed to get larger very stupid, trying to freeze bottom layers
 - increasing update actor interval can constitute as lowering the learning rate
+- also learned that simplifying the angle to inbetween pi and -pi makes it more stable
+I was confused why the AI was performing worse and couldn't keep the pendulum upright when done in the real world.
+It could keep it upright sometimes but not consistently and not for a long time.
+Looking into the data that the AI was receiving, I found out that the state's velocity went to zero sometimes and there were
+duplicated states in the data. And then suddenly a big update in states resulting in angular velocities such as 47 rads/s
+I think (we conjectured) that it was due to the program not being able to catch up because of the speed of the pendulum rotation.
+The program was in python and relied on a daemon to do stuff (interrupts and RPi GPIOs) so I converted it into C++ which ran perfectly.
+
+Upon trying layer normalization, it sucks compared to the original way which is without layer normalization. It wasn't
+able to generalize to the current environment. Will try domain randomization techniques.
+
 
 The code to open sample_data_16x16.csv
 with open("recordings/sample_data_16x16.csv", 'r') as file:
@@ -31,3 +46,23 @@ while True:
         os.remove(agent.memory_file_pth)
         break
     time.sleep(0.1)
+
+observations_data, observations__data, actions_data = [], [], []
+observations_data.append(agent.memory.state_memory[:agent.memory.mem_cntr])
+observations__data.append(agent.memory.new_state_memory[:agent.memory.mem_cntr])
+actions_data.append(agent.memory.action_memory[:agent.memory.mem_cntr])
+for observations_, observations__, actions_ in zip(observations_data, observations__data, actions_data):
+    dones_ = np.zeros((len(actions_), 1), dtype=np.bool_)
+    for i in range(len(actions_)):
+        if (i % 1000 == 999):
+            dones_[i] = [True]
+    for observation, observation_, action, done in zip(observations_, observations__, actions_, dones_):
+        obs_ = observation_
+        reward = np.cos(obs_[1]) - (
+                2 * obs_[0] ** 2
+                + 0.001 * obs_[2] ** 2
+                + 0.001 * obs_[3] ** 2
+                + 0.01 * action[0] ** 2
+            )
+        agent_main.remember(observation, action, reward, observation_, done)
+

@@ -4,21 +4,10 @@ from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box
 
-
 DEFAULT_CAMERA_CONFIG = {
     "trackbodyid": 0,
     "distance": 2.04,
 }
-
-
-def simp_angle(a):
-    _2pi = 2 * np.pi
-    if a > np.pi:
-        return simp_angle(a - _2pi)
-    elif a < -np.pi:
-        return simp_angle(a + _2pi)
-    else:
-        return a
 
 
 class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
@@ -126,12 +115,10 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         self.init_qpos = np.array([0.0, np.pi])
 
     def step(self, a):
-        # changing the simulation to be more similar to the environment
-        # changes the action to have a more logarithmic form
-        # becomes zero in between -.09 and .09
+        # doing this similar to real life
+        a = np.clip(a * 2.0, -2.0, 2.0)
         self.do_simulation(a, self.frame_skip)
         ob = self._get_obs()
-        ob[1] = simp_angle(ob[1])
 
         # -(theta^2 + 10*cart^2 + 0.1*theta_dt^2 + 0.1*cart_dt^2 + 0.001*torque^2)
         reward = np.cos(ob[1]) - (

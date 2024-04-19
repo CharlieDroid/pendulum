@@ -102,12 +102,23 @@ if __name__ == "__main__":
         source = os.path.join(pc_pth, "rpi.zip").replace("\\", "/")
         destination = hostname + f":{pi_pth}"
         print("...sending...")
-        rpi = RPIConnect()
-        rpi.sys_command(f'scp "{source}" {destination}')
+        trials = 0
+        while True:
+            rpi = RPIConnect()
+            rpi.sys_command(f'scp "{source}" {destination}')
+            if "rpi.zip" in rpi.ssh_command("cd pendulum ; ls -a").split("\n"):
+                print("...sent...")
+                break
+            trials += 1
+            print(f"Trial #{trials}")
+            if trials > 20:
+                import sys
+
+                sys.exit("...failed to send...")
+
         rpi.ssh_command(
             f"cd pendulum ; unzip -o {pi_pth}/rpi.zip"
         )  # deleting rpi.zip apparently fixes connection probs
-        print("...finished...")
         os.remove("rpi.zip")
         rpi.ssh_command(f"cd pendulum ; rm {pi_pth}/rpi.zip")
         print("...removed rpi.zip...")

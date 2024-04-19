@@ -13,15 +13,12 @@ from td3_fork import Agent, AgentActor
 from utils import RPIConnect, Episode, get_pins, get_paths
 
 
-# TODO: lower the sampling frequency
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--log_file_name",
         help="file name of the log file",
-        default="32nd run, c++ code, removed physical boundary",
+        default="56th run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers, training for best",
         # default="testing run",
         type=str,
     )
@@ -34,7 +31,7 @@ def parse_args():
     parser.add_argument(
         "--preload_buffer",
         help="if true it will preload 10,000 time steps of warmup data",
-        default=False,
+        default=True,
         type=bool,
     )
     parser.add_argument(
@@ -64,7 +61,13 @@ def parse_args():
     parser.add_argument(
         "--warmup",
         help="warmup before learning starts",
-        default=5_000,
+        default=0,
+        type=int,
+    )
+    parser.add_argument(
+        "--n_updates",
+        help="how many learning updates",
+        default=1,
         type=int,
     )
     return parser.parse_args()
@@ -113,7 +116,14 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
     # so that I can save when I stop main
     global agent
     # choose whether to save or load buffer
-    agent = Agent(lr=0.001, env=env, save_buffer=True, load_buffer=True)
+    agent = Agent(
+        lr=0.001,
+        env=env,
+        save_buffer=True,
+        load_buffer=False,
+        ln=True,
+        update_actor_interval=1,
+    )
     rpi = RPIConnect()
     send_actor_command = f"scp {agent.actor_zipfile_pth} charles@raspberrypi:{os.path.join(pi_pth, agent.chkpt_dir)}"
     get_memory_command = f"scp charles@raspberrypi:{os.path.join(pi_pth, agent.memory_zipfile_pth)} {agent.memory_dir}"
@@ -124,11 +134,11 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
         print("...finished sending trained actor...")
     else:
         # preload warmup data to replay buffer
+        episode_jump_start = 0
         if args.preload_buffer:
             agent.preload_buffer()
             env.time_step = agent.memory.mem_cntr
 
-        episode_jump_start = 0
         if args.continue_training:
             print("...continuing...")
             agent.load_models()
@@ -138,13 +148,20 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
 
         if args.start_retraining:
             print("...starting transfer learning...")
-            agent.load_models(reset=True, freeze=False)
+            agent.load_models(reset=False, freeze=False)
             # env.time_step = agent.memory.mem_cntr
 
         # send initialized actor parameters to rpi
         agent.save_model_txt()
         print("...sending actor params...")
         rpi.sys_command(send_actor_command)
+        while True:
+            if agent.actor_file_zip in rpi.ssh_command(
+                "cd pendulum/models ; ls -a"
+            ).split("\n"):
+                break
+            rpi = RPIConnect()
+            rpi.sys_command(send_actor_command)
 
         # check if there is memory file in pi then delete
         files = rpi.ssh_command("cd pendulum/memory ; ls -a").split("\n")
@@ -157,6 +174,7 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
         best_score = env.reward_range[0]
         best_avg_score = best_score
         score_history = []
+        score_history.append(200)  # to balance the average score
 
         print("Start!")
         for i in range(n_episodes):
@@ -194,26 +212,23 @@ def main_pc(args, n_episodes, episode_time_steps, pi_pth, log_dir):
 
             # learn the episode (monte carlo)
             if env.time_step > args.warmup:
-                if env.time_step == args.warmup:
-                    print("...training all warmup steps...")
-                    steps = args.warmup
-                else:
-                    steps = episode_time_steps
+                steps = episode_time_steps
                 for step in range(steps):
-                    c_loss, a_loss, s_loss, r_loss = agent.learn()
+                    for _ in range(args.n_updates):
+                        c_loss, a_loss, s_loss, r_loss = agent.learn()
 
-                    if c_loss is not None:
-                        critic_loss_count += 1
-                        critic_loss += c_loss
-                    if a_loss is not None:
-                        actor_loss_count += 1
-                        actor_loss += a_loss
-                    if s_loss is not None:
-                        system_loss_count += 1
-                        system_loss += s_loss
-                    if r_loss is not None:
-                        reward_loss_count += 1
-                        reward_loss += r_loss
+                        if c_loss is not None:
+                            critic_loss_count += 1
+                            critic_loss += c_loss
+                        if a_loss is not None:
+                            actor_loss_count += 1
+                            actor_loss += a_loss
+                        if s_loss is not None:
+                            system_loss_count += 1
+                            system_loss += s_loss
+                        if r_loss is not None:
+                            reward_loss_count += 1
+                            reward_loss += r_loss
 
             # send new agent
             agent.save_model_txt()

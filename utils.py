@@ -3,6 +3,7 @@ import gymnasium as gym
 from gymnasium.wrappers import RecordVideo
 import os
 import csv
+from mujoco_mod.envs.domain_randomization import simp_angle
 
 
 def run_env(game_id="InvertedPendulumModded", eps=1):
@@ -75,6 +76,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
         for ep in range(eps):
             observation, info = env.reset()
             obs = observation
+            obs[1] = simp_angle(obs[1])
             print(
                 f"pos:{obs[0]:.2f} angle:{obs[1]:.2f} lin_vel:{obs[2]:.2f} ang_vel:{obs[3]:.2f}"
             )
@@ -86,6 +88,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
             while not done:
                 action = agent.choose_action(observation, evaluate=True)
                 observation_, reward, terminated, truncated, info = env.step(action)
+                observation_[1] = simp_angle(observation_[1])
                 if not save:
                     obs = observation_
                     print(

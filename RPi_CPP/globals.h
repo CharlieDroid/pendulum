@@ -6,10 +6,13 @@
 #define RPI_CPP_GLOBALS_H
 
 //#define PRECHECK
-//#define PRECHECK_NO_MOTOR  // Turns off motor during precheck
-
-#include <boost/asio.hpp>
+// Turns off motor during precheck
+//#define PRECHECK_NO_MOTOR
+//#define DEBUG
 #include <iostream>
+
+#ifndef DEBUG
+#include <boost/asio.hpp>
 
 using namespace boost::asio;
 // global variables e.g. used by environment.cpp and main.cpp
@@ -23,7 +26,8 @@ constexpr int TOTAL_TIMESTEPS{ 1000 };
 constexpr int EPISODES{ 1000 };
 #else
 constexpr int EPISODES{ 1 };
-#endif
+#endif  // PRECHECK
+#endif  // DEBUG
 
 extern std::string ACTOR_FILENAME;
 extern std::string MEMORY_FILENAME;

@@ -186,8 +186,15 @@ class Episode:
             # to 0. to 1.
             # compute for reward
             reward = np.cos(obs_[1]) - (
-                10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17)
+                2 * obs_[0] ** 2
+                + 0.001 * obs_[2] ** 2
+                + 0.001 * obs_[3] ** 2
+                + 0.01 * action[0] ** 2
             )
+            # reward = np.cos(obs_[1]) - (
+            #     10 * int(abs(obs_[0]) > bound) + 10 * int(abs(obs_[3]) > 17)
+            # )
+            # action = np.clip(action * 2.0, -2.0, 2.0)
             self.agent.remember(obs, action, reward, obs_, done)
             self.env.time_step += 1
             score_ += reward
@@ -264,8 +271,29 @@ def open_agent_console():
     from RPi.td3_fork import Agent
     from RPi.environment import DummyPendulum
     import os
+    import numpy as np
 
     os.chdir("RPi")
 
     env = DummyPendulum()
     agent = Agent(env)
+
+
+def check_environment():
+    import gymnasium as gym
+    from gymnasium.envs.registration import register
+    import numpy as np
+    import torch as T
+    import os
+
+    register(
+        id="InvertedPendulumModded",
+        entry_point="mujoco_mod.envs.inverted_pendulum_mod:InvertedPendulumEnv",
+        max_episode_steps=1000,
+        reward_threshold=0.0,
+    )
+
+    game_id = "InvertedPendulumModded"
+    env = gym.make(game_id, render_mode="human")
+    env.unwrapped.model.geom_size
+    env.unwrapped.model.body_mass

@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
 import os
+import zipfile
 
 
 class ReplayBuffer:
@@ -137,16 +138,20 @@ class Agent:
         max_size=1_000_000,
         input_dims=[8],
         gamma=0.99,
-        layer1_size=256,
-        layer2_size=256,
+        layer1_size=400,
+        layer2_size=300,
+        critic1_size=256,
+        critic2_size=256,
         n_actions=2,
         autotune=True,
         alpha=0.2,
         policy_freq=1,
+        ln=False,
         target_network_frequency=1,
         chkpt_dir="./tmp/sac new",
         game_id="Pendulum-v2",
     ):
+        self.ln = ln
         self.gamma = gamma
         self.tau = tau
         self.warmup = warmup
@@ -156,7 +161,12 @@ class Agent:
         self.policy_freq = policy_freq
         self.autotune = autotune
         self.target_network_frequency = target_network_frequency
+        self.chkpt_dir = chkpt_dir
         self.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} sac new.chkpt")
+        self.actor_file_zip = "sac_actor.zip"
+        self.actor_zipfile_pth = os.path.join(chkpt_dir, self.actor_file_zip).replace(
+            "\\", "/"
+        )
 
         self.actor = ActorNetwork(
             a_lr,
@@ -167,16 +177,16 @@ class Agent:
             n_actions=n_actions,
         )
         self.critic_1 = CriticNetwork(
-            q_lr, input_dims, layer1_size, layer2_size, n_actions
+            q_lr, input_dims, critic1_size, critic2_size, n_actions
         )
         self.critic_2 = CriticNetwork(
-            q_lr, input_dims, layer1_size, layer2_size, n_actions
+            q_lr, input_dims, critic1_size, critic2_size, n_actions
         )
         self.critic_target_1 = CriticNetwork(
-            q_lr, input_dims, layer1_size, layer2_size, n_actions, optimizer=False
+            q_lr, input_dims, critic1_size, critic2_size, n_actions, optimizer=False
         )
         self.critic_target_2 = CriticNetwork(
-            q_lr, input_dims, layer1_size, layer2_size, n_actions, optimizer=False
+            q_lr, input_dims, critic1_size, critic2_size, n_actions, optimizer=False
         )
         self.critic_target_1.load_state_dict(self.critic_1.state_dict())
         self.critic_target_2.load_state_dict(self.critic_2.state_dict())
@@ -294,6 +304,54 @@ class Agent:
             dictionary["log_alpha"] = self.log_alpha
             dictionary["a_optimizer"] = self.a_optimizer.state_dict()
         T.save(dictionary, self.chkpt_file_pth)
+
+    def save_model_txt(self):
+        print("...saving actor...")
+        fc1_w = self.actor.fc1.weight.detach().numpy()
+        fc1_b = self.actor.fc1.bias.detach().numpy()
+        fc2_w = self.actor.fc2.weight.detach().numpy()
+        fc2_b = self.actor.fc2.bias.detach().numpy()
+        mu_w = self.actor.mu.weight.detach().numpy()
+        mu_b = self.actor.mu.bias.detach().numpy()
+        sigma_w = self.actor.sigma.weight.detach().numpy()
+        sigma_b = self.actor.sigma.bias.detach().numpy()
+        files = [fc1_w, fc1_b, fc2_w, fc2_b, mu_w, mu_b, sigma_w, sigma_b]
+        filenames = [
+            "models/fc1_weights.csv",
+            "models/fc1_biases.csv",
+            "models/fc2_weights.csv",
+            "models/fc2_biases.csv",
+            "models/mu_weights.csv",
+            "models/mu_biases.csv",
+            "models/sigma_weights.csv",
+            "models/sigma_biases.csv",
+        ]
+        if self.ln:
+            ln1_w = self.actor.ln1.weight.detach().numpy()
+            ln1_b = self.actor.ln1.bias.detach().numpy()
+            ln2_w = self.actor.ln2.weight.detach().numpy()
+            ln2_b = self.actor.ln2.bias.detach().numpy()
+            # default layer norm epsilon value is 1e-5
+            files.append(ln1_w)
+            files.append(ln1_b)
+            files.append(ln2_w)
+            files.append(ln2_b)
+            filenames.append("models/ln1_weights.csv")
+            filenames.append("models/ln1_biases.csv")
+            filenames.append("models/ln2_weights.csv")
+            filenames.append("models/ln2_biases.csv")
+        for name, file in zip(filenames, files):
+            np.savetxt(name, file, delimiter=",")
+        if self.actor_file_zip in os.listdir(self.chkpt_dir):
+            os.remove(self.actor_zipfile_pth)
+        with zipfile.ZipFile(self.actor_zipfile_pth, "w") as zipf:
+            os.chdir(self.chkpt_dir)
+            for file in filenames:
+                zipf.write(file[7:])  # write without "models/"
+        zipf.close()
+        os.chdir("..")
+        for file in filenames:
+            os.remove(file)
 
     def load_models(self):
         print("...loading checkpoint...")

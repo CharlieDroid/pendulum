@@ -3,6 +3,7 @@ from gymnasium.envs.registration import register
 import numpy as np
 from td3_fork import Agent
 from torch.utils.tensorboard import SummaryWriter
+from mujoco_mod.envs.domain_randomization import DomainRandomization, simp_angle
 import torch as T
 import os
 
@@ -25,6 +26,7 @@ register(
 )
 
 if __name__ == "__main__":
+    isDomainRandomization = True
     game_id = "InvertedPendulumModded"
     filename = "testing"
     chkpt_dir = "./tmp/td3 fork"
@@ -32,6 +34,8 @@ if __name__ == "__main__":
     # chkpt_dir = "./drive/MyDrive/pendulum/tmp/td3 fork"
     # log_dir = f"./drive/MyDrive/pendulum/runs/inverted_pendulum_sim/{filename}"
     env = gym.make(game_id)
+    if isDomainRandomization:
+        domain_randomizer = DomainRandomization()
 
     seed = None
     if seed is not None:
@@ -43,6 +47,7 @@ if __name__ == "__main__":
     agent = Agent(
         alpha=lr,
         beta=lr,
+        ln=True,
         warmup=10000,  # can be changed now
         input_dims=env.observation_space.shape,
         tau=0.005,
@@ -58,7 +63,7 @@ if __name__ == "__main__":
         r2_size=256,
         sys_weight=0.6,
         update_actor_interval=1,
-        max_size=500_000,
+        max_size=1_000_000,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
         chkpt_dir=chkpt_dir,
@@ -90,6 +95,8 @@ if __name__ == "__main__":
     score = 0
     steps = 0
     done = True
+    if isDomainRandomization:
+        domain_randomizer.reset_environment()
 
     for step in range(n_timesteps):
         if done:
@@ -109,14 +116,27 @@ if __name__ == "__main__":
                     reward_loss_count += 1
                     reward_loss += r_loss
             steps = 0
+            if isDomainRandomization:
+                ep = int(step / episode)
+                if domain_randomizer.check_level_up(np.mean(score_history[-10:]), ep):
+                    best_avg_score -= 800
+                    best_score -= 800
+                domain_randomizer.environment()
+            env = gym.make(game_id)
             observation, info = env.reset(seed=seed)
+            if isDomainRandomization:
+                observation = domain_randomizer.observation(observation)
+            observation[1] = simp_angle(observation[1])
 
         action = agent.choose_action(observation)
+        action = domain_randomizer.action(action)
         observation_, reward, terminated, truncated, info = env.step(action)
+        if isDomainRandomization:
+            observation_ = domain_randomizer.observation(observation_)
+        observation_[1] = simp_angle(observation_[1])
         done = terminated or truncated
         agent.remember(observation, action, reward, observation_, done)
         steps += 1
-        # c_loss, a_loss = agent.learn()
         observation = observation_
         writer.add_scalar("train/return", reward, step)
         score += reward
