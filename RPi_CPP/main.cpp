@@ -37,20 +37,19 @@ executor_work_guard<io_context::executor_type> work{ make_work_guard(io) };
 steady_timer timer(io, std::chrono::milliseconds(DT_MS));
 
 #ifdef PRECHECK  // edit precheck function to have similar structure to the one below
-void doEpisode(const system::error_code& ec)
+void doEpisode([[maybe_unused]] const boost::system::error_code&)
 {
     // moving pendulum moves the motor
     printEncoderValues();
 
     timestep++;
-    if (timestep < TOTAL_TIMESTEPS)
+    if (timestep < (TOTAL_TIMESTEPS + 1))
     {
         // Create a new timer with the same interval (20ms)
-        asio::deadline_timer *timer;
-        timer = new asio::deadline_timer(io, posix_time::milliseconds(DT_MS));
-        timer->async_wait(&doEpisode);
+        timer.expires_after(std::chrono::milliseconds(DT_MS));
+        timer.async_wait(&doEpisode);
     } else  // stop loop
-    { io.stop(); io.restart(); }
+    { timestep = 0; rotate(0); io.stop(); }
 }
 #else
 void doEpisode([[maybe_unused]] const boost::system::error_code&)

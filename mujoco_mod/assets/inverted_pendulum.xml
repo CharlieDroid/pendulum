@@ -20,7 +20,11 @@
 <!--				<body name="tip" pos="0.001 0 -.7">-->
 <!--					<geom name="ctip" rgba="0.8 0 0.7 1" size="0.1" density="2000" type="sphere"/>-->
 <!--				</body>-->
-				<!--                 <body name="pole2" pos="0.001 0 0.6"><joint name="hinge2" type="hinge" pos="0 0 0" axis="0 1 0"/><geom name="cpole2" type="capsule" fromto="0 0 0 0 0 0.6" size="0.05 0.3" rgba="0.7 0 0.7 1"/><site name="tip2" pos="0 0 .6"/></body>-->
+<!--					<body name="pole2" pos="0.001 0 0.6">-->
+<!--						<joint name="hinge2" type="hinge" pos="0 0 0" axis="0 1 0" limited="false"/>-->
+<!--						<geom name="cpole2" type="capsule" fromto="0 0 0 0 0 0.6" size="0.05 0.3" rgba="0.7 0 0.7 1"/>-->
+<!--						<site name="tip2" pos="0 0 .6"/>-->
+<!--					</body>-->
 			</body>
 		</body>
 	</worldbody>

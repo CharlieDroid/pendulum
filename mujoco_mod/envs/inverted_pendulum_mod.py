@@ -116,7 +116,8 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
 
     def step(self, a):
         # doing this similar to real life
-        a = np.clip(a * 2.0, -2.0, 2.0)
+        max_action = 2.0
+        a = np.clip(a * max_action, -max_action, max_action)
         self.do_simulation(a, self.frame_skip)
         ob = self._get_obs()
 

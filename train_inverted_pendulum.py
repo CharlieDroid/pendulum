@@ -30,7 +30,8 @@ register(
 
 if __name__ == "__main__":
     algo = "td3-fork"
-    isDomainRandomization = True
+    isDomainRandomization = False
+    isMonteCarlo = False  # True = train every episode
     game_id = "InvertedPendulumModded"
     filename = "testing"
     chkpt_dir = "./tmp/td3 fork"
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
     if algo == "td3-fork":
         # a warmup of 20,000 steps irl
-        lr = 0.005
+        lr = 0.001  # now is 0.005
         agent = td3_fork.Agent(
             alpha=lr,
             beta=lr,
@@ -59,8 +60,8 @@ if __name__ == "__main__":
             gamma=0.98,
             noise=0.1,
             policy_noise=0.2,
-            layer1_size=16,  # constant don't change
-            layer2_size=16,
+            layer1_size=400,  # constant don't change orig now it is 16x16
+            layer2_size=300,
             sys1_size=400,
             sys2_size=300,
             r1_size=256,
@@ -73,12 +74,12 @@ if __name__ == "__main__":
             chkpt_dir=chkpt_dir,
         )
         # remove this after transfer learning
-        agent.chkpt_file_pth = (
-            f"./drive/MyDrive/pendulum/tmp/td3_fork_learned/{game_id} td3_fork.chkpt"
-        )
-        agent.load_models(load_all_weights=True, load_optimizers=False)
-        agent.freeze_layer(first_layer=False, second_layer=False)
-        agent.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
+        # agent.chkpt_file_pth = (
+        #     f"./drive/MyDrive/pendulum/tmp/td3_fork_learned/{game_id} td3_fork.chkpt"
+        # )
+        # agent.load_models(load_all_weights=True, load_optimizers=False)
+        # agent.freeze_layer(first_layer=False, second_layer=False)
+        # agent.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
     elif algo == "sac":
         agent = sac.Agent(
             a_lr=0.00073,
@@ -86,8 +87,8 @@ if __name__ == "__main__":
             batch_size=256,
             max_size=1_000_000,
             gamma=0.98,
-            layer1_size=16,
-            layer2_size=16,
+            layer1_size=400,
+            layer2_size=300,
             tau=0.02,
             warmup=10_000,
             input_dims=env.observation_space.shape,
@@ -143,25 +144,26 @@ if __name__ == "__main__":
 
     for step in range(n_timesteps):
         if done:
-            for _ in range(steps):
-                if algo == "td3-fork":
-                    c_loss, a_loss, s_loss, r_loss = agent.learn()
-                else:
-                    c_loss, a_loss = agent.learn()
+            if isMonteCarlo:
+                for _ in range(steps):
+                    if algo == "td3-fork":
+                        c_loss, a_loss, s_loss, r_loss = agent.learn()
+                    else:
+                        c_loss, a_loss = agent.learn()
 
-                if c_loss is not None:
-                    critic_loss_count += 1
-                    critic_loss += c_loss
-                if a_loss is not None:
-                    actor_loss_count += 1
-                    actor_loss += a_loss
-                if algo == "td3-fork":
-                    if s_loss is not None:
-                        system_loss_count += 1
-                        system_loss += s_loss
-                    if r_loss is not None:
-                        reward_loss_count += 1
-                        reward_loss += r_loss
+                    if c_loss is not None:
+                        critic_loss_count += 1
+                        critic_loss += c_loss
+                    if a_loss is not None:
+                        actor_loss_count += 1
+                        actor_loss += a_loss
+                    if algo == "td3-fork":
+                        if s_loss is not None:
+                            system_loss_count += 1
+                            system_loss += s_loss
+                        if r_loss is not None:
+                            reward_loss_count += 1
+                            reward_loss += r_loss
             steps = 0
             if isDomainRandomization:
                 ep = int(step / episode)
@@ -187,6 +189,26 @@ if __name__ == "__main__":
         observation = observation_
         writer.add_scalar("train/return", reward, step)
         score += reward
+
+        if not isMonteCarlo:
+            if algo == "td3-fork":
+                c_loss, a_loss, s_loss, r_loss = agent.learn()
+            else:
+                c_loss, a_loss = agent.learn()
+
+            if c_loss is not None:
+                critic_loss_count += 1
+                critic_loss += c_loss
+            if a_loss is not None:
+                actor_loss_count += 1
+                actor_loss += a_loss
+            if algo == "td3-fork":
+                if s_loss is not None:
+                    system_loss_count += 1
+                    system_loss += s_loss
+                if r_loss is not None:
+                    reward_loss_count += 1
+                    reward_loss += r_loss
 
         if (step + 1) % episode == 0:
             i = int(step / episode)

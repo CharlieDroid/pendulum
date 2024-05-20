@@ -245,10 +245,13 @@ class Agent:
         chkpt_dir="./tmp/td3 fork",
         game_id="Pendulum-v2",
     ):
+        # IN NEXT IMPLEMENTATION: Add gradient clipping
         self.gamma = gamma
         self.tau = tau
-        self.max_action = [2.0]  # change these in environment
-        self.min_action = [-2.0]
+        self.max_action = [
+            1.0
+        ]  # moved to the environment, everything here is action = [-1, 1]
+        self.min_action = [-1.0]
         self.memory = ReplayBuffer(max_size, input_dims, n_actions)
         self.batch_size = batch_size
         self.learn_step_cntr = 0
@@ -330,9 +333,6 @@ class Agent:
         mu_prime = mu
         # decided to remove this since my input is bounded in [-1, 1] I'll
         # multiply max action inside environment
-        # mu_prime = T.clamp(
-        #     mu_prime * self.max_action[0], self.min_action[0], self.max_action[0]
-        # )
         self.time_step += 1
         # should be list if moving to real world now or like basta optional ra ang numpy
         return mu_prime.cpu().detach().numpy()
