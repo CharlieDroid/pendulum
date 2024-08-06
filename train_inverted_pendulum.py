@@ -174,14 +174,22 @@ if __name__ == "__main__":
             env = gym.make(game_id)
             observation, info = env.reset(seed=seed)
             if isDomainRandomization:
-                observation = domain_randomizer.observation(observation)
+                observation = domain_randomizer.observation(observation, env)
+                observation = np.clip(
+                    observation,
+                    agent.obs_lower_bound_ideal,
+                    agent.obs_upper_bound_ideal,
+                )
             observation[1] = simp_angle(observation[1])
 
         action = agent.choose_action(observation)
-        action = domain_randomizer.action(action)
-        observation_, reward, terminated, truncated, info = env.step(action)
+        action_alt = domain_randomizer.action(action)
+        observation_, reward, terminated, truncated, info = env.step(action_alt)
         if isDomainRandomization:
-            observation_ = domain_randomizer.observation(observation_)
+            observation_ = domain_randomizer.observation(observation_, env)
+            observation_ = np.clip(
+                observation_, agent.obs_lower_bound_ideal, agent.obs_upper_bound_ideal
+            )
         observation_[1] = simp_angle(observation_[1])
         done = terminated or truncated
         agent.remember(observation, action, reward, observation_, done)

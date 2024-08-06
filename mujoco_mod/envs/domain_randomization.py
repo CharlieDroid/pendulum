@@ -3,13 +3,7 @@ from lxml import etree
 
 
 def simp_angle(a):
-    _2pi = 2 * np.pi
-    if a > np.pi:
-        return simp_angle(a - _2pi)
-    elif a < -np.pi:
-        return simp_angle(a + _2pi)
-    else:
-        return a
+    return (a + np.pi) % (2 * np.pi) - np.pi
 
 
 class DomainRandomization:
@@ -54,8 +48,7 @@ class DomainRandomization:
 
     def __init__(self):
         self.xml_file_pth = "./mujoco_mod/assets/inverted_pendulum.xml"
-        self.difficulty_level = 0  # 0 to 3 (including)
-        self.max_disturbance = 0.8  # this means 70% of max action
+        self.difficulty_level = 3  # [0, 3]
         self.max_action_val = 255  # discretization
         self.max_sensor_val = 600
         self.friction_loss_cart = 0  # 0.01 to 0.5 uni
@@ -68,6 +61,13 @@ class DomainRandomization:
         self.density = 1000  # 0 to 2000 uni
         self.gear = 100  # -30 to 50 uni
         self.ep_ = 0
+        self.pendulum_balanced = False
+        self.disturbance_count = 0
+        self.disturbance_range = (3, 6)
+        self.disturbance_max_count = np.random.randint(
+            low=self.disturbance_range[0], high=self.disturbance_range[1]
+        )
+        self.disturbance_wait_steps = 0
 
     def check_level_up(self, score, ep):
         if ep - self.ep_ < 10:
@@ -91,20 +91,37 @@ class DomainRandomization:
     def action(self, action):
         if self.difficulty_level >= 1:
             action = np.trunc(action * self.max_action_val) / self.max_action_val
-        if self.difficulty_level >= 2:
-            disturbance_chance = 0.3
-        elif self.difficulty_level >= 1:
-            disturbance_chance = 0.1
+        return action
+
+    def external_force(self, env):
+        # 3D Force (x, y, z) and 3D torque (theta, phi, psi)
+        force = float(np.random.choice([-3, -2, 2, 3]))
+        env.data.xfrc_applied[2] = np.array([0.0, 0.0, 0.0, 0.0, force, 0.0])
+        self.disturbance_max_count = np.random.randint(
+            low=self.disturbance_range[0], high=self.disturbance_range[1]
+        )
+        self.disturbance_count += 1
+        if self.disturbance_count >= self.disturbance_max_count:
+            self.pendulum_balanced = False
+            self.disturbance_count = 0
+            env.data.xfrc_applied[2] = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+    def observation(self, observation, env):
+        if abs(observation[1]) < 0.07 and abs(observation[3]) < 0.01:
+            if self.difficulty_level >= 2:
+                disturbance_chance = 0.3
+            elif self.difficulty_level >= 1:
+                disturbance_chance = 0.1
+        else:
+            if self.difficulty_level >= 2:
+                disturbance_chance = 0.3 / 2
+            elif self.difficulty_level >= 1:
+                disturbance_chance = 0.1 / 2
 
         if self.difficulty_level >= 1:
             if np.random.uniform() < disturbance_chance:
-                if np.random.uniform() < 0.5:
-                    action += self.max_disturbance
-                else:
-                    action -= self.max_disturbance
-        return action
+                self.external_force(env)
 
-    def observation(self, observation):
         if self.difficulty_level >= 3:
             pos_noise = np.random.normal(
                 loc=0, scale=2 * self.pos_sensor_noise_std, size=1
@@ -118,7 +135,7 @@ class DomainRandomization:
                 loc=0, scale=self.angle_sensor_noise_std, size=1
             )
 
-        if self.difficulty_level >= 2:
+        if self.difficulty_level >= 1:
             observation[0] += pos_noise
             observation[1] += angle_noise
             observation[2] += pos_noise * 2

@@ -10,6 +10,16 @@ DEFAULT_CAMERA_CONFIG = {
 }
 
 
+def simp_angle(a):
+    _2pi = 2 * np.pi
+    if a > np.pi:
+        return simp_angle(a - _2pi)
+    elif a < -np.pi:
+        return simp_angle(a + _2pi)
+    else:
+        return a
+
+
 class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
     """
     ## Description
@@ -116,18 +126,53 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
 
     def step(self, a):
         # doing this similar to real life
-        max_action = 2.0
+        max_action = 3.0
         a = np.clip(a * max_action, -max_action, max_action)
         self.do_simulation(a, self.frame_skip)
         ob = self._get_obs()
 
-        # -(theta^2 + 10*cart^2 + 0.1*theta_dt^2 + 0.1*cart_dt^2 + 0.001*torque^2)
+        # if self.pendulum_balanced:
+        #     # opt 1
+        #     # if abs(ob[1]) < np.pi / 4:
+        #     #     reward = (-16 / (np.pi**2)) * (simp_angle(ob[1]) ** 2) + 1
+        #     # else:
+        #     #     reward = -2
+        #     #
+        #     # reward -= (
+        #     #     2 * ob[0] ** 2
+        #     #     + 0.001 * ob[2] ** 2
+        #     #     + 0.001 * ob[3] ** 2
+        #     #     + 0.01 * a[0] ** 2
+        #     # )
+        #
+        #     # opt 2
+        #     reward = (
+        #         -simp_angle(ob[1]) ** 2
+        #         + 1
+        #         - (
+        #             9.5 * ob[0] ** 2
+        #             + 0.001 * ob[2] ** 2
+        #             + 0.001 * ob[3] ** 2
+        #             + 0.01 * a[0] ** 2
+        #         )
+        #     )
+        #     reward = np.cos(ob[1]) - (
+        #         3 * ob[0] ** 2
+        #         + 0.001 * ob[2] ** 2
+        #         + 0.001 * ob[3] ** 2
+        #         + 0.01 * a[0] ** 2
+        #     )
+        # else:
+        #     reward = np.cos(ob[1]) - (
+        #         3 * ob[0] ** 2
+        #         + 0.001 * ob[2] ** 2
+        #         + 0.001 * ob[3] ** 2
+        #         + 0.01 * a[0] ** 2
+        #     )
+
         reward = np.cos(ob[1]) - (
             2 * ob[0] ** 2 + 0.001 * ob[2] ** 2 + 0.001 * ob[3] ** 2 + 0.01 * a[0] ** 2
         )
-        # reward = np.cos(ob[1]) - (
-        #     10 * int(abs(ob[0]) > 0.85) + 10 * int(abs(ob[3]) > 17)
-        # )
 
         terminate = False
         terminated = bool(not np.isfinite(ob).all() or terminate)
@@ -136,6 +181,7 @@ class InvertedPendulumEnv(MujocoEnv, utils.EzPickle):
         return ob, reward, terminated, False, {}
 
     def reset_model(self):
+        self.pendulum_balanced = False
         qpos = self.init_qpos + self.np_random.uniform(
             size=self.model.nq, low=-0.1, high=0.1
         )

@@ -137,7 +137,7 @@ class Episode:
 
     def run_eval(self):
         if self.steps > 0:
-            action = self.agent.choose_action(self.observation)
+            action = self.agent.choose_action(self.observation, evaluate=True)
             self.env.step(action[0])
             bound = self.env.bound[1]
             obs_ = self.env.get_obs()

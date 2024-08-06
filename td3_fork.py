@@ -278,6 +278,7 @@ class Agent:
             name="actor",
             ln=ln,
         )
+        self.actor.apply(self.init_weights)
         self.critic_1 = CriticNetwork(
             beta,
             input_dims,
@@ -287,6 +288,7 @@ class Agent:
             name="critic_1",
             ln=ln,
         )
+        self.critic_1.apply(self.init_weights)
         self.critic_2 = CriticNetwork(
             beta,
             input_dims,
@@ -296,9 +298,13 @@ class Agent:
             name="critic_2",
             ln=ln,
         )
+        self.critic_2.apply(self.init_weights)
         self.target_actor = copy.deepcopy(self.actor)
         self.target_critic_1 = copy.deepcopy(self.critic_1)
         self.target_critic_2 = copy.deepcopy(self.critic_2)
+        self.target_actor.apply(self.init_weights)
+        self.target_critic_1.apply(self.init_weights)
+        self.target_critic_2.apply(self.init_weights)
 
         self.system = SystemNetwork(
             beta, input_dims, sys1_size, sys2_size, n_actions=n_actions, ln=ln
@@ -308,24 +314,29 @@ class Agent:
         self.reward = RewardNetwork(
             beta, input_dims, r1_size, r2_size, n_actions=n_actions, ln=ln
         )
+        self.reward.apply(self.init_weights)
 
-        self.obs_upper_bound = T.tensor([1.1, np.pi, 20.0, 100.0]).to(self.actor.device)
-        self.obs_lower_bound = T.tensor([-1.1, -np.pi, -20.0, -100.0]).to(
+        self.obs_upper_bound = T.tensor([1.1, T.pi, 20.0, 100.0]).to(self.actor.device)
+        self.obs_lower_bound = T.tensor([-1.1, -T.pi, -20.0, -100.0]).to(
             self.actor.device
         )
+        # bounding for domain randomization sensor noise
+        self.obs_upper_bound_ideal = np.array([1.1, np.inf, np.inf, np.inf])
+        self.obs_lower_bound_ideal = np.array([-1.1, -np.inf, -np.inf, -np.inf])
         self.noise = noise
         self.policy_noise = policy_noise
 
     def init_weights(self, m):
-        if type(m) == nn.Linear:
-            T.nn.init.xavier_uniform_(m.weight)
-            m.bias.data.fill_(0.001)
+        if isinstance(m, nn.Linear):
+            T.nn.init.kaiming_normal_(m.weight, mode="fan_in", nonlinearity="relu")
+            if m.bias is not None:
+                T.nn.init.constant_(m.bias, 0)
 
     def choose_action(self, observation, evaluate=False):
+        # purpose of evaluate is when loading the model the timestep is reset to 0 usually
+        # we don't want to use the random actions
         if (self.time_step < self.warmup) and not evaluate:
-            # mu = T.tensor(np.random.normal(scale=self.noise, size=(self.n_actions,)))
-            state = T.tensor(observation, dtype=T.float).to(self.actor.device)
-            mu = self.actor.forward(state).to(self.actor.device)
+            mu = T.tensor(np.random.uniform(low=-1, high=1, size=(self.n_actions,)))
         else:
             state = T.tensor(observation, dtype=T.float).to(self.actor.device)
             mu = self.actor.forward(state).to(self.actor.device)
@@ -341,7 +352,7 @@ class Agent:
         self.memory.store_transition(state, action, reward, new_state, done)
 
     def learn(self):
-        if (self.memory.mem_cntr < self.batch_size) or (self.time_step < self.warmup):
+        if self.memory.mem_cntr < self.batch_size:
             return None, None, None, None
 
         self.learn_step_cntr += 1
@@ -408,6 +419,10 @@ class Agent:
         self.reward_loss = reward_loss.item()
 
         s_flag = 1 if system_loss.item() < self.sys_threshold else 0
+        # according to paper:
+        # "the system thresholds are the typical estimation errors after about 20,000 steps"
+        if self.time_step == 20_000:
+            print(f"system_loss at 20k steps: {system_loss.item()}")
 
         if self.learn_step_cntr % self.update_actor_iter != 0:
             return critic_loss, None, system_loss, reward_loss
@@ -415,7 +430,7 @@ class Agent:
         actor_q1_loss = self.critic_1.forward(state, self.actor.forward(state))
         actor_loss = -T.mean(actor_q1_loss)
 
-        if s_flag:
+        if s_flag and (self.time_step >= 20_000):
             predict_next_state = self.system.forward(state, self.actor.forward(state))
             predict_next_state = T.clamp(
                 predict_next_state, self.obs_lower_bound, self.obs_upper_bound

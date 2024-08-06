@@ -15,7 +15,7 @@ register(
 
 if __name__ == "__main__":
     find_best = False  # find best video (not needed now)
-    save = False  # save video
+    save = True  # save video
     # obs, reward, action
     save_data = False  # save episode data
     algo = "td3-fork"
