@@ -58,7 +58,8 @@ if __name__ == "__main__":
             tau=0.005,
             env=env,
             gamma=0.98,
-            noise=0.1,
+            noise=0.1,  # unused
+            noise_clip=0.5,
             policy_noise=0.2,
             layer1_size=400,  # constant don't change orig now it is 16x16
             layer2_size=300,

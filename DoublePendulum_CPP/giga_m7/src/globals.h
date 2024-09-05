@@ -7,4 +7,6 @@
 
 #define DEBUG
 
+constexpr float DT{ 0.01f };
+
 #endif //GIGA_M7_GLOBALS_H

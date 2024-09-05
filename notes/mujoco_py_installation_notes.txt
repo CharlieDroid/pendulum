@@ -3,7 +3,8 @@ pip uninstall mujoco
 pip uninstall gymnasium
 pip uninstall mujoco-py
 pip install gymnasium[mujoco]
-pip install mujoco
+pip install mujoco==2.3.5
+because rendering issue in latest
 
 add to path
 

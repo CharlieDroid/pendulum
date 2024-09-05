@@ -48,7 +48,7 @@ class DomainRandomization:
 
     def __init__(self):
         self.xml_file_pth = "./mujoco_mod/assets/inverted_pendulum.xml"
-        self.difficulty_level = 3  # [0, 3]
+        self.difficulty_level = 0  # [0, 3]
         self.max_action_val = 255  # discretization
         self.max_sensor_val = 600
         self.friction_loss_cart = 0  # 0.01 to 0.5 uni
@@ -208,7 +208,7 @@ class DomainRandomization:
             tree.write(self.xml_file_pth)
 
     def reset_environment(self):
-        print("...resetting environment parameters...")
+        print("...resetting environment parameters domain randomization...")
         tree = etree.parse(self.xml_file_pth)
         root = tree.getroot()
 
@@ -233,5 +233,7 @@ class DomainRandomization:
         root.xpath('.//geom[@name="cpole"]')[0].attrib["size"] = f"0.049 {length}"
         # pendulum density
         root.xpath('.//geom[@name="cpole"]')[0].attrib["density"] = str(self.density)
+
+        root.xpath(".//option")[0].attrib["gravity"] = f"0 0 -9.80665"
 
         tree.write(self.xml_file_pth)

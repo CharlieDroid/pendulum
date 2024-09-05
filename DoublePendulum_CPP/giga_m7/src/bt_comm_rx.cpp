@@ -5,17 +5,24 @@
 
 #include <array>
 
-constexpr int SAMPLES{ 200 };
+constexpr int SAMPLES{ 10 };
 std::array<unsigned long, SAMPLES> latencies = {};
 
-const char* deviceServiceUuid = "19b10000-e8f2-537e-4f6c-d104768a1214";
-const char* deviceServiceCharacteristicUuid = "19b10001-e8f2-537e-4f6c-d104768a1214";
+const char* deviceServiceUuid = "dec1be10-9063-4b54-ae16-24f2bf72a4c6";
+const char* angleVelocityCharacteristicUuid = "dec1be11-9063-4b54-ae16-24f2bf72a4c6";
+const char* resetEncoderCharacteristicUuid = "dec1be12-9063-4b54-ae16-24f2bf72a4c6";
 
 union AngleData {
     float angleVelocity[2];
     uint8_t bytes[8];
 };
 
+union ResetData {
+    bool reset;
+    uint8_t bytes[1];
+};
+
+#ifdef LATENCY_MEASUREMENT
 void measureLatency(BLEDevice& peripheral, BLECharacteristic& angleVelocityCharacteristic)
 {
     AngleData sendAngleData = {{1.0f, -1.0f}};
@@ -87,12 +94,14 @@ void printStats()
     Serial.print(stdDevLatency / 1000.0, 3);
     Serial.println(" ms");
 }
+#endif
 
 void readPeripheral(BLEDevice& peripheral)
 {
 #ifdef DEBUG
-
-    BLECharacteristic angleVelocityCharacteristic = peripheral.characteristic(deviceServiceCharacteristicUuid);
+    // CHECK IF CORRECT CHARACTERISTIC
+    BLECharacteristic angleVelocityCharacteristic{ peripheral.characteristic(angleVelocityCharacteristicUuid) };
+    BLECharacteristic resetEncoderCharacteristic{ peripheral.characteristic(resetEncoderCharacteristicUuid) };
 
     if (!angleVelocityCharacteristic)
     {
@@ -101,27 +110,63 @@ void readPeripheral(BLEDevice& peripheral)
         peripheral.disconnect();
         return;
     }
-    else if (!angleVelocityCharacteristic.canRead())
+    if (!angleVelocityCharacteristic.canRead())
     {
         Serial.println("* Peripheral does not have a readable characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
         return;
     }
-    else if (!angleVelocityCharacteristic.canSubscribe())
+    if (!angleVelocityCharacteristic.canSubscribe())
     {
         Serial.println("* Peripheral does not have a subscribable characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
     }
 
+    if (!resetEncoderCharacteristic)
+    {
+        Serial.println("* Peripheral device does not have characteristic!");
+        redBlink(3, 100);
+        peripheral.disconnect();
+        return;
+    }
+    if (!resetEncoderCharacteristic.canRead())
+    {
+        Serial.println("* Peripheral does not have a readable characteristic!");
+        redBlink(3, 100);
+        peripheral.disconnect();
+        return;
+    }
+
     angleVelocityCharacteristic.subscribe();
     greenBlink(4, 250);
-    measureLatency(peripheral, angleVelocityCharacteristic);
+
+    // GOOD TO GO
+    AngleData receivedAngleData{};
+    unsigned long timeNow{ millis() };
+    bool resetSent{ true };
+    while (peripheral.connected())
+    {
+        if (millis() - timeNow > 10)
+        {
+            angleVelocityCharacteristic.readValue(receivedAngleData.bytes, 8);
+            Serial.print(receivedAngleData.angleVelocity[0]);
+            Serial.print(",");
+            Serial.println(receivedAngleData.angleVelocity[1]);
+            timeNow = millis();
+        }
+        // else
+        // {
+        //     constexpr ResetData resetData{ true };
+        //     resetEncoderCharacteristic.writeValue(resetData.bytes, 1);
+        //     resetSent = true;
+        // }
+    }
+    // DISCONNECTED
     Serial.println("- Peripheral device disconnected!");
     angleVelocityCharacteristic.unsubscribe();
-    printStats();
-    while (1);
+    while (true) delay(1000);
 
 #else
 
@@ -254,9 +299,6 @@ void connectPeripheral()
 void btInit()
 {
 #ifdef DEBUG
-
-    Serial.begin(9600);
-    while (!Serial);
 
     if (!BLE.begin())
     {

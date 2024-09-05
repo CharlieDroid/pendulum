@@ -4,68 +4,8 @@ import torch as T
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.optim as optim
+from buffer import ReplayBuffer
 import os
-import pickle
-
-
-class ReplayBuffer:
-    def __init__(self, max_size, input_shape, n_actions):
-        self.mem_size = max_size
-        self.mem_cntr = 0
-        self.state_memory = np.zeros((self.mem_size, *input_shape))
-        self.new_state_memory = np.zeros((self.mem_size, *input_shape))
-        self.action_memory = np.zeros((self.mem_size, n_actions))
-        self.reward_memory = np.zeros(self.mem_size)
-        self.terminal_memory = np.zeros(self.mem_size, dtype=bool)
-
-    def store_transition(self, state, action, reward, state_, done):
-        index = self.mem_cntr % self.mem_size
-        self.state_memory[index] = state
-        self.action_memory[index] = action
-        self.reward_memory[index] = reward
-        self.new_state_memory[index] = state_
-        self.terminal_memory[index] = done
-
-        self.mem_cntr += 1
-
-    def sample_buffer(self, batch_size):
-        max_mem = min(self.mem_cntr, self.mem_size)
-
-        batch = np.random.choice(max_mem, batch_size)
-
-        states = self.state_memory[batch]
-        states_ = self.new_state_memory[batch]
-        actions = self.action_memory[batch]
-        rewards = self.reward_memory[batch]
-        dones = self.terminal_memory[batch]
-
-        return states, actions, rewards, states_, dones
-
-    def save(self, file_pth):
-        print("...saving memory...")
-        memory = (
-            self.state_memory,
-            self.new_state_memory,
-            self.action_memory,
-            self.terminal_memory,
-            self.reward_memory,
-            self.mem_cntr,
-        )
-        with open(file_pth, "wb") as outfile:
-            pickle.dump(memory, outfile, pickle.HIGHEST_PROTOCOL)
-
-    def load(self, file_pth):
-        print("...loading memory...")
-        with open(file_pth, "rb") as infile:
-            result = pickle.load(infile)
-        (
-            self.state_memory,
-            self.new_state_memory,
-            self.action_memory,
-            self.terminal_memory,
-            self.reward_memory,
-            self.mem_cntr,
-        ) = result
 
 
 class RewardNetwork(nn.Module):
@@ -222,6 +162,7 @@ class Agent:
         input_dims,
         tau,
         env,
+        n_extra_obs=0,
         gamma=0.99,
         update_actor_interval=2,
         warmup=10_000,
@@ -236,7 +177,8 @@ class Agent:
         r1_size=256,
         r2_size=256,
         batch_size=100,
-        noise=0.2,
+        noise=0.1,
+        noise_clip=0.5,
         policy_noise=0.2,
         sys_weight=0.5,
         sys_weight2=0.4,
@@ -246,6 +188,7 @@ class Agent:
         game_id="Pendulum-v2",
     ):
         # IN NEXT IMPLEMENTATION: Add gradient clipping
+        self.n_extra_obs = n_extra_obs
         self.gamma = gamma
         self.tau = tau
         self.max_action = [
@@ -268,7 +211,6 @@ class Agent:
         self.sys_threshold = sys_threshold
         self.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
         self.buffer_file_pth = os.path.join(chkpt_dir, f"buffer td3 fork.pkl")
-
         self.actor = ActorNetwork(
             alpha,
             input_dims,
@@ -299,21 +241,20 @@ class Agent:
             ln=ln,
         )
         self.critic_2.apply(self.init_weights)
+
         self.target_actor = copy.deepcopy(self.actor)
         self.target_critic_1 = copy.deepcopy(self.critic_1)
         self.target_critic_2 = copy.deepcopy(self.critic_2)
-        self.target_actor.apply(self.init_weights)
-        self.target_critic_1.apply(self.init_weights)
-        self.target_critic_2.apply(self.init_weights)
+        # no need to apply init weights because their weights are already initialized
 
         self.system = SystemNetwork(
             beta, input_dims, sys1_size, sys2_size, n_actions=n_actions, ln=ln
         )
-        self.system.apply(self.init_weights)
-
         self.reward = RewardNetwork(
             beta, input_dims, r1_size, r2_size, n_actions=n_actions, ln=ln
         )
+
+        self.system.apply(self.init_weights)
         self.reward.apply(self.init_weights)
 
         self.obs_upper_bound = T.tensor([1.1, T.pi, 20.0, 100.0]).to(self.actor.device)
@@ -324,6 +265,7 @@ class Agent:
         self.obs_upper_bound_ideal = np.array([1.1, np.inf, np.inf, np.inf])
         self.obs_lower_bound_ideal = np.array([-1.1, -np.inf, -np.inf, -np.inf])
         self.noise = noise
+        self.noise_clip = noise_clip
         self.policy_noise = policy_noise
 
     def init_weights(self, m):
@@ -356,10 +298,15 @@ class Agent:
             return None, None, None, None
 
         self.learn_step_cntr += 1
-
-        state, action, reward, new_state, done = self.memory.sample_buffer(
-            self.batch_size
-        )
+        (
+            state,
+            action,
+            reward,
+            new_state,
+            done,
+            actor_state,
+            actor_new_state,
+        ) = self.memory.sample_buffer(self.batch_size)
         reward = T.tensor(reward, dtype=T.float).to(self.critic_1.device)
         done = T.tensor(done).to(self.critic_1.device)
         state_ = T.tensor(new_state, dtype=T.float).to(self.critic_1.device)
@@ -367,7 +314,11 @@ class Agent:
         action = T.tensor(action, dtype=T.float).to(self.critic_1.device)
 
         with T.no_grad():
-            noise = T.clamp(T.randn_like(action) * self.policy_noise, -0.5, 0.5)
+            noise = T.clamp(
+                T.randn_like(action) * self.policy_noise,
+                -self.noise_clip,
+                self.noise_clip,
+            )
             target_actions = T.clamp(
                 self.target_actor(state_) + noise,
                 self.min_action[0],
@@ -432,6 +383,7 @@ class Agent:
 
         if s_flag and (self.time_step >= 20_000):
             predict_next_state = self.system.forward(state, self.actor.forward(state))
+
             predict_next_state = T.clamp(
                 predict_next_state, self.obs_lower_bound, self.obs_upper_bound
             )
@@ -565,8 +517,7 @@ class Agent:
             )
             self.system.optimizer.load_state_dict(checkpoint["system_optimizer"])
             self.reward.optimizer.load_state_dict(checkpoint["reward_optimizer"])
-        # self.time_step = checkpoint["timestep"]  # orig
-        self.time_step = 0
+        self.time_step = checkpoint["timestep"]  # orig
 
     def partial_load_models(self):
         print("...partial loading checkpoint...")

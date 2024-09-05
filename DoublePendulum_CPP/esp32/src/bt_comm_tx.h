@@ -8,10 +8,17 @@
 #include "globals.h"
 #include "utils.h"
 
-#include <Arduino.h>
 #include <ArduinoBLE.h>
 
 void btInit();
-void transmitCentral();
+BLEDevice getCentral();
+void pingPong(const BLEDevice& central);
+void sendEncoderMeasurements();
+void IRAM_ATTR updateEncoderMeasurements();
+bool getIsReset();
+void setReset(const bool& reset);
+#ifdef DEBUG
+void getAngleAndVelocity(float& angle, float& angleVelo);
+#endif
 
 #endif //ESP32_BT_COMM_TX_H

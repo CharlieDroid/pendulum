@@ -4,6 +4,50 @@ from gymnasium.wrappers import RecordVideo
 import os
 import csv
 from mujoco_mod.envs.domain_randomization import DomainRandomization, simp_angle
+from mujoco_mod.envs.domain_randomization_double import (
+    DomainRandomization as DomainRandomizationDouble,
+)
+import os
+import imageio
+import numpy as np
+from PIL import Image
+import PIL.ImageDraw as ImageDraw
+import matplotlib.pyplot as plt
+
+
+def _label_with_episode_number(frame, episode_num):
+    im = Image.fromarray(frame)
+
+    drawer = ImageDraw.Draw(im)
+
+    if np.mean(im) < 128:
+        text_color = (255, 255, 255)
+    else:
+        text_color = (0, 0, 0)
+    drawer.text(
+        (im.size[0] / 20, im.size[1] / 18), f"Episode: {episode_num+1}", fill=text_color
+    )
+
+    return im
+
+
+def save_random_agent_gif(env):
+    frames = []
+    for i in range(5):
+        state = env.reset()
+        for t in range(500):
+            action = env.action_space.sample()
+
+            frame = env.render(mode="rgb_array")
+            frames.append(_label_with_episode_number(frame, episode_num=i))
+
+            state, _, done, _ = env.step(action)
+            if done:
+                break
+
+    env.close()
+
+    imageio.mimwrite(os.path.join("./videos/", "random_agent.gif"), frames, fps=60)
 
 
 def run_env(game_id="InvertedPendulumModded", eps=1):
@@ -65,7 +109,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
         env = RecordVideo(
             env,
             "recordings",
-            name_prefix="InvertedPendulum",
+            name_prefix=game_id,
             episode_trigger=lambda _: True,
         )
     if save_data:
@@ -75,6 +119,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
         rewards = 0
         domain_randomizer = DomainRandomization()
         for ep in range(eps):
+            frames = []
             observation, info = env.reset()
             obs = observation
             obs[1] = simp_angle(obs[1])
@@ -121,31 +166,234 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
                     writer.writerow(d)
 
         return rewards / eps
+        env.close()
+
+
+def agent_play_double(
+    game_id,
+    agent_balance,
+    agent_swingup=None,
+    agent_0=None,
+    agent_1=None,
+    agent_2=None,
+    eps=3,
+    save=True,
+    find_best=False,
+    save_data=False,
+    combined=False,
+    teachers=False,
+):
+    if save:
+        render_mode = "rgb_array"
     else:
-        trial = 0
-        while True:
-            trial += 1
-            rewards = 0
+        render_mode = "human"
+    if game_id == "Pendulum-v1":
+        env = gym.make(game_id, render_mode=render_mode, g=9.80665)
+    else:
+        env = gym.make(game_id, render_mode=render_mode)
+    if save:
+        env = RecordVideo(
+            env,
+            "recordings",
+            name_prefix=game_id,
+            episode_trigger=lambda _: True,
+            # disable_logger=True,
+        )
+    if save_data:
+        eps = 1
+        data = []
+    if not find_best:
+        rewards = 0
+        domain_randomizer = DomainRandomizationDouble(2500)
+        domain_randomizer.reset_environment()
+        for ep in range(eps):
+            frames = []
             observation, info = env.reset()
+            if teachers:
+                obs = np.insert(
+                    observation,
+                    8,
+                    [
+                        env.unwrapped.pendulum_command_list[
+                            env.unwrapped.pendulum_command
+                        ][0],
+                        env.unwrapped.pendulum_command_list[
+                            env.unwrapped.pendulum_command
+                        ][1],
+                    ],
+                )
+                observation = obs
+            else:
+                obs = observation
+            a1, a2 = env.data.qpos[1:]
+            a2 += a1
+            a1 = simp_angle(a1)
+            a2 = simp_angle(a2)
+            if teachers:
+                print(
+                    f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} p1:{obs[8]:.0f} p2:{obs[9]:.0f} tip_x:{obs[10]:.2f} tip_y:{obs[11]:.2f} a1:{obs[12]:.2f} a2:{obs[13]:.2f}"
+                )
+            else:
+                print(
+                    f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} c0:{obs[8]:.0f} c1:{obs[9]:.0f} c2:{obs[10]:.0f} c3:{obs[11]:.0f} tip_x:{obs[12]:.2f} tip_y:{obs[13]:.2f} a1:{obs[14]:.2f} a2:{obs[15]:.2f}"
+                )
             if save:
                 env.start_video_recorder()
             done = False
+            max_speed = float("-inf")
+            time_steps = 0
+            ready_balance = False
+            # import time
+            #
+            # time.sleep(2)
             while not done:
-                action = agent.choose_action(observation, evaluate=True)
+                if combined or teachers:
+                    if obs[8] > 0.0:
+                        action = agent_0.choose_action(observation, evaluate=True)
+                        ready_balance = False
+                    elif obs[9] > 0.0:
+                        action = agent_1.choose_action(observation, evaluate=True)
+                        ready_balance = False
+                    elif obs[10] > 0.0:
+                        action = agent_2.choose_action(observation, evaluate=True)
+                        ready_balance = False
+                    elif obs[11] > 0.0:
+                        a1, a2 = env.data.qpos[1:]
+                        tip_x, _, tip_y = env.data.site_xpos[0]
+                        a2 += a1
+                        x_goal = bool(abs(obs[0]) < 0.3)
+                        theta1_goal = bool(abs(simp_angle(a1)) < 0.1)
+                        theta2_goal = bool(abs(simp_angle(a2)) < 0.1)
+                        x_dot_goal = bool(abs(obs[5]) < 0.3)
+                        theta1_dot_goal = bool(abs(obs[6]) < 1.0)
+                        theta2_dot_goal = bool(abs(obs[7]) < 1.0)
+                        if (
+                            x_goal
+                            and theta1_goal
+                            and theta2_goal
+                            and x_dot_goal
+                            and theta1_dot_goal
+                            and theta2_dot_goal
+                        ):
+                            ready_balance = True
+                        if ready_balance and tip_y < 0.8:
+                            ready_balance = False
+
+                        if ready_balance:
+                            action = agent_balance.choose_action(
+                                observation, evaluate=True
+                            )
+                        else:
+                            action = agent_swingup.choose_action(
+                                observation, evaluate=True
+                            )
+                else:
+                    if obs[11] > 0.0:
+                        a1, a2 = env.data.qpos[1:]
+                        tip_x, _, tip_y = env.data.site_xpos[0]
+                        a2 += a1
+                        x_goal = bool(abs(obs[0]) < 0.3)
+                        theta1_goal = bool(abs(simp_angle(a1)) < 0.1)
+                        theta2_goal = bool(abs(simp_angle(a2)) < 0.1)
+                        x_dot_goal = bool(abs(obs[5]) < 0.3)
+                        theta1_dot_goal = bool(abs(obs[6]) < 1.0)
+                        theta2_dot_goal = bool(abs(obs[7]) < 1.0)
+                        if (
+                            x_goal
+                            and theta1_goal
+                            and theta2_goal
+                            and x_dot_goal
+                            and theta1_dot_goal
+                            and theta2_dot_goal
+                        ):
+                            print("...goal reached...")
+                    action = agent_balance.choose_action(observation, evaluate=True)
+                # action[0] = 0.0
+                if save:
+                    frame = env.render()
+                    # frames.append(_label_with_episode_number(frame, episode_num=ep))
                 observation_, reward, terminated, truncated, info = env.step(action)
+                domain_randomizer.observation(observation, env)
+                if teachers:
+                    observation_ = np.insert(
+                        observation_,
+                        8,
+                        [
+                            env.unwrapped.pendulum_command_list[
+                                env.unwrapped.pendulum_command
+                            ][0],
+                            env.unwrapped.pendulum_command_list[
+                                env.unwrapped.pendulum_command
+                            ][1],
+                        ],
+                    )
+                if not save:
+                    obs = observation_
+                    a1, a2 = env.data.qpos[1:]
+                    a2 += a1
+                    a1 = simp_angle(a1)
+                    a2 = simp_angle(a2)
+                    if teachers:
+                        print(
+                            f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} p1:{obs[8]:.0f} p2:{obs[9]:.0f} tip_x:{obs[10]:.2f} tip_y:{obs[11]:.2f} a1:{obs[12]:.2f} a2:{obs[13]:.2f} reward:{reward:.2f} action:{action[0]:.2f}"
+                        )
+                    else:
+                        print(
+                            f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} c0:{obs[8]:.0f} c1:{obs[9]:.0f} c2:{obs[10]:.0f} c3:{obs[11]:.0f} tip_x:{obs[12]:.2f} tip_y:{obs[13]:.2f} a1:{obs[14]:.2f} a2:{obs[15]:.2f} reward:{reward:.2f} action:{action[0]:.2f}"
+                        )
+                if save_data:
+                    if teachers:
+                        data.append(
+                            [
+                                observation[0],
+                                observation[1],
+                                observation[2],
+                                observation[3],
+                                observation[4],
+                                observation[5],
+                                observation[6],
+                                observation[7],
+                                observation[8],
+                                observation[9],
+                                reward,
+                                action.item(),
+                            ]
+                        )
+                    else:
+                        data.append(
+                            [
+                                observation[0],
+                                observation[1],
+                                observation[2],
+                                observation[3],
+                                observation[4],
+                                observation[5],
+                                observation[6],
+                                observation[7],
+                                reward,
+                                action.item(),
+                            ]
+                        )
                 rewards += reward
                 observation = observation_
                 done = terminated or truncated
-            print(f"trial #{trial} rewards {rewards}")
-            if rewards > 888:
-                print("Found the best episode")
-                break
-            else:
-                [
-                    os.remove(os.path.join(".\\recordings", file))
-                    for file in os.listdir(".\\recordings")
-                ]
+                time_steps += 1
+            print(time_steps)
+            # if save:
+            #     imageio.mimwrite(
+            #         os.path.join("./recordings/", f"{game_id} {ep}.gif"),
+            #         frames,
+            #         fps=60,
+            #     )
         env.close()
+
+        if save_data:
+            with open("recordings/sample_data_16x16.csv", "w") as file:
+                writer = csv.writer(file)
+                for d in data:
+                    writer.writerow(d)
+
+        return rewards / eps
 
 
 def testing(env):

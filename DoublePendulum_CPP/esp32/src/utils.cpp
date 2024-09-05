@@ -4,6 +4,83 @@
 
 #include "utils.h"
 
+// ============[ ENCODER FUNCTIONS ]================
+static volatile Encoder pend2Enc{};
+// NOTE TO SELF: never use port mux shit with bluetooth stuff
+
+void IRAM_ATTR updateEncoderA()
+{
+    pend2Enc.levA = digitalRead(encoderPinA);
+
+    if (encoderPinA != pend2Enc.lastPin)
+    {
+        pend2Enc.lastPin = encoderPinA;
+        if (pend2Enc.levA)
+        {
+            if (pend2Enc.levB) pend2Enc.val++;
+        }
+    }
+}
+
+void IRAM_ATTR updateEncoderB()
+{
+    pend2Enc.levB = digitalRead(encoderPinB);
+
+    if (encoderPinB != pend2Enc.lastPin)
+    {
+        pend2Enc.lastPin = encoderPinB;
+        if (pend2Enc.levB)
+        {
+            if (pend2Enc.levA) pend2Enc.val--;
+        }
+    }
+}
+
+void encInit(void* pvParameters)
+{
+    pinMode(encoderPinA, INPUT_PULLUP);
+    pinMode(encoderPinB, INPUT_PULLUP);
+
+    attachInterrupt(encoderPinA, updateEncoderA, CHANGE);
+    attachInterrupt(encoderPinB, updateEncoderB, CHANGE);
+
+#ifdef DEBUG
+    Serial.print("encInit() running on core ");
+    Serial.println(xPortGetCoreID());
+    Serial.println("Running infinite loop in here");
+#endif
+    while (true) delay(1000);
+}
+
+float getAngleVelo()
+{
+    const float velo{ static_cast<float>(pend2Enc.val - pend2Enc.val_) * ANGLE_VELO_FACTOR };
+    pend2Enc.val_ = pend2Enc.val;
+    return velo;
+}
+
+float getAngle()
+{
+    return static_cast<float>(pend2Enc.val) * ANGLE_FACTOR;
+}
+
+int getRawPendVal()
+{
+    return pend2Enc.val;
+    // return rotaryEncoder.readEncoder();
+}
+
+void resetPendVals()
+{
+    // reset to zero since this is second pendulum
+    pend2Enc.val = 0;
+    pend2Enc.val_ = 0;
+    pend2Enc.levA = 0;
+    pend2Enc.levB = 0;
+    pend2Enc.lastPin = -1;
+}
+
+// ============[ LED FUNCTIONS ]================
 constexpr int LED_R{ 14 };
 constexpr int LED_G{ 15 };
 constexpr int LED_B{ 16 };

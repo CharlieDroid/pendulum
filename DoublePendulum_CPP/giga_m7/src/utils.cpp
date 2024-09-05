@@ -4,6 +4,7 @@
 
 #include "utils.h"
 
+// ============[ LED FUNCTIONS ]================
 constexpr int LED_R{ 86 };
 constexpr int LED_G{ 87 };
 constexpr int LED_B{ 88 };

@@ -5,6 +5,7 @@
 #ifndef GIGA_M7_UTILS_H
 #define GIGA_M7_UTILS_H
 
+#include "globals.h"
 #include <Arduino.h>
 
 void redBlink(const int& times, const int& delayTime);
