@@ -2,3 +2,906 @@ libtorch-win-shared-with-deps-2.1.2+cpu.zip
 *.zip
 /RPi_CPP/libs/
 /RPi_CPP/cmake-build-debug/
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/libb64/cdecode.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/libb64/cdecode.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/libb64/cencode.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/libb64/cencode.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/base64.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/base64.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/cbuf.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/cbuf.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Esp.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Esp.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-adc.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-adc.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-bt.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-bt.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-cpu.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-cpu.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-dac.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-dac.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-gpio.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-gpio.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-i2c.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-i2c.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-i2c-slave.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-i2c-slave.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-ledc.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-ledc.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-matrix.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-matrix.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-misc.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-misc.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-psram.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-psram.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-rgb-led.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-rgb-led.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-rmt.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-rmt.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-sigmadelta.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-sigmadelta.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-spi.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-spi.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-time.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-time.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-timer.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-timer.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-tinyusb.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-tinyusb.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-touch.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-touch.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-uart.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/esp32-hal-uart.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/firmware_msc_fat.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/firmware_msc_fat.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/FirmwareMSC.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/FirmwareMSC.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/FunctionalInterrupt.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/FunctionalInterrupt.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/HardwareSerial.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/HardwareSerial.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/HWCDC.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/HWCDC.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/IPAddress.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/IPAddress.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/IPv6Address.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/IPv6Address.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/main.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/main.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/MD5Builder.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/MD5Builder.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Print.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Print.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/stdlib_noniso.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/stdlib_noniso.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Stream.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Stream.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/StreamString.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/StreamString.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Tone.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/Tone.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USB.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USB.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USBCDC.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USBCDC.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USBMSC.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/USBMSC.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/wiring_pulse.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/wiring_pulse.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/wiring_shift.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/wiring_shift.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/WMath.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/WMath.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/WString.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduino/WString.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/dfu_callbacks.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/dfu_callbacks.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/double_tap.c.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/double_tap.c.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/io_pin_remap.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/io_pin_remap.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/variant.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/FrameworkArduinoVariant/variant.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalAttribute.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalAttribute.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalCharacteristic.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalCharacteristic.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalDescriptor.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalDescriptor.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalDevice.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalDevice.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalService.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/local/BLELocalService.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteAttribute.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteAttribute.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteCharacteristic.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteCharacteristic.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteDescriptor.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteDescriptor.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteDevice.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteDevice.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteService.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/remote/BLERemoteService.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/ATT.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/ATT.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/bitDescriptions.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/bitDescriptions.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/BLEUuid.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/BLEUuid.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/btct.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/btct.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/GAP.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/GAP.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/GATT.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/GATT.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCI.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCI.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCICordioTransport.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCICordioTransport.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCISilabsTransport.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCISilabsTransport.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIUartTransport.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIUartTransport.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIVirtualTransport.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIVirtualTransport.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIVirtualTransportAT.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/HCIVirtualTransportAT.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/keyDistribution.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/keyDistribution.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/L2CAPSignaling.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/utility/L2CAPSignaling.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEAdvertisingData.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEAdvertisingData.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLECharacteristic.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLECharacteristic.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEDescriptor.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEDescriptor.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEDevice.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEDevice.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEService.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEService.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEStringCharacteristic.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLEStringCharacteristic.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLETypedCharacteristics.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/ArduinoBLE/BLETypedCharacteristics.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/lib128/libArduinoBLE.a
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/bt_comm_tx.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/bt_comm_tx.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/main.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/main.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/utils.cpp.d
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/src/utils.cpp.o
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/.sconsign312.dblite
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/bootloader.bin
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/firmware.bin
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/firmware.elf
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/firmware.map
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/libFrameworkArduino.a
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/partitions.bin
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/tmpdimxu5y_.tmp
+/DoublePendulum_CPP/esp32/.pio/build/arduino_nano_esp32/tmpl_wgti4n.tmp
+/DoublePendulum_CPP/esp32/.pio/build/project.checksum
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.github/workflows/compile-examples.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.github/workflows/spell-check.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.github/workflows/sync-labels.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.github/dependabot.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Central/LedControl/LedControl.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Central/PeripheralExplorer/PeripheralExplorer.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Central/Scan/Scan.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Central/ScanCallback/ScanCallback.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Central/SensorTagButton/SensorTagButton.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/Advertising/EnhancedAdvertising/EnhancedAdvertising.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/Advertising/RawDataAdvertising/RawDataAdvertising.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/BatteryMonitor/BatteryMonitor.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/ButtonLED/ButtonLED.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/CallbackLED/CallbackLED.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/EncryptedBatteryMonitor/EncryptedBatteryMonitor.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/examples/Peripheral/LED/LED.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalAttribute.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalAttribute.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalCharacteristic.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalCharacteristic.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalDescriptor.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalDescriptor.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalDevice.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalDevice.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalService.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/local/BLELocalService.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteAttribute.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteAttribute.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteCharacteristic.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteCharacteristic.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteDescriptor.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteDescriptor.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteDevice.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteDevice.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteService.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/remote/BLERemoteService.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/ATT.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/ATT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/bitDescriptions.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/bitDescriptions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/BLELinkedList.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/BLEUuid.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/BLEUuid.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/btct.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/btct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/GAP.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/GAP.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/GATT.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/GATT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCI.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCI.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCICordioTransport.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCICordioTransport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCITransport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIUartTransport.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIUartTransport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIVirtualTransport.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIVirtualTransport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIVirtualTransportAT.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/HCIVirtualTransportAT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/keyDistribution.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/keyDistribution.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/L2CAPSignaling.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/utility/L2CAPSignaling.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/ArduinoBLE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEAdvertisingData.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEAdvertisingData.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLECharacteristic.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLECharacteristic.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEDescriptor.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEDescriptor.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEDevice.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEDevice.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEProperty.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEService.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEService.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEStringCharacteristic.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLEStringCharacteristic.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLETypedCharacteristic.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLETypedCharacteristics.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/src/BLETypedCharacteristics.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.gitignore
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/.piopm
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/CHANGELOG
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/keywords.txt
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/library.properties
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/LICENSE
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoBLE/README.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/.github/workflows/build.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Cholesky/LDLT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Cholesky/LLT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Cholesky/LLT_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/CholmodSupport/CholmodSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/MatrixProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/MatrixProductCommon.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/MatrixProductMMA.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AltiVec/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX512/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX512/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX512/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/AVX512/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/Half.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/PacketMathHalf.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/CUDA/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/BFloat16.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/ConjHelper.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/GenericPacketMathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/GenericPacketMathFunctionsFwd.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/Half.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/Settings.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/Default/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/GPU/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/GPU/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/GPU/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/HIP/hcc/math_constants.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/MSA/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/MSA/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/MSA/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/NEON/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/NEON/GeneralBlockPanelKernel.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/NEON/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/NEON/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/NEON/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SSE/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SSE/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SSE/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SSE/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SVE/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SVE/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SVE/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SYCL/InteropHeaders.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SYCL/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SYCL/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SYCL/SyclMemoryModel.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/SYCL/TypeCasting.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/ZVector/Complex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/ZVector/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/arch/ZVector/PacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/AssignmentFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/BinaryFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/NullaryFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/StlFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/TernaryFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/functors/UnaryFunctors.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/Parallelizer.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointMatrixVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/SelfadjointRank2Update.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularMatrixMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularMatrixVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularSolverMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/products/TriangularSolverVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/BlasUtil.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/ConfigureVectorization.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/Constants.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/DisableStupidWarnings.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/ForwardDeclarations.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/IndexedViewHelper.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/IntegralConstant.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/Macros.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/Memory.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/Meta.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/MKL_support.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/NonMPL2.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/ReenableStupidWarnings.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/ReshapedHelper.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/StaticAssert.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/SymbolicIndex.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/util/XprHelper.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ArithmeticSequence.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Array.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ArrayBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ArrayWrapper.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Assign.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Assign_MKL.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/AssignEvaluator.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/BandMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Block.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/BooleanRedux.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CommaInitializer.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ConditionEstimator.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CoreEvaluators.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CoreIterators.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CwiseBinaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CwiseNullaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CwiseTernaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CwiseUnaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/CwiseUnaryView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/DenseBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/DenseCoeffsBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/DenseStorage.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Diagonal.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/DiagonalMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/DiagonalProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Dot.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/EigenBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ForceAlignedAccess.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Fuzzy.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/GeneralProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/GenericPacketMath.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/GlobalFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/IndexedView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Inverse.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/IO.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Map.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/MapBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/MathFunctions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/MathFunctionsImpl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Matrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/MatrixBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/NestByValue.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/NoAlias.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/NumTraits.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/PartialReduxEvaluator.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/PermutationMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/PlainObjectBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Product.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ProductEvaluators.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Random.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Redux.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Ref.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Replicate.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Reshaped.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/ReturnByValue.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Reverse.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Select.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/SelfAdjointView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/SelfCwiseBinaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Solve.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/SolverBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/SolveTriangular.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/StableNorm.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/StlIterators.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Stride.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Swap.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Transpose.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Transpositions.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/TriangularMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/VectorBlock.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/VectorwiseOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Core/Visitor.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/ComplexSchur.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/EigenSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/RealQZ.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/RealSchur.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Eigenvalues/Tridiagonalization.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/arch/Geometry_SIMD.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/arch/Geometry_SSE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/AlignedBox.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/AngleAxis.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/EulerAngles.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Homogeneous.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Hyperplane.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/OrthoMethods.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/ParametrizedLine.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Quaternion.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Rotation2D.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/RotationBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Scaling.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Transform.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Translation.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Geometry/Umeyama.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Householder/BlockHouseholder.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Householder/Householder.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Householder/HouseholderSequence.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/BasicPreconditioners.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/ConjugateGradient.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/IterativeSolverBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/LeastSquareConjugateGradient.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/IterativeLinearSolvers/SolveWithGuess.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/Jacobi/Jacobi.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/KLUSupport/KLUSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/arch/Inverse_SSE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/arch/InverseSize4.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/Determinant.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/FullPivLU.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/InverseImpl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/PartialPivLU.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/LU/PartialPivLU_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/MetisSupport/MetisSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/blas.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/Image.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/Kernel.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/lapack.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/lapacke.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/lapacke_mangling.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/misc/RealSvd2x2.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/OrderingMethods/Amd.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/OrderingMethods/Eigen_Colamd.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/OrderingMethods/Ordering.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/PardisoSupport/PardisoSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/PaStiXSupport/PaStiXSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/BlockMethods.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/CommonCwiseBinaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/CommonCwiseUnaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/IndexedViewMethods.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/plugins/ReshapedMethods.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/ColPivHouseholderQR.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/FullPivHouseholderQR.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/HouseholderQR.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/QR/HouseholderQR_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCholesky/SimplicialCholesky.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCholesky/SimplicialCholesky_impl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/AmbiVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/CompressedStorage.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/ConservativeSparseSparseProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/MappedSparseMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseAssign.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseBlock.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseColEtree.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseCompressedBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseCwiseBinaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseCwiseUnaryOp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseDenseProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseDiagonalProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseDot.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseFuzzy.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseMap.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseMatrixBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparsePermutation.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseProduct.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseRedux.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseRef.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseSelfAdjointView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseSolverBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseSparseProductWithPruning.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseTranspose.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseTriangularView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseUtil.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/SparseView.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseCore/TriangularSolver.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_column_bmod.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_column_dfs.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_copy_to_ucol.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_gemm_kernel.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_heap_relax_snode.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_kernel_bmod.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_Memory.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_panel_bmod.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_panel_dfs.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_pivotL.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_pruneL.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_relax_snode.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_Structs.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_SupernodalMatrix.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLU_Utils.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseLU/SparseLUImpl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SparseQR/SparseQR.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SPQRSupport/SuiteSparseQRSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/StlSupport/details.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/StlSupport/StdDeque.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/StlSupport/StdList.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/StlSupport/StdVector.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SuperLUSupport/SuperLUSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SVD/BDCSVD.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SVD/JacobiSVD.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SVD/SVDBase.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/SVD/UpperBidiagonalization.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/src/UmfPackSupport/UmfPackSupport.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Cholesky
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/CholmodSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/CMakeLists.txt
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Core
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Dense
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Eigen
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Eigenvalues
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Geometry
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Householder
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/IterativeLinearSolvers
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Jacobi
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/KLUSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/LU
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/MetisSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/OrderingMethods
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/PardisoSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/PaStiXSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/QR
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/QtAlignedMalloc
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/Sparse
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SparseCholesky
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SparseCore
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SparseLU
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SparseQR
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SPQRSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/StdDeque
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/StdList
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/StdVector
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SuperLUSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/SVD
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/Eigen/UmfPackSupport
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/ArduinoEigenCommon.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen/ArduinoEigenExtension.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/examples/matrices_and_vectors_dynamic/matrices_and_vectors_dynamic.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/examples/matrices_and_vectors_static/matrices_and_vectors_static.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/examples/simple/simple.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/.gitignore
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/.piopm
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigen.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigenDense.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/ArduinoEigenSparse.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/COPYING.MPL2
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/COPYING.README
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/library.json
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/library.properties
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/LICENSE
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArduinoEigen/README.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/.github/workflows/build.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/functional.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/has_include.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/has_libstdcplusplus.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/initializer_list.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/replace_minmax_macros.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/tuple.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits/type_traits.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/examples/functional/functional.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/examples/sfinae/sfinae.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/examples/tuple/tuple.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/.piopm
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/ArxTypeTraits.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/library.json
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/library.properties
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/LICENSE
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/ArxTypeTraits/README.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/.github/ISSUE_TEMPLATE/bug_report.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/.github/ISSUE_TEMPLATE/feature_request.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/.github/workflows/auto-github-actions.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/examples/LittleFS_Counting/LittleFS_Counting.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/examples/LittleFS_Test/LittleFS_Test.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.7.2/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/2.8.0/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/3.0.0/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/Packages_Patches/arduino/hardware/mbed_portenta/3.0.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/platformio/platformio.ini
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/src/FlashIAPLimits.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/src/LittleFS_Portenta_H7.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/src/LittleFS_Portenta_H7_Debug.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/.gitignore
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/.piopm
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/changelog.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/CONTRIBUTING.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/keywords.txt
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/library.json
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/library.properties
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/LICENSE
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/LittleFS_Portenta_H7/README.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/ISSUE_TEMPLATE/bug_report.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/ISSUE_TEMPLATE/feature_request.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/workflows/auto-github-actions.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/workflows/report-size-deltas.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/workflows/spell-check.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/dependabot.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.github/stale.yml
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/Change_Interval/Change_Interval.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/ISR_16_Timers_Array_Complex/ISR_16_Timers_Array_Complex.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/multiFileProject/multiFileProject.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/multiFileProject/multiFileProject.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/multiFileProject/multiFileProject.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/PWM/PWM_Multi_Args/PWM_Multi_Args.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/PWM_manual/PWM_manual.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/PWM_Multi/PWM_Multi.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/PWM_Single/PWM_Single.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/PWM_StepperControl/PWM_StepperControl.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/TimerInterruptLEDDemo/TimerInterruptLEDDemo.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/examples/TimerInterruptTest/TimerInterruptTest.ino
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.4.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.5.2/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/libraries/SocketWrapper/src/MbedUdp.cpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/libraries/SocketWrapper/src/MbedUdp.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.6.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.7.2/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/2.8.0/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/3.0.0/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/3.0.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/3.1.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/3.3.0/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/Packages_Patches/arduino/hardware/mbed_portenta/3.4.1/portenta_post_install.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/platformio/platformio.ini
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/stm32/timer.c
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/stm32/timer.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/Portenta_H7_ISR_Timer-Impl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/Portenta_H7_PWM.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/Portenta_H7_PWM.hpp
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/Portenta_H7_PWM_Impl.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/Portenta_H7_TimerInterrupt.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/src/PWM_Generic_Debug.h
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/utils/astyle_library.conf
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/utils/restyle.sh
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.codespellrc
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.gitignore
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/.piopm
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/changelog.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/CONTRIBUTING.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/keywords.txt
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/library.json
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/library.properties
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/LICENSE
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/Portenta_H7_PWM/README.md
+/DoublePendulum_CPP/giga_m7/.pio/libdeps/giga_r1_m7/integrity.dat
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/CanMsg.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/CanMsgRingbuffer.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/Common.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/IPAddress.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/PluggableUSB.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/Print.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/Stream.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/api/String.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/as_mbed_library/variant.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/mbed/platform/cxxsupport/mstd_mutex.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/USB/PluggableUSBDevice.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/USB/USBCDC.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/USB/USBSerial.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/abi.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/arm_hal_random.c.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/Interrupts.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/itoa.c.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/main.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/pinToIndex.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/random_seed.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/Serial.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/timer.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/Tone.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/wiring.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/wiring_analog.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/wiring_digital.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/wiring_pulse.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/wiring_shift.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduino/WMath.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduinoVariant/pure_analog_pins.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/FrameworkArduinoVariant/variant.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/local/BLELocalAttribute.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/local/BLELocalCharacteristic.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/local/BLELocalDescriptor.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/local/BLELocalDevice.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/local/BLELocalService.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/remote/BLERemoteAttribute.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/remote/BLERemoteCharacteristic.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/remote/BLERemoteDescriptor.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/remote/BLERemoteDevice.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/remote/BLERemoteService.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/ATT.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/bitDescriptions.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/BLEUuid.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/btct.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/GAP.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/GATT.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/HCI.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/HCICordioTransport.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/HCIUartTransport.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/HCIVirtualTransport.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/HCIVirtualTransportAT.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/keyDistribution.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/utility/L2CAPSignaling.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLEAdvertisingData.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLECharacteristic.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLEDescriptor.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLEDevice.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLEService.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLEStringCharacteristic.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/ArduinoBLE/BLETypedCharacteristics.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libecb/libArduinoBLE.a
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/src/bt_comm_rx.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/src/environment.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/src/utils.cpp.o
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/.sconsign312.dblite
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/cpp.linker_script.ld
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/firmware.bin
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/firmware.elf
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/idedata.json
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libFrameworkArduino.a
+/DoublePendulum_CPP/giga_m7/.pio/build/giga_r1_m7/libFrameworkArduinoVariant.a
+/DoublePendulum_CPP/giga_m7/.pio/build/project.checksum
+/RPi/runs/#11 run 0.9 bounds resetting optimizer weights and no freezing and training during warmup/events.out.tfevents.1704210869.DESKTOP-E4TGT7Q.40284.0
+/RPi/runs/#12 run 0.9 bounds resetting optimizer weights and no freezing and 1e-5 lr/events.out.tfevents.1704213940.DESKTOP-E4TGT7Q.10816.0
+/RPi/runs/#13 run resetting optimizer weights and no freezing and 1e-5 lr and update actor interval=4/events.out.tfevents.1704260327.DESKTOP-E4TGT7Q.37564.0
+/RPi/runs/#13 run resetting optimizer weights and no freezing and 1e-5 lr and update actor interval=4/events.out.tfevents.1704260381.DESKTOP-E4TGT7Q.35812.0
+/RPi/runs/#13 run resetting optimizer weights and no freezing and 1e-5 lr and update actor interval=4/events.out.tfevents.1704260427.DESKTOP-E4TGT7Q.644.0
+/RPi/runs/#14 run resetting optimizer weights and no freezing and 1e-6 lr and update actor interval=6/events.out.tfevents.1704282672.DESKTOP-E4TGT7Q.30488.0
+/RPi/runs/#15 run resetting optimizer weights and no freezing and 1e-6 lr and update actor interval=5/events.out.tfevents.1704283575.DESKTOP-E4TGT7Q.26032.0
+/RPi/runs/#15 run resetting optimizer weights and no freezing and 1e-6 lr and update actor interval=5/events.out.tfevents.1704283835.DESKTOP-E4TGT7Q.4792.0
+/RPi/runs/#15 run resetting optimizer weights and no freezing and 1e-6 lr and update actor interval=5/events.out.tfevents.1704295842.DESKTOP-E4TGT7Q.29224.0
+/RPi/runs/#15 run resetting optimizer weights and no freezing and 1e-6 lr and update actor interval=5/events.out.tfevents.1704344570.DESKTOP-E4TGT7Q.35716.0
+/RPi/runs/16th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5/events.out.tfevents.1704345048.DESKTOP-E4TGT7Q.31332.0
+/RPi/runs/16th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5/events.out.tfevents.1704345206.DESKTOP-E4TGT7Q.39064.0
+/RPi/runs/16th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5/events.out.tfevents.1704350366.DESKTOP-E4TGT7Q.15932.0
+/RPi/runs/17th run, resetting optimizer weights,no freezing, 0.0003 lr,update actor interval=8, retraining previous/events.out.tfevents.1704362321.DESKTOP-E4TGT7Q.31432.0
+/RPi/runs/18th run, resetting optimizer weights,no freezing, 1e-5 lr,update actor interval=5, retraining previous/events.out.tfevents.1704367587.DESKTOP-E4TGT7Q.10156.0
+/RPi/runs/19th run, resetting optimizer weights,no freezing, 1e-5 lr,update actor interval=5, retraining previous/events.out.tfevents.1704370841.DESKTOP-E4TGT7Q.19096.0
+/RPi/runs/20.0th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz/events.out.tfevents.1704606448.DESKTOP-E4TGT7Q.11808.0
+/RPi/runs/20.0th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz/events.out.tfevents.1704627317.DESKTOP-E4TGT7Q.16536.0
+/RPi/runs/21st run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz/events.out.tfevents.1704633662.DESKTOP-E4TGT7Q.34384.0
+/RPi/runs/21st run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz/events.out.tfevents.1704637431.DESKTOP-E4TGT7Q.1816.0
+/RPi/runs/21st run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 30Hz/events.out.tfevents.1704637553.DESKTOP-E4TGT7Q.24392.0
+/RPi/runs/22nd run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz/events.out.tfevents.1705408199.DESKTOP-E4TGT7Q.1848.0
+/RPi/runs/22nd run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz/events.out.tfevents.1705408342.DESKTOP-E4TGT7Q.8992.0
+/RPi/runs/22nd run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz/events.out.tfevents.1705408629.DESKTOP-E4TGT7Q.33652.0
+/RPi/runs/22nd run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz/events.out.tfevents.1705409155.DESKTOP-E4TGT7Q.30952.0
+/RPi/runs/23rd run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1705409558.DESKTOP-E4TGT7Q.22648.0
+/RPi/runs/24th run, resetting optimizer weights,no freezing, 1e-6 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1705412169.DESKTOP-E4TGT7Q.19152.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707470413.DESKTOP-E4TGT7Q.36376.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707470471.DESKTOP-E4TGT7Q.24904.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707470488.DESKTOP-E4TGT7Q.3316.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707470531.DESKTOP-E4TGT7Q.42556.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707470966.DESKTOP-E4TGT7Q.35468.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707471382.DESKTOP-E4TGT7Q.31412.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707471654.DESKTOP-E4TGT7Q.26544.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707471712.DESKTOP-E4TGT7Q.3004.0
+/RPi/runs/27th run, resetting optimizer weights,no freezing, 1e-8 lr,update actor interval=5, 20kHz, new motor/events.out.tfevents.1707477814.DESKTOP-E4TGT7Q.11588.0
+/RPi/runs/28th run, c++ code/events.out.tfevents.1707481666.DESKTOP-E4TGT7Q.7328.0
+/RPi/runs/31st run, c++ code, freeze action bottom layer/events.out.tfevents.1707572710.DESKTOP-E4TGT7Q.22580.0
+/RPi/runs/32nd run, c++ code, removed physical boundary/events.out.tfevents.1707663821.DESKTOP-E4TGT7Q.15372.0
+/RPi/runs/32nd run, c++ code, removed physical boundary/events.out.tfevents.1707664152.DESKTOP-E4TGT7Q.20308.0
+/RPi/runs/33rd run, c++ code, removed physical boundary, fine tuning best ai/events.out.tfevents.1707719642.DESKTOP-E4TGT7Q.38172.0
+/RPi/runs/34th run, c++ code, removed physical boundary, fine tuning best ai, freezing everything except actor network/events.out.tfevents.1707724022.DESKTOP-E4TGT7Q.13272.0
+/RPi/runs/36th run, c++ code, removed physical boundary, fine tuning best ai, training (pre-trained network on irl data two times)/events.out.tfevents.1707822321.DESKTOP-E4TGT7Q.9672.0
+/RPi/runs/36th run, c++ code, removed physical boundary, fine tuning best ai, training (pre-trained network on irl data two times)/events.out.tfevents.1707822657.DESKTOP-E4TGT7Q.26688.0
+/RPi/runs/36th run, c++ code, removed physical boundary, fine tuning best ai, training (pre-trained network on irl data two times)/events.out.tfevents.1707827929.DESKTOP-E4TGT7Q.35640.0
+/RPi/runs/38th run, c++ code, removed physical boundary, fine tuning best ai, pre-trained without actor, with dropout defaults/events.out.tfevents.1707986733.DESKTOP-E4TGT7Q.14412.0
+/RPi/runs/40th run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai/events.out.tfevents.1707993571.DESKTOP-E4TGT7Q.3468.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1707999847.DESKTOP-E4TGT7Q.6452.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003030.DESKTOP-E4TGT7Q.9832.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003047.DESKTOP-E4TGT7Q.15260.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003064.DESKTOP-E4TGT7Q.11924.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003081.DESKTOP-E4TGT7Q.17288.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003103.DESKTOP-E4TGT7Q.1040.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003160.DESKTOP-E4TGT7Q.16420.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003212.DESKTOP-E4TGT7Q.4304.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1/events.out.tfevents.1708003231.DESKTOP-E4TGT7Q.11428.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708004806.DESKTOP-E4TGT7Q.9180.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708004825.DESKTOP-E4TGT7Q.10132.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708004840.DESKTOP-E4TGT7Q.10376.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708004856.DESKTOP-E4TGT7Q.3672.0
+/RPi/runs/41st run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708004874.DESKTOP-E4TGT7Q.13428.0
+/RPi/runs/43rd run, c++ code, removed physical boundary, fine tuning best ai, vanilla simulation ai that learned action space between -1 to 1 with layer norm/events.out.tfevents.1708344830.DESKTOP-E4TGT7Q.8452.0
+/RPi/runs/45th run, c++ code, removed physical boundary, fine tuning best ai, td3 fork layer norm, lr=0.001, delayed_update=20/events.out.tfevents.1708409835.DESKTOP-E4TGT7Q.16804.0
+/RPi/runs/45th run, c++ code, removed physical boundary, fine tuning best ai, td3 fork layer norm, lr=0.001, delayed_update=20/events.out.tfevents.1708410315.DESKTOP-E4TGT7Q.1528.0
+/RPi/runs/46th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=2/events.out.tfevents.1708411794.DESKTOP-E4TGT7Q.3540.0
+/RPi/runs/46th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=2/events.out.tfevents.1708412682.DESKTOP-E4TGT7Q.5328.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708412967.DESKTOP-E4TGT7Q.11040.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413015.DESKTOP-E4TGT7Q.15168.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413069.DESKTOP-E4TGT7Q.14152.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413114.DESKTOP-E4TGT7Q.9628.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413144.DESKTOP-E4TGT7Q.9292.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413273.DESKTOP-E4TGT7Q.15572.0
+/RPi/runs/47th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, n_updates=1/events.out.tfevents.1708413820.DESKTOP-E4TGT7Q.16632.0
+/RPi/runs/48th run, c++ code, removed physical boundary, fine tuning best ai, delayed_update=20, only actor not pretrained irl/events.out.tfevents.1708419065.DESKTOP-E4TGT7Q.6984.0
+/RPi/runs/50th run, c++ code, removed physical boundary, fine tuning best ai, FORK only + DR/events.out.tfevents.1708605593.DESKTOP-E4TGT7Q.19632.0
+/RPi/runs/51st run, c++ code, removed physical boundary, fine tuning best ai, FORK only + DR + LN preload buffer from sim/events.out.tfevents.1708654237.DESKTOP-E4TGT7Q.4244.0
+/RPi/runs/52nd run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers/events.out.tfevents.1708680365.DESKTOP-E4TGT7Q.25512.0
+/RPi/runs/53rd run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers/events.out.tfevents.1708688280.DESKTOP-E4TGT7Q.21412.0
+/RPi/runs/54th run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR preload buffer from sim, load optimizers/events.out.tfevents.1708698451.DESKTOP-E4TGT7Q.4692.0
+/RPi/runs/55th run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers, new powersupply/events.out.tfevents.1708756091.DESKTOP-E4TGT7Q.11200.0
+/RPi/runs/55th run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers, new powersupply/events.out.tfevents.1708756636.DESKTOP-E4TGT7Q.28552.0
+/RPi/runs/56th run, c++ code, removed physical boundary, fine tuning best ai, FORK + DR + LN preload buffer from sim, load optimizers, training for best/events.out.tfevents.1708758767.DESKTOP-E4TGT7Q.23604.0
+/RPi/runs/testing run/events.out.tfevents.1703850392.DESKTOP-E4TGT7Q.37616.0
+/RPi/runs/testing run/events.out.tfevents.1703850763.DESKTOP-E4TGT7Q.38932.0
+/RPi/runs/testing run/events.out.tfevents.1703852129.DESKTOP-E4TGT7Q.34928.0
+/RPi/runs/testing run/events.out.tfevents.1703852871.DESKTOP-E4TGT7Q.9656.0
+/RPi/runs/testing run/events.out.tfevents.1703853767.DESKTOP-E4TGT7Q.6528.0
+/RPi/runs/testing run/events.out.tfevents.1703856190.DESKTOP-E4TGT7Q.23352.0
+/RPi/runs/testing run/events.out.tfevents.1703857302.DESKTOP-E4TGT7Q.32268.0
+/RPi/runs/testing run/events.out.tfevents.1703857416.DESKTOP-E4TGT7Q.20516.0
+/RPi/runs/testing run/events.out.tfevents.1705476604.DESKTOP-E4TGT7Q.9092.0
+/RPi/runs/testing run/events.out.tfevents.1705476811.DESKTOP-E4TGT7Q.2932.0
+/RPi/runs/testing run/events.out.tfevents.1707809754.DESKTOP-E4TGT7Q.34564.0
+/RPi/runs/testing run/events.out.tfevents.1707811225.DESKTOP-E4TGT7Q.42368.0
+/RPi/runs/testing run/events.out.tfevents.1708349496.DESKTOP-E4TGT7Q.13088.0
+/RPi/runs/testing run/events.out.tfevents.1708651958.DESKTOP-E4TGT7Q.14572.0
