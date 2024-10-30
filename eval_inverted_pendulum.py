@@ -15,9 +15,9 @@ register(
 
 if __name__ == "__main__":
     find_best = False  # find best video (not needed now)
-    save = True  # save video
+    save = False  # save video
     # obs, reward, action
-    save_data = False  # save episode data
+    save_data = True  # save episode data
     algo = "td3-fork"
     game_id = "InvertedPendulumModded"
     eps = 1

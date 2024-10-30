@@ -6,7 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/RPi_CPP/libs/libtorch" />
       <excludeFolder url="file://$MODULE_DIR$/RPi_CPP/cmake-build-debug" />
     </content>
-    <orderEntry type="jdk" jdkName="C:\ProgramData\anaconda3" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (pendulum)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

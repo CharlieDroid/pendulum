@@ -118,6 +118,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
     if not find_best:
         rewards = 0
         domain_randomizer = DomainRandomization()
+        domain_randomizer.reset_environment()
         for ep in range(eps):
             frames = []
             observation, info = env.reset()
@@ -134,7 +135,7 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
             while not done:
                 action = agent.choose_action(observation, evaluate=True)
                 observation_, reward, terminated, truncated, info = env.step(action)
-                domain_randomizer.observation(observation_, env)
+                observation_ = domain_randomizer.observation(observation_, env)
                 observation_[1] = simp_angle(observation_[1])
                 if not save:
                     obs = observation_
@@ -166,7 +167,6 @@ def agent_play(game_id, agent, eps=3, save=True, find_best=False, save_data=Fals
                     writer.writerow(d)
 
         return rewards / eps
-        env.close()
 
 
 def agent_play_double(
@@ -204,39 +204,20 @@ def agent_play_double(
         data = []
     if not find_best:
         rewards = 0
-        domain_randomizer = DomainRandomizationDouble(2500)
+        domain_randomizer = DomainRandomizationDouble(4000)
         domain_randomizer.reset_environment()
         for ep in range(eps):
-            frames = []
+            domain_randomizer.environment()
+            env = gym.make(game_id, render_mode=render_mode)
             observation, info = env.reset()
-            if teachers:
-                obs = np.insert(
-                    observation,
-                    8,
-                    [
-                        env.unwrapped.pendulum_command_list[
-                            env.unwrapped.pendulum_command
-                        ][0],
-                        env.unwrapped.pendulum_command_list[
-                            env.unwrapped.pendulum_command
-                        ][1],
-                    ],
-                )
-                observation = obs
-            else:
-                obs = observation
+            obs = observation
             a1, a2 = env.data.qpos[1:]
             a2 += a1
             a1 = simp_angle(a1)
             a2 = simp_angle(a2)
-            if teachers:
-                print(
-                    f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} p1:{obs[8]:.0f} p2:{obs[9]:.0f} tip_x:{obs[10]:.2f} tip_y:{obs[11]:.2f} a1:{obs[12]:.2f} a2:{obs[13]:.2f}"
-                )
-            else:
-                print(
-                    f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} c0:{obs[8]:.0f} c1:{obs[9]:.0f} c2:{obs[10]:.0f} c3:{obs[11]:.0f} tip_x:{obs[12]:.2f} tip_y:{obs[13]:.2f} a1:{obs[14]:.2f} a2:{obs[15]:.2f}"
-                )
+            print(
+                f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} tip_x:{obs[8]:.2f} tip_y:{obs[9]:.2f} a1:{obs[10]:.2f} a2:{obs[11]:.2f}"
+            )
             if save:
                 env.start_video_recorder()
             done = False
@@ -246,87 +227,17 @@ def agent_play_double(
             # import time
             #
             # time.sleep(2)
+            observation = domain_randomizer.observation(observation, env)
             while not done:
-                if combined or teachers:
-                    if obs[8] > 0.0:
-                        action = agent_0.choose_action(observation, evaluate=True)
-                        ready_balance = False
-                    elif obs[9] > 0.0:
-                        action = agent_1.choose_action(observation, evaluate=True)
-                        ready_balance = False
-                    elif obs[10] > 0.0:
-                        action = agent_2.choose_action(observation, evaluate=True)
-                        ready_balance = False
-                    elif obs[11] > 0.0:
-                        a1, a2 = env.data.qpos[1:]
-                        tip_x, _, tip_y = env.data.site_xpos[0]
-                        a2 += a1
-                        x_goal = bool(abs(obs[0]) < 0.3)
-                        theta1_goal = bool(abs(simp_angle(a1)) < 0.1)
-                        theta2_goal = bool(abs(simp_angle(a2)) < 0.1)
-                        x_dot_goal = bool(abs(obs[5]) < 0.3)
-                        theta1_dot_goal = bool(abs(obs[6]) < 1.0)
-                        theta2_dot_goal = bool(abs(obs[7]) < 1.0)
-                        if (
-                            x_goal
-                            and theta1_goal
-                            and theta2_goal
-                            and x_dot_goal
-                            and theta1_dot_goal
-                            and theta2_dot_goal
-                        ):
-                            ready_balance = True
-                        if ready_balance and tip_y < 0.8:
-                            ready_balance = False
-
-                        if ready_balance:
-                            action = agent_balance.choose_action(
-                                observation, evaluate=True
-                            )
-                        else:
-                            action = agent_swingup.choose_action(
-                                observation, evaluate=True
-                            )
-                else:
-                    if obs[11] > 0.0:
-                        a1, a2 = env.data.qpos[1:]
-                        tip_x, _, tip_y = env.data.site_xpos[0]
-                        a2 += a1
-                        x_goal = bool(abs(obs[0]) < 0.3)
-                        theta1_goal = bool(abs(simp_angle(a1)) < 0.1)
-                        theta2_goal = bool(abs(simp_angle(a2)) < 0.1)
-                        x_dot_goal = bool(abs(obs[5]) < 0.3)
-                        theta1_dot_goal = bool(abs(obs[6]) < 1.0)
-                        theta2_dot_goal = bool(abs(obs[7]) < 1.0)
-                        if (
-                            x_goal
-                            and theta1_goal
-                            and theta2_goal
-                            and x_dot_goal
-                            and theta1_dot_goal
-                            and theta2_dot_goal
-                        ):
-                            print("...goal reached...")
-                    action = agent_balance.choose_action(observation, evaluate=True)
+                action = agent_balance.choose_action(observation, evaluate=True)
+                if not save_data:
+                    action = domain_randomizer.action(action)
                 # action[0] = 0.0
-                if save:
-                    frame = env.render()
-                    # frames.append(_label_with_episode_number(frame, episode_num=ep))
                 observation_, reward, terminated, truncated, info = env.step(action)
-                domain_randomizer.observation(observation, env)
-                if teachers:
-                    observation_ = np.insert(
-                        observation_,
-                        8,
-                        [
-                            env.unwrapped.pendulum_command_list[
-                                env.unwrapped.pendulum_command
-                            ][0],
-                            env.unwrapped.pendulum_command_list[
-                                env.unwrapped.pendulum_command
-                            ][1],
-                        ],
-                    )
+                observation_ = domain_randomizer.observation(observation_, env)
+                observation_ = np.clip(
+                    observation_, agent_balance.obs_lower_bound_ideal, agent_balance.obs_upper_bound_ideal)
+
                 if not save:
                     obs = observation_
                     a1, a2 = env.data.qpos[1:]
@@ -339,7 +250,7 @@ def agent_play_double(
                         )
                     else:
                         print(
-                            f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} c0:{obs[8]:.0f} c1:{obs[9]:.0f} c2:{obs[10]:.0f} c3:{obs[11]:.0f} tip_x:{obs[12]:.2f} tip_y:{obs[13]:.2f} a1:{obs[14]:.2f} a2:{obs[15]:.2f} reward:{reward:.2f} action:{action[0]:.2f}"
+                            f"pos:{obs[0]:.2f} a1:{a1:.2f} a2:{a2:.2f} lin_vel:{obs[5]:.2f} a1_vel:{obs[6]:.2f} a2_vel:{obs[7]:.2f} tip_x:{obs[8]:.2f} tip_y:{obs[9]:.2f} a1:{obs[10]:.2f} a2:{obs[11]:.2f} reward:{reward:.2f} action:{action[0]:.2f}"
                         )
                 if save_data:
                     if teachers:
@@ -386,6 +297,7 @@ def agent_play_double(
             #         fps=60,
             #     )
         env.close()
+        domain_randomizer.reset_environment()
 
         if save_data:
             with open("recordings/sample_data_16x16.csv", "w") as file:

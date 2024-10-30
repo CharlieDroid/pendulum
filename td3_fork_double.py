@@ -117,7 +117,7 @@ class CriticNetwork(nn.Module):
 
 class ActorNetwork(nn.Module):
     def __init__(
-        self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name, ln=False
+        self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name, l2_regularization=0.0, ln=False
     ):
         super(ActorNetwork, self).__init__()
         self.input_dims = input_dims
@@ -136,7 +136,7 @@ class ActorNetwork(nn.Module):
             self.ln1 = nn.LayerNorm(self.fc1_dims)
             self.ln2 = nn.LayerNorm(self.fc2_dims)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha, weight_decay=l2_regularization)
         self.device = T.device("cuda:0" if T.cuda.is_available() else "cpu")
 
         self.to(self.device)
@@ -187,6 +187,7 @@ class Agent:
         sys_weight2=0.4,
         sys_threshold=0.020,
         episodes_teacher_anneal=200,
+        l2_regularization=1e-4,
         ln=False,
         distill=False,
         teacher=False,
@@ -253,6 +254,7 @@ class Agent:
             layer1_size,
             layer2_size,
             n_actions=n_actions,
+            l2_regularization=l2_regularization,
             name="actor",
             ln=ln,
         )
@@ -294,7 +296,7 @@ class Agent:
             self.system.apply(self.init_weights)
             self.reward.apply(self.init_weights)
 
-        pendulum_length = 0.7
+        pendulum_length = 0.39
         max_tip_x = (2 * pendulum_length + 1) * 1.1  # pendulum length + rail max
         max_tip_y = (2 * pendulum_length) * 1.1
         self.obs_upper_bound = T.tensor(
@@ -305,18 +307,18 @@ class Agent:
                 1.0,
                 1.0,
                 20.0,  # pos vel
-                150.0,
-                150.0,
-                1.0,  # 00
-                1.0,  # 01
-                1.0,  # 10
-                1.0,  # 11
+                10.0,
+                10.0,
+                # 1.0,  # 00
+                # 1.0,  # 01
+                # 1.0,  # 10
+                # 1.0,  # 11
                 max_tip_x,
                 max_tip_y,
-                3.0,  # a1 rot max
-                3.0,  # a2 rot max
+                1.0,  # a1 rot max
+                1.0,  # a2 rot max
                 1.0,  # friction cart
-                1.0,
+                1.0,  # friction pendulum
                 1.0,  # damping
                 1.0,  # armature
                 1.0,  # gear
@@ -335,18 +337,18 @@ class Agent:
                 -1.0,
                 -1.0,
                 -20.0,
-                -150.0,
-                -150.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
+                -10.0,
+                -10.0,
+                # 0.0,
+                # 0.0,
+                # 0.0,
+                # 0.0,
                 -max_tip_x,
                 -max_tip_y,
-                -3.0,  # a1 rot
-                -3.0,  # a2 rot
+                -1.0,  # a1 rot
+                -1.0,  # a2 rot
                 0.0,  # friction cart
-                0.0,
+                0.0,  # friction pendulum
                 0.0,  # damping
                 0.0,  # armature
                 -1.0,  # gear
@@ -358,12 +360,12 @@ class Agent:
             ]
         ).to(self.actor.device)
         # bounding for domain randomization sensor noise
-        self.obs_upper_bound_ideal = np.ones(26) * np.inf
+        self.obs_upper_bound_ideal = np.ones(input_dims[0]) * np.inf
         self.obs_upper_bound_ideal[0] = 1.1
-        self.obs_upper_bound_ideal[5:8] = [20.0, 150.0, 150.0]
-        self.obs_lower_bound_ideal = np.ones(26) * -np.inf
+        self.obs_upper_bound_ideal[5:8] = [20.0, 10.0, 10.0]
+        self.obs_lower_bound_ideal = np.ones(input_dims[0]) * -np.inf
         self.obs_lower_bound_ideal[0] = -1.1
-        self.obs_lower_bound_ideal[5:8] = [-20.0, -150.0, -150.0]
+        self.obs_lower_bound_ideal[5:8] = [-20.0, -10.0, -10.0]
         self.noise = noise
         self.noise_clip = noise_clip
         self.policy_noise = policy_noise
@@ -541,11 +543,9 @@ class Agent:
         self.reward.optimizer.step()
         self.reward_loss = reward_loss.item()
 
-        s_flag = 1 if system_loss.item() < self.sys_threshold else 0
+        s_flag = bool(system_loss.item() < self.sys_threshold)
         # according to paper:
         # "the system thresholds are the typical estimation errors after about 20,000 steps"
-        if self.time_step == int(self.warmup * 2):
-            print(f"system_loss at {int(self.warmup*2)} steps: {system_loss.item()}")
 
         if self.learn_step_cntr % self.update_actor_iter != 0:
             return critic_loss, None, system_loss, reward_loss
@@ -561,7 +561,7 @@ class Agent:
         else:
             actor_loss = -T.mean(actor_q1_loss)
 
-        if s_flag and (self.time_step >= int(self.warmup * 2)):
+        if s_flag:
             predict_next_state = self.system.forward(
                 state, self.actor.forward(actor_state)
             )

@@ -15,7 +15,7 @@
 --><mujoco model="inverted double pendulum">
   <compiler coordinate="local" inertiafromgeom="true"/>
   <custom>
-    <numeric data="1" name="frame_skip"/>
+    <numeric data="2" name="frame_skip"/>
   </custom>
   <default>
     <joint armature="0" damping="1" limited="true"/>
@@ -31,11 +31,11 @@
       <geom name="cart" pos="0 0 0" quat="0.707 0 0.707 0" size="0.1 0.1" type="capsule"/>
       <body name="pole" pos="0 0 0">
         <joint axis="0 1 0" name="hinge" pos="0 0 0" limited="false" frictionloss="0.0001" damping="0" type="hinge"/>
-        <geom fromto="0 0 0 0.001 0 0.6" name="cpole" rgba="0 0.7 0.7 1" size="0.049 0.6" density="1500" type="capsule"/>
-        <body name="pole2" pos="0 0 0.6">
+        <geom fromto="0 0 0 0.001 0 0.3" name="cpole" rgba="0 0.7 0.7 1" size="0.049 0.3" density="1500" type="capsule"/>
+        <body name="pole2" pos="0 0 0.3">
           <joint axis="0 1 0" name="hinge2" pos="0 0 0" limited="false" frictionloss="0.0001" damping="0" type="hinge"/>
-          <geom fromto="0 0 0 0.001 0 0.6" name="cpole2" rgba="0 0.7 0.7 1" size="0.049 0.6" density="1000" type="capsule"/>
-          <site name="tip" pos="0 0 0.6" size="0.01 0.01"/>
+          <geom fromto="0 0 0 0.001 0 0.3" name="cpole2" rgba="0 0.7 0.7 1" size="0.049 0.3" density="1000" type="capsule"/>
+          <site name="tip" pos="0 0 0.3" size="0.01 0.01"/>
         </body>
       </body>
     </body>

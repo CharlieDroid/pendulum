@@ -26,8 +26,8 @@ union ResetData {
     uint8_t bytes[1];
 };
 
-static float currAngle{ 0.0f };
-static float currAngleVelo{ 0.0f };
+static volatile float currAngle{ 0.0f };
+static volatile float currAngleVelo{ 0.0f };
 
 void btInit()
 {
@@ -60,6 +60,7 @@ void btInit()
     BLE.advertise();
 }
 
+#ifdef LATENCY_MEASUREMENT
 void pingPong(const BLEDevice& central)
 {
     AngleData receivedAngleData{};
@@ -73,6 +74,7 @@ void pingPong(const BLEDevice& central)
         }
     }
 }
+#endif
 
 void sendEncoderMeasurements()
 {

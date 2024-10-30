@@ -36,7 +36,7 @@ void IRAM_ATTR updateEncoderB()
     }
 }
 
-void encInit(void* pvParameters)
+[[noreturn]] void encInit(void* pvParameters)
 {
     pinMode(encoderPinA, INPUT_PULLUP);
     pinMode(encoderPinB, INPUT_PULLUP);
@@ -49,7 +49,7 @@ void encInit(void* pvParameters)
     Serial.println(xPortGetCoreID());
     Serial.println("Running infinite loop in here");
 #endif
-    while (true) delay(1000);
+    while (true) delay(100);
 }
 
 float getAngleVelo()
@@ -59,15 +59,11 @@ float getAngleVelo()
     return velo;
 }
 
+// int mod(const int& value, const int& divisor) { return ((value % divisor) + divisor) % divisor; }
+
 float getAngle()
 {
     return static_cast<float>(pend2Enc.val) * ANGLE_FACTOR;
-}
-
-int getRawPendVal()
-{
-    return pend2Enc.val;
-    // return rotaryEncoder.readEncoder();
 }
 
 void resetPendVals()
@@ -134,6 +130,60 @@ void blueBlink(const int& times, const int& delayTime)
         digitalWrite(LED_G, HIGH);
         digitalWrite(LED_B, HIGH);
         delay(static_cast<int>(delayTime / 2));
+    }
+}
+
+void yellowBlinkNonBlocking(const int& times, const int& delayTime)
+{
+    unsigned long ledTimeNow{ millis() };
+    bool isLedOn{ false };
+    int counter{ 0 };
+    while (true)
+    {
+        if (!isLedOn && (millis() - ledTimeNow > (delayTime / 2)))
+        {
+            digitalWrite(LED_R, LOW);
+            digitalWrite(LED_G, LOW);
+            digitalWrite(LED_B, HIGH);
+            isLedOn = true;
+            ledTimeNow = millis();
+        }
+        else if (isLedOn && (millis() - ledTimeNow > (delayTime / 2)))
+        {
+            digitalWrite(LED_R, HIGH);
+            digitalWrite(LED_G, HIGH);
+            digitalWrite(LED_B, HIGH);
+            isLedOn = false;
+            ledTimeNow = millis();
+            if (++counter == times) break;
+        }
+    }
+}
+
+void magentaBlinkNonBlocking(const int& times, const int& delayTime)
+{
+    unsigned long ledTimeNow{ millis() };
+    bool isLedOn{ false };
+    int counter{ 0 };
+    while (true)
+    {
+        if (!isLedOn && (millis() - ledTimeNow > (delayTime / 2)))
+        {
+            digitalWrite(LED_R, LOW);
+            digitalWrite(LED_B, HIGH);
+            digitalWrite(LED_G, LOW);
+            isLedOn = true;
+            ledTimeNow = millis();
+        }
+        else if (isLedOn && (millis() - ledTimeNow > (delayTime / 2)))
+        {
+            digitalWrite(LED_R, HIGH);
+            digitalWrite(LED_G, HIGH);
+            digitalWrite(LED_B, HIGH);
+            isLedOn = false;
+            ledTimeNow = millis();
+            if (++counter == times) break;
+        }
     }
 }
 

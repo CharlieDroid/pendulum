@@ -78,7 +78,8 @@ if __name__ == "__main__":
         # agent.chkpt_file_pth = (
         #     f"./drive/MyDrive/pendulum/tmp/td3_fork_learned/{game_id} td3_fork.chkpt"
         # )
-        # agent.load_models(load_all_weights=True, load_optimizers=False)
+        # agent.load_models(load_all_weights=True, load_optimizers=True)
+        # agent.memory.load(agent.buffer_file_pth)
         # agent.freeze_layer(first_layer=False, second_layer=False)
         # agent.chkpt_file_pth = os.path.join(chkpt_dir, f"{game_id} td3 fork.chkpt")
     elif algo == "sac":
@@ -184,7 +185,7 @@ if __name__ == "__main__":
             observation[1] = simp_angle(observation[1])
 
         action = agent.choose_action(observation)
-        action_alt = domain_randomizer.action(action)
+        action, action_alt = domain_randomizer.action(action)
         observation_, reward, terminated, truncated, info = env.step(action_alt)
         if isDomainRandomization:
             observation_ = domain_randomizer.observation(observation_, env)
@@ -272,6 +273,8 @@ if __name__ == "__main__":
 
             if avg_score >= best_avg_score:
                 best_avg_score = avg_score
+                agent.save_models()
+            elif i % 10 == 0:
                 agent.save_models()
             critic_loss_count = 0
             actor_loss_count = 0

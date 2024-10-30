@@ -14,9 +14,10 @@ register(
 if __name__ == "__main__":
     find_best = False  # find best video (not needed now)
     save = False  # save video
-    # obs, reward, action
-    save_data = False  # save episode data
-    combined = True
+    # save episode data: obs, reward, action
+    # !! if false then no DR action noise !!
+    save_data = False
+    combined = False
     teachers = False
     game_id = "InvertedDoublePendulumModded"
     eps = 1
@@ -129,8 +130,8 @@ if __name__ == "__main__":
             gamma=0.98,
             noise=0.1,
             n_extra_obs=14,
-            layer1_size=100,
-            layer2_size=75,
+            layer1_size=32,
+            layer2_size=32,
             update_actor_interval=1,
             max_size=10_000,
             n_actions=env.action_space.shape[0],
@@ -174,8 +175,10 @@ if __name__ == "__main__":
             gamma=0.98,
             noise=0.1,
             n_extra_obs=14,
-            layer1_size=100,
-            layer2_size=75,
+            layer1_size=80,
+            layer2_size=60,
+            critic1_size=256,
+            critic2_size=256,
             update_actor_interval=1,
             max_size=10_000,
             n_actions=env.action_space.shape[0],

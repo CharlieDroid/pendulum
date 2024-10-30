@@ -139,7 +139,7 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
     }
 
     def __init__(self, **kwargs):
-        observation_space = Box(low=-np.inf, high=np.inf, shape=(26,), dtype=np.float64)
+        observation_space = Box(low=-np.inf, high=np.inf, shape=(22,), dtype=np.float64)
         # self.xml_file_pth = "/mnt/batch/tasks/shared/LS_root/mounts/clusters/doublependulum/code/Users/csosmea/mujoco_mod/assets/inverted_double_pendulum.xml"
         self.xml_file_pth = "./mujoco_mod/assets/inverted_double_pendulum.xml"
         MujocoEnv.__init__(
@@ -168,10 +168,10 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
         self.pendulum_command_list = ((0, 0), (0, 1), (1, 0), (1, 1))
         self.steps_change_command = 500
         self.steps = 0
-        self.curr_pendulum_length = 0.6
+        self.curr_pendulum_length = 0.3
 
-        self.a1_rot_max = 2.5
-        self.a2_rot_max = 5
+        self.a1_rot_max = 4
+        self.a2_rot_max = 6
         utils.EzPickle.__init__(self, **kwargs)
 
     def step(self, a):
@@ -188,85 +188,56 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
 
         if self.all_in_one:
             # ALL IN ONE
-            vel_rotation_penalty = 5
+            vel_rotation_penalty = 6
 
             if self.pendulum_command == 0:
                 vel_penalty = min(
-                    10 * abs(v2) + 10 * abs(v3) + 0.1 * a[0] ** 2,
+                    0.01 * (v1 ** 2) + 0.2 * (v2 ** 2) + 0.1 * (v3 ** 2) + 0.1 * a[0] ** 2,
                     vel_rotation_penalty,
                 )
             else:
                 vel_penalty = min(
-                    0.01 * (v2**2) + 0.01 * (v3**2) + 0.01 * a[0] ** 2,
+                    0.001 * (v1 ** 2) + 0.02 * (v2 ** 2) + 0.01 * (v3 ** 2) + 0.01 * a[0] ** 2,
                     vel_rotation_penalty,
                 )
 
-            if self.pendulum_command == 0:
-                pos_penalty = min(10 * x**2, 5)
-            else:
-                # it was observed pendulum_commands 0,1, and 2 would not settle in the center
-                pos_penalty = 5 * x**2
+            pos_penalty = 4 * x ** 2
+            angle_reward = self.compute_angle_reward(a1, a2)
 
-            if self.pendulum_command == 0:
-                angle_reward = self.compute_angle_reward(a1, a2)
-            else:
-                angle_reward = 3.0 * self.compute_angle_reward(a1, a2)
-
-            a1_rot = (a1 - np.pi) / (2 * np.pi)
-            a2_rot = (a2 + a1 - np.pi) / (2 * np.pi)
-            rotation_penalty = min(
-                (1 / (self.a1_rot_max**4)) * (a1_rot**4)
-                + (1 / (self.a2_rot_max**4)) * (a2_rot**4),
-                vel_rotation_penalty,
-            )
-            r = angle_reward - pos_penalty - vel_penalty - rotation_penalty
-
-            terminated = (
-                False
-                or bool(abs(a1_rot) > (self.a1_rot_max * 2))
-                or bool(abs(a2_rot) > (self.a2_rot_max * 2))
-            )
+            r = angle_reward - pos_penalty - vel_penalty
+            terminated = False
         elif self.swingup:
-            vel_rotation_penalty = 5
+            vel_rotation_penalty = 6
 
             if self.pendulum_command == 0:
                 vel_penalty = min(
-                    3 * (abs(v2) + abs(v3) + abs(a[0])),
-                    # 10 * abs(v2) + 10 * abs(v3) + 0.1 * a[0] ** 2,
+                    0.01 * abs(v1) + 0.2 * abs(v2) + 0.1 * abs(v3) + 0.1 * abs(a[0]),
                     vel_rotation_penalty,
                 )
             else:
                 vel_penalty = min(
-                    0.015 * (v2**2) + 0.015 * (v3**2) + 0.015 * a[0] ** 2,
+                    # 0.001 * (v1 ** 2) + 0.01 * (v2 ** 2) + 0.005 * (v3 ** 2) + 0.01 * a[0] ** 2,
+                    0.01 * (v2 ** 2) + 0.01 * (v3 ** 2) + 0.01 * a[0] ** 2,
                     vel_rotation_penalty,
                 )
 
-            if self.pendulum_command == 0:
-                pos_penalty = min(4 * x**2, 4)
-                # pos_penalty = min(10 * x**2, 5)
-            else:
-                # it was observed pendulum_commands 0,1, and 2 would not settle in the center
-                pos_penalty = 6 * x**2
+            pos_penalty = 2 * x**2
 
-            if self.pendulum_command == 0:
-                angle_reward = self.compute_angle_reward(a1, a2)
-            else:
-                angle_reward = 3.0 * self.compute_angle_reward(a1, a2)
+            angle_reward = self.compute_angle_reward(a1, a2)
+
+            r = angle_reward - pos_penalty - vel_penalty
 
             a1_rot = (a1 - np.pi) / (2 * np.pi)
             a2_rot = (a2 + a1 - np.pi) / (2 * np.pi)
-            rotation_penalty = min(
-                (1 / (self.a1_rot_max**4)) * (a1_rot**4)
-                + (1 / (self.a2_rot_max**4)) * (a2_rot**4),
-                vel_rotation_penalty,
-            )
-            r = angle_reward - pos_penalty - vel_penalty - rotation_penalty
 
             terminated = (
-                False
-                or bool(abs(a1_rot) > self.a1_rot_max)
-                or bool(abs(a2_rot) > self.a2_rot_max)
+                    False
+                    or bool(abs(a1_rot) > self.a1_rot_max)
+                    or bool(abs(a2_rot) > self.a2_rot_max)
             )
+            # terminated = False
+            if terminated:
+                r -= 50
         else:
             dist_penalty = 0.01 * (tip_x**2) + 14 * (
                 (tip_y - (self.curr_pendulum_length * 2)) ** 2
@@ -289,26 +260,27 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
         return ob, r, terminated, truncated, {}
 
     def _get_obs(self):
-        # observed info (12): pos, sin(a1), sin(a2), cos(a1), cos(a2), pos_vel, a1_vel, a2_vel, 00, 01, 10, 11
+        # observed info (8): pos, sin(a1), sin(a2), cos(a1), cos(a2), pos_vel, a1_vel, a2_vel
         # privileged info (14): tip_x, tip_y, a1, a2, friction_cart, friction_pendulums, damping, armature, gear, length, density_p1, density_p2, force, noise_std
         x, _, y = self.data.site_xpos[0]
         a1, a2 = self.data.qpos[1:]
         a1 = (a1 - np.pi) / (2 * np.pi * self.a1_rot_max)
         a2 = (a2 + a1 - np.pi) / (2 * np.pi * self.a2_rot_max)
-        comm = np.zeros(
-            4,
-        )
-        comm[self.pendulum_command] = 1.0
         system_params = np.zeros(
             10,
         )
+        qvel = np.clip(self.data.qvel, -200, 200)
+        # pos velocity is okay
+        qvel[1:] = qvel[1:] / 30.0  # scale down pendulum velocities
+
+        # NOTE: !!! IF CHANGED, ADJUST TD3_FORK_DOUBLE AND DOMAIN_RANDOMIZATION_DOUBLE
+        # TO MATCH CHANGED OBSERVATIONS !!!
         obs = np.concatenate(
             [
                 self.data.qpos[:1],  # cart x pos
                 np.sin(self.data.qpos[1:]),  # link angles
                 np.cos(self.data.qpos[1:]),
-                np.clip(self.data.qvel, -150, 150),
-                comm,
+                qvel,
                 np.array([x]),
                 np.array([y]),
                 np.array([a1]),
@@ -332,26 +304,30 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
             # x_dot_noise = self.np_random.uniform(low=-0.2, high=0.2)
             # theta1_dot_noise = self.np_random.uniform(low=-0.2, high=0.2)
             # theta2_dot_noise = self.np_random.uniform(low=-0.2, high=0.2)
-            if self.pendulum_command == 0:
-                x_noise = self.np_random.uniform(low=-0.2, high=0.2)
-                theta1_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
-                theta2_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
-                x_dot_noise = self.np_random.uniform(low=-1, high=1)
-                theta1_dot_noise = self.np_random.uniform(low=-10, high=10)
-                theta2_dot_noise = self.np_random.uniform(low=-20, high=20)
+            # if self.pendulum_command == 0:
+            x_noise = self.np_random.uniform(low=-0.2, high=0.2)
+            theta1_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
+            theta2_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
+            x_dot_noise = self.np_random.uniform(low=-1, high=1)
+            theta1_dot_noise = self.np_random.uniform(low=-10, high=10)
+            theta2_dot_noise = self.np_random.uniform(low=-20, high=20)
 
-                self.init_qpos = self.init_qposes[0]
-            else:
-                x_noise = self.np_random.uniform(low=-0.4, high=0.4)
-                theta1_noise = self.np_random.uniform(low=-0.2, high=0.2)
-                theta2_noise = self.np_random.uniform(low=-0.2, high=0.2)
-                x_dot_noise = self.np_random.uniform(low=-0.2, high=0.2)
-                theta1_dot_noise = self.np_random.uniform(low=-1.0, high=1.0)
-                theta2_dot_noise = self.np_random.uniform(low=-2.0, high=2.0)
-
-                self.init_qpos = self.init_qposes[np.random.randint(low=0, high=4)]
+            self.init_qpos = self.init_qposes[0]
+            # else:
+            #     x_noise = self.np_random.uniform(low=-0.4, high=0.4)
+            #     theta1_noise = self.np_random.uniform(low=-0.2, high=0.2)
+            #     theta2_noise = self.np_random.uniform(low=-0.2, high=0.2)
+            #     x_dot_noise = self.np_random.uniform(low=-0.2, high=0.2)
+            #     theta1_dot_noise = self.np_random.uniform(low=-1.0, high=1.0)
+            #     theta2_dot_noise = self.np_random.uniform(low=-2.0, high=2.0)
+            #
+            #     self.init_qpos = self.init_qposes[np.random.randint(low=0, high=4)]
         elif self.swingup:
-            if self.pendulum_command in [0, 1, 2]:
+            """
+            Reasons to keep this:
+            - Way to 'sample' the environment in the beginning when DR is here
+            """
+            if self.pendulum_command in [0, 1, 2, 3]:
                 x_noise = self.np_random.uniform(low=-0.2, high=0.2)
                 theta1_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
                 theta2_noise = self.np_random.uniform(low=-np.pi, high=np.pi)
@@ -372,8 +348,7 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
                 while choice == self.pendulum_command:
                     choice = np.random.randint(low=0, high=4)
 
-                self.init_qpos = self.init_qposes[np.random.randint(low=0, high=4)]
-                # self.init_qpos = self.init_qposes[0]
+                self.init_qpos = self.init_qposes[choice]
         else:
             # extra 0.01 margin
             x_noise = self.np_random.uniform(low=-0.4, high=0.4)
@@ -406,7 +381,11 @@ class InvertedDoublePendulumEnv(MujocoEnv, utils.EzPickle):
 
     def compute_angle_reward(self, a1, a2):
         if self.pendulum_command == 3:
-            angle_reward = np.cos(a1) + np.cos(a2 + a1)
+            dummy = np.cos(a1)
+            angle1_reward = 0.8*np.exp(4*dummy - 4) + dummy
+            dummy = np.cos(a1 + a2)
+            angle2_reward = 1.2*np.exp(4*dummy - 4) + dummy
+            angle_reward = angle1_reward + angle2_reward
         elif self.pendulum_command == 2:
             angle_reward = 1.2 * np.cos(a1) - 0.8 * np.cos(a2 + a1)
         elif self.pendulum_command == 1:

@@ -1,0 +1,2 @@
+Started with same reward function. The problem was it kept on spinning around.
+- added exponential and increasing velocity to the reward function

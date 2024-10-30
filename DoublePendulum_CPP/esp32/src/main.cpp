@@ -6,6 +6,7 @@
 TaskHandle_t encoderTaskHandle;
 hw_timer_t *timer0{ nullptr };
 static volatile bool stopResetFlag{ false };
+static volatile bool doReset{ false };
 static bool isTimerMeasureAttached{ false };
 unsigned long currTime{ micros() };
 constexpr int DT_HALF_MICROS{ static_cast<int>(0.5f * DT * 1e6) };
@@ -22,13 +23,7 @@ void stop_timer0()
 
 void IRAM_ATTR timer0_reset()
 {
-    static int cntr{ 0 };
-    static constexpr int cntrMax{ static_cast<int>(1.2f / DT) };
-    // check if pendulum has zero velocity
-    (getAngleVelo() < 0.001) ? cntr++ : cntr = 0;
-
-    // if it has been zero velocity for 1.2 seconds then stop timer interrupt and reset
-    stopResetFlag = (cntr > cntrMax);
+    doReset = true;
 }
 
 void IRAM_ATTR timer0_measure()
@@ -73,13 +68,19 @@ void loop()
     }
     if (millis() - timeNow > 100)
     {
-        // Serial.print(getAngle());
-        // Serial.print(",");
-        // Serial.println(getAngleVelo());
+        static int resetCounter{ 0 };
+        resetCounter++;
+        if (resetCounter == static_cast<int>(3000 / 100))
+        {
+            Serial.println("Resetting");
+            setReset(true);
+            Serial.println("Set Reset Set");
+            Serial.println(getIsReset());
+        }
         float angle{};
         float angleVelo{};
         getAngleAndVelocity(angle, angleVelo);
-        Serial.print(angle);
+        Serial.print(angle, 4);
         Serial.print(",");
         Serial.println(angleVelo);
         timeNow = millis();
@@ -98,7 +99,9 @@ void loop()
     }
     else
     {
-        blueBlink(5, 100);
+        Serial.println("OHAYO");
+        Serial.println("IN ACTUAL RESETTING");
+        yellowBlinkNonBlocking(5, 100);
 
         // detach timer for measure
         if (isTimerMeasureAttached)
@@ -109,19 +112,39 @@ void loop()
 
         // attach timer interrupt for reset
         stopResetFlag = false;
-        timer0 = timerBegin(0, preScaler, true);
+        timer0 = timerBegin(1, preScaler, true);
         timerAttachInterrupt(timer0, &timer0_reset, true);
         timerAlarmWrite(timer0, timerTicks, true);
         timerAlarmEnable(timer0);
-        while (!stopResetFlag) {}
-        // detach timer interrupt for reset
-        stop_timer0();
+        while (!stopResetFlag)
+        {
+            static int cntr{ 0 };
+            static constexpr int cntrMax{ static_cast<int>(1.2f / DT) };
+
+            if (doReset)
+            {
+                // check if pendulum has zero velocity
+                (getAngleVelo() < 0.001) ? cntr++ : cntr = 0;
+
+                // if it has been zero velocity for 1.2 seconds then stop timer interrupt and reset
+                stopResetFlag = cntr > cntrMax;
+                if (stopResetFlag)
+                {
+                    cntr = 0;
+                    // detach timer interrupt for reset
+                    stop_timer0();
+                }
+
+                doReset = false;
+            }
+        }
+
         // then reset pendulum enc values
         resetPendVals();
 
         // set reset back to false
         setReset(false);
-        greenBlink(5, 100);
+        magentaBlinkNonBlocking(5, 100);
     }
 #else
     BLEDevice central{ getCentral() };
@@ -151,7 +174,7 @@ void loop()
         }
         else
         {
-            blueBlink(5, 100);
+            yellowBlinkNonBlocking(5, 100);
 
             // detach timer for measure
             if (isTimerMeasureAttached)
@@ -162,19 +185,39 @@ void loop()
 
             // attach timer interrupt for reset
             stopResetFlag = false;
-            timer0 = timerBegin(0, preScaler, true);
+            timer0 = timerBegin(1, preScaler, true);
             timerAttachInterrupt(timer0, &timer0_reset, true);
             timerAlarmWrite(timer0, timerTicks, true);
             timerAlarmEnable(timer0);
-            while (!stopResetFlag) {}
-            // detach timer interrupt for reset
-            stop_timer0();
+            while (!stopResetFlag)
+            {
+                static int cntr{ 0 };
+                static constexpr int cntrMax{ static_cast<int>(1.2f / DT) };
+
+                if (doReset)
+                {
+                    // check if pendulum has zero velocity
+                    (getAngleVelo() < 0.001) ? cntr++ : cntr = 0;
+
+                    // if it has been zero velocity for 1.2 seconds then stop timer interrupt and reset
+                    stopResetFlag = cntr > cntrMax;
+                    if (stopResetFlag)
+                    {
+                        cntr = 0;
+                        // detach timer interrupt for reset
+                        stop_timer0();
+                    }
+
+                    doReset = false;
+                }
+            }
+
             // then reset pendulum enc values
             resetPendVals();
 
             // set reset back to false
             setReset(false);
-            greenBlink(5, 100);
+            magentaBlinkNonBlocking(5, 100);
         }
     }
 #endif

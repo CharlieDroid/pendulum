@@ -48,10 +48,9 @@ if __name__ == "__main__":
     # comm 0 about 1400 gradient_clip=1.0 beta_ep_max=100
     # comm 1 about 5400 gradient_clip=1.0 beta_ep_max=150
     # comm 2 about 5400 gradient_clip=1.0 beta_ep_max=200
-    # comm 3 swingup about 1700 gradient_clip=0.8 beta_ep_max=300
-    # comm 3 balance about 900 gradient_clip=1.0 beta_ep_max=100
-    beta_ep_max = 200
-    highest_score = 2500
+    # comm 3 about 1700 gradient_clip=1.0 beta_ep_max=100 sys_threshold=0.018
+    # beta_ep_max = 200
+    highest_score = 4000
     domain_randomizer = DomainRandomization(highest_score)
 
     seed = None
@@ -71,13 +70,15 @@ if __name__ == "__main__":
         tau=0.005,
         env=env,
         n_extra_obs=14,
-        gamma=0.98,
+        gamma=0.99,
         noise=0.2,  # choose action noise
         noise_clip=0.5,
         gradient_clip=1.0,
         policy_noise=0.2,  # learning action noise
-        layer1_size=100,
-        layer2_size=75,
+        layer1_size=80,
+        layer2_size=60,
+        critic1_size=400,
+        critic2_size=300,
         sys1_size=400,
         sys2_size=300,
         r1_size=256,
@@ -85,7 +86,8 @@ if __name__ == "__main__":
         sys_weight=0.6,
         update_actor_interval=1,
         max_size=1_000_000,
-        sys_threshold=0.04,
+        sys_threshold=0.01,
+        l2_regularization=1e-5,
         distill=False,
         n_actions=env.action_space.shape[0],
         game_id=game_id,
@@ -126,8 +128,13 @@ if __name__ == "__main__":
             if isDomainRandomization:
                 ep = int(step / episode)
                 if domain_randomizer.check_level_up(np.mean(score_history[-10:]), ep):
-                    best_avg_score -= highest_score * 0.8
-                    best_score -= highest_score * 0.8
+                    best_avg_score -= highest_score * 0.5
+                    best_score -= highest_score * 0.5
+                if domain_randomizer.difficulty_level >= 1:
+                    agent.memory.tree.beta = 0.6
+                    agent.gradient_clip = 0.5
+                if domain_randomizer.difficulty_level >= 3:
+                    agent.sys_threshold = 0.035
                 domain_randomizer.environment()
             env = gym.make(game_id)
             observation, info = env.reset(seed=seed)
@@ -142,11 +149,9 @@ if __name__ == "__main__":
         action = agent.choose_action(observation)
 
         if isDomainRandomization:
-            action_alt = domain_randomizer.action(action)
-        else:
-            action_alt = action
+            action = domain_randomizer.action(action)
 
-        observation_, reward, terminated, truncated, info = env.step(action_alt)
+        observation_, reward, terminated, truncated, info = env.step(action)
 
         if isDomainRandomization:
             observation_ = domain_randomizer.observation(observation_, env)
@@ -178,7 +183,7 @@ if __name__ == "__main__":
 
         if (step + 1) % episode == 0:
             i = int(step / episode)
-            agent.memory.tree.anneal_beta(i, beta_ep_max)
+            # agent.memory.tree.anneal_beta(i, beta_ep_max)
             score_history.append(score)
             avg_score = np.mean(score_history[-100:])
             if critic_loss_count > 0:
@@ -202,10 +207,10 @@ if __name__ == "__main__":
                 i,
                 "score %.1f" % score,
                 "avg score %.1f" % avg_score,
-                "critic loss %.5f" % critic_loss,
-                "actor loss %.5f" % actor_loss,
-                "system loss %.5f" % system_loss,
-                "reward loss %.5f" % reward_loss,
+                "critic loss %.3f" % critic_loss,
+                "actor loss %.2f" % actor_loss,
+                "system loss %.6f" % system_loss,
+                "reward loss %.6f" % reward_loss,
             )
 
             if avg_score >= best_avg_score:

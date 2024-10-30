@@ -3,14 +3,20 @@
 //
 #include "bt_comm_rx.h"
 
+const char* deviceServiceUuid = "dec1be10-9063-4b54-ae16-24f2bf72a4c6";
+const char* angleVelocityCharacteristicUuid = "dec1be11-9063-4b54-ae16-24f2bf72a4c6";
+const char* resetEncoderCharacteristicUuid = "dec1be12-9063-4b54-ae16-24f2bf72a4c6";
+
+BLEDevice peripheral;
+BLECharacteristic angleVelocityCharacteristic;
+BLECharacteristic resetEncoderCharacteristic;
+
+#ifdef LATENCY_MEASUREMENT
 #include <array>
 
 constexpr int SAMPLES{ 10 };
 std::array<unsigned long, SAMPLES> latencies = {};
-
-const char* deviceServiceUuid = "dec1be10-9063-4b54-ae16-24f2bf72a4c6";
-const char* angleVelocityCharacteristicUuid = "dec1be11-9063-4b54-ae16-24f2bf72a4c6";
-const char* resetEncoderCharacteristicUuid = "dec1be12-9063-4b54-ae16-24f2bf72a4c6";
+#endif
 
 union AngleData {
     float angleVelocity[2];
@@ -21,6 +27,7 @@ union ResetData {
     bool reset;
     uint8_t bytes[1];
 };
+
 
 #ifdef LATENCY_MEASUREMENT
 void measureLatency(BLEDevice& peripheral, BLECharacteristic& angleVelocityCharacteristic)
@@ -96,32 +103,32 @@ void printStats()
 }
 #endif
 
-void readPeripheral(BLEDevice& peripheral)
+int checkCharacteristics()
 {
 #ifdef DEBUG
-    // CHECK IF CORRECT CHARACTERISTIC
-    BLECharacteristic angleVelocityCharacteristic{ peripheral.characteristic(angleVelocityCharacteristicUuid) };
-    BLECharacteristic resetEncoderCharacteristic{ peripheral.characteristic(resetEncoderCharacteristicUuid) };
+    angleVelocityCharacteristic = peripheral.characteristic(angleVelocityCharacteristicUuid);
+    resetEncoderCharacteristic = peripheral.characteristic(resetEncoderCharacteristicUuid);
 
     if (!angleVelocityCharacteristic)
     {
         Serial.println("* Peripheral device does not have characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
-        return;
+        return 0;
     }
     if (!angleVelocityCharacteristic.canRead())
     {
         Serial.println("* Peripheral does not have a readable characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
-        return;
+        return 0;
     }
     if (!angleVelocityCharacteristic.canSubscribe())
     {
         Serial.println("* Peripheral does not have a subscribable characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
+        return 0;
     }
 
     if (!resetEncoderCharacteristic)
@@ -129,45 +136,19 @@ void readPeripheral(BLEDevice& peripheral)
         Serial.println("* Peripheral device does not have characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
-        return;
+        return 0;
     }
     if (!resetEncoderCharacteristic.canRead())
     {
         Serial.println("* Peripheral does not have a readable characteristic!");
         redBlink(3, 100);
         peripheral.disconnect();
-        return;
+        return 0;
     }
 
     angleVelocityCharacteristic.subscribe();
     greenBlink(4, 250);
-
-    // GOOD TO GO
-    AngleData receivedAngleData{};
-    unsigned long timeNow{ millis() };
-    bool resetSent{ true };
-    while (peripheral.connected())
-    {
-        if (millis() - timeNow > 10)
-        {
-            angleVelocityCharacteristic.readValue(receivedAngleData.bytes, 8);
-            Serial.print(receivedAngleData.angleVelocity[0]);
-            Serial.print(",");
-            Serial.println(receivedAngleData.angleVelocity[1]);
-            timeNow = millis();
-        }
-        // else
-        // {
-        //     constexpr ResetData resetData{ true };
-        //     resetEncoderCharacteristic.writeValue(resetData.bytes, 1);
-        //     resetSent = true;
-        // }
-    }
-    // DISCONNECTED
-    Serial.println("- Peripheral device disconnected!");
-    angleVelocityCharacteristic.unsubscribe();
-    while (true) delay(1000);
-
+    return 1;  // 1 = OK
 #else
 
     BLECharacteristic valueCharacteristic = peripheral.characteristic(deviceServiceCharacteristicUuid);
@@ -198,11 +179,30 @@ void readPeripheral(BLEDevice& peripheral)
 #endif
 }
 
-void connectPeripheral()
+void getAngleAndVelocity(float& angle, float& angleVelo)
+{
+    AngleData receivedAngleData{};
+    angleVelocityCharacteristic.readValue(receivedAngleData.bytes, 8);
+    angle = receivedAngleData.angleVelocity[0];
+    angleVelo = receivedAngleData.angleVelocity[1];
+}
+
+bool getReset()
+{
+    ResetData receivedResetData{};
+    resetEncoderCharacteristic.readValue(receivedResetData.bytes, 1);
+    return receivedResetData.reset;
+}
+
+void setReset(const bool& reset)
+{
+    const ResetData resetData{ reset };
+    resetEncoderCharacteristic.writeValue(resetData.bytes, 1);
+}
+
+int connectPeripheral()
 {
 #ifdef DEBUG
-
-    BLEDevice peripheral;
 
     Serial.println("- Discovering peripheral device...");
 
@@ -239,7 +239,7 @@ void connectPeripheral()
             Serial.println("* Connection to peripheral device failed!");
             Serial.println(" ");
             redBlink(5, 100);
-            return;
+            return 0;
         }
 
         Serial.println("- Discovering peripheral device attributes...");
@@ -255,10 +255,10 @@ void connectPeripheral()
             Serial.println(" ");
             redBlink(3, 100);
             peripheral.disconnect();
-            return;
+            return 0;
         }
 
-        readPeripheral(peripheral);
+        return 1;  // 1 = OK
     }
 
 #else
@@ -303,7 +303,7 @@ void btInit()
     if (!BLE.begin())
     {
         Serial.println("* Starting Bluetooth® Low Energy module failed!");
-        while (1);
+        while (true);
     }
 
     BLE.setConnectionInterval(0x004, 0x008);
@@ -316,7 +316,10 @@ void btInit()
 
 #else
 
-    if (!BLE.begin()) while (1);
+    if (!BLE.begin()) while (true);
+
+    BLE.setConnectionInterval(0x004, 0x008);
+
     BLE.setLocalName("Giga R1 (Central)");
     BLE.advertise();
 

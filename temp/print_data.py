@@ -130,8 +130,8 @@ def plot_data(data_a, data_b, show_single=False, single_dataset=None):
 
 
 # Extract data from two different files
-data_a = extract_data("data_a.txt")
-data_b = extract_data("data_b.txt")
+data_a = extract_data("data_c_0.4beta_0.1polnoise.txt")
+data_b = extract_data("data_a_0.4beta.txt")
 
 # Call plot_data with show_single as True and single_dataset as 'A' or 'B'
-plot_data(data_a, data_b, show_single=True, single_dataset="A")
+plot_data(data_a, data_b, show_single=False, single_dataset="A")

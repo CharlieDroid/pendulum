@@ -1,101 +1,34 @@
 //
 // Created by Charles on 8/26/2024.
 //
+// Main change for this implementation compared to RPi is the dual-core usage.
+// Interrupts for encoders are handled by M4 core for better performance.
+//
 
 #include "environment.h"
 
+#define _PWM_LOGLEVEL_ 0
+#include "Portenta_H7_PWM.h"
+
+// Env timer is TIM4 and global timer is TIM8
+Portenta_H7_Timer EnvTimer(TIM4);
 mbed::PwmOut* motorA{ nullptr };
 mbed::PwmOut* motorB{ nullptr };
-static volatile Encoder pend1Enc{};
-static volatile Encoder cartEnc{};
 static volatile bool stopFlag{ false };
+float angle2{ 0.0f };
+float angle2Velo{ 0.0f };
 
 // ============[ INTERRUPT HANDLERS ]================
-void updatePendulumEncoderA()
-{
-    pend1Enc.levA = digitalRead(PENDULUM_PIN_A);
+// Interrupt handlers for encoders are moved to M4 core
 
-    if (PENDULUM_PIN_A != pend1Enc.lastPin)
-    {
-        pend1Enc.lastPin = PENDULUM_PIN_A;
-        if (pend1Enc.levA)
-        {
-            if (pend1Enc.levB) pend1Enc.val++;
-        }
-    }
-}
-
-void updatePendulumEncoderB()
-{
-    pend1Enc.levB = digitalRead(PENDULUM_PIN_B);
-
-    if (PENDULUM_PIN_B != pend1Enc.lastPin)
-    {
-        pend1Enc.lastPin = PENDULUM_PIN_B;
-        if (pend1Enc.levB)
-        {
-            if (pend1Enc.levA) pend1Enc.val--;
-        }
-    }
-}
-
-void updateCartEncoderA()
-{
-    cartEnc.levA = digitalRead(CART_PIN_A);
-
-    if (CART_PIN_A != cartEnc.lastPin)
-    {
-        cartEnc.lastPin = CART_PIN_A;
-        if (cartEnc.levA)
-        {
-            if (cartEnc.levB) cartEnc.val++;
-        }
-    }
-}
-
-void updateCartEncoderB()
-{
-    cartEnc.levB = digitalRead(CART_PIN_B);
-
-    if (CART_PIN_B != cartEnc.lastPin)
-    {
-        cartEnc.lastPin = CART_PIN_B;
-        if (cartEnc.levB)
-        {
-            if (cartEnc.levA) cartEnc.val--;
-        }
-    }
-}
-
-void buttonOff();  // forward declaration for function
+void buttonOff();  // forward declaration for button off function
 void updateButton()
 {
-    cartEnc.val = 0;
-    cartEnc.val_ = 0;
-    buttonOff();
-    cartEnc.levA = 0;
-    cartEnc.levB = 0;
-    cartEnc.lastPin = -1;
-    rotate(-USUAL_SPEED);
-    delay(500);
-    rotate(0.0f);
     stopFlag = true;
 }
 
 // ============[ INITIALIZATION ]================
-void initEncoders()
-{
-    pinMode(PENDULUM_PIN_A, INPUT_PULLUP);
-    pinMode(PENDULUM_PIN_B, INPUT_PULLUP);
-    pinMode(CART_PIN_A, INPUT_PULLUP);
-    pinMode(CART_PIN_B, INPUT_PULLUP);
-
-    // TODO: Double check if this should have digitalPinToInterrupt()
-    attachInterrupt(PENDULUM_PIN_A, updatePendulumEncoderA, CHANGE);
-    attachInterrupt(PENDULUM_PIN_B, updatePendulumEncoderB, CHANGE);
-    attachInterrupt(CART_PIN_A, updateCartEncoderA, CHANGE);
-    attachInterrupt(CART_PIN_B, updateCartEncoderB, CHANGE);
-}
+// initEncoders moved to M4
 
 void initMotor()
 {
@@ -103,43 +36,35 @@ void initMotor()
     setPWM(motorB, MOTOR_PIN_B, MOTOR_FREQUENCY, 0.0f);
 
 #ifdef DEBUG
-    Serial.print("Motor Frequency: ");
+    Serial.print("Set Motor Frequency: ");
     Serial.println(MOTOR_FREQUENCY);
 #endif
 }
 
 void initButton()
 {
-    pinMode(BUTTON_PIN, INPUT_PULLUP);
+    pinMode(BUTTON_PIN, INPUT_PULLDOWN);
 }
 
 void buttonOn()
 {
-    // not sure if RISING or FALLING
     attachInterrupt(BUTTON_PIN, updateButton, RISING);
 }
 
 void initEnv()
 {
-//#warning "Encoder initialized inside main core, M7"
-    initEncoders();
+    RPC.begin();  // init RPC for M4
+    delay(500);  // wait for RPC to load, interferes with button interrupts if not so for some reason???
     initMotor();
     initButton();
+    pinMode(STOP_PIN, INPUT_PULLUP);
 }
 
 // ============[ KILL ]================
 void killMotor()
 {
-    setPWM(motorA, MOTOR_PIN_A, MOTOR_FREQUENCY, 0.0f);
-    setPWM(motorB, MOTOR_PIN_B, MOTOR_FREQUENCY, 0.0f);
-}
-
-void killEncoders()
-{
-    detachInterrupt(PENDULUM_PIN_A);
-    detachInterrupt(PENDULUM_PIN_B);
-    detachInterrupt(CART_PIN_A);
-    detachInterrupt(CART_PIN_B);
+    setPWM_DCPercentage_manual(motorA, MOTOR_PIN_A, 0.0f);
+    setPWM_DCPercentage_manual(motorB, MOTOR_PIN_B, 0.0f);
 }
 
 void buttonOff()
@@ -150,68 +75,79 @@ void buttonOff()
 void killEnv()
 {
     killMotor();
-    killEncoders();
     buttonOff();
 }
 
 // ============[ ENVIRONMENT FUNCTIONS ]================
 float getPos()
-{ return static_cast<float>(cartEnc.val) * POS_FACTOR + POS_BIAS; }
+{ return RPC.call("getCartEncVal").as<float>() * POS_FACTOR + POS_BIAS; }
 
 float getAngleVelo()
-{
-    float velo{ static_cast<float>(pend1Enc.val - pend1Enc.val_) * ANGLE_VELO_FACTOR };
-    pend1Enc.val_ = pend1Enc.val;
-    return velo;
-}
+{ return RPC.call("getPend1EncValDiff").as<float>() * ANGLE_VELO_FACTOR; }
 
-float getSimpAngleValue()
-{
-    // ((val + 300) % 600) - 300
-    return static_cast<float>(((pend1Enc.val + 300) % 600) - 300);
-}
-
-void rotate(const float& dutyCycle)
+void rotate(const float& dutyCycle)  // from 0 to 100.0f
 {
     if (dutyCycle > 0.0f)
     {
         // forward
-        setPWM(motorB, MOTOR_PIN_B, MOTOR_FREQUENCY, 0.0f);
-        setPWM(motorA, MOTOR_PIN_A, MOTOR_FREQUENCY, dutyCycle);
+        setPWM_DCPercentage_manual(motorB, MOTOR_PIN_B, 0.0f);
+        setPWM_DCPercentage_manual(motorA, MOTOR_PIN_A, dutyCycle);
     }
     else
     {
         // backward
-        setPWM(motorA, MOTOR_PIN_A, MOTOR_FREQUENCY, 0.0f);
-        setPWM(motorB, MOTOR_PIN_B, MOTOR_FREQUENCY, -dutyCycle);
+        setPWM_DCPercentage_manual(motorA, MOTOR_PIN_A, 0.0f);
+        setPWM_DCPercentage_manual(motorB, MOTOR_PIN_B, -dutyCycle);
     }
 }
 
 #if defined(PRECHECK) && defined(DEBUG)
 void printEncoderValues()
 {
-    /* Things to check:
+    /* Single Pendulum: x, theta, x_dot, theta_dot
+     * Double Pendulum: pos, sin(a1), sin(a2), cos(a1), cos(a2), pos_vel, a1_vel, a2_vel
+     * Things to check:
      * - clockwise rotation should be positive vice versa
      * - going to the right should be positive
      * - positive value for motor should move to the right
      */
-    const float angle{ getSimpAngleValue() * ANGLE_FACTOR }
-    const float posVelo{ static_cast<float>(cartEnc.val - cartEnc.val_) * POS_VELO_FACTOR };
-    cartEnc.val_ = cartEnc.val;
+    const float angle1{ RPC.call("getSimpAngleValue").as<float>() * ANGLE_FACTOR };
+    const float posVelo{ RPC.call("getCartEncValDiff").as<float>() * POS_VELO_FACTOR };
+    // actual observed information
+#if defined(SINGLE_PENDULUM)
     Serial.print(getPos());
     Serial.print(",");
-    Serial.print(angle);
+    Serial.print(angle1);
     Serial.print(",");
     Serial.print(posVelo);
     Serial.print(",");
     Serial.print(getAngleVelo());
-    Serial.print("\t");
-    Serial.print(pend1Enc.val);
+#elif defined(DOUBLE_PENDULUM)
+    getAngleAndVelocity(angle2, angle2Velo);  // get from bluetooth
+    Serial.print(getPos());
     Serial.print(",");
-    Serial.print(cartEnc.val);
+    Serial.print(sin(angle1));
+    Serial.print(",");
+    Serial.print(sin(angle2));
+    Serial.print(",");
+    Serial.print(cos(angle1));
+    Serial.print(",");
+    Serial.print(cos(angle2));
+    Serial.print(",");
+    Serial.print(posVelo);
+    Serial.print(",");
+    Serial.print(getAngleVelo());
+    Serial.print(",");
+    Serial.print(angle2Velo);
+#endif
+    Serial.print("\t");
+    Serial.print(RPC.call("getSimpAngleValue").as<int>());
+    Serial.print(",");
+    Serial.print(RPC.call("getCartEncVal").as<int>());
     Serial.print("\t");
 #if defined(PRECHECK) && !defined(NO_MOTOR)
-    const float dutyCycle{ static_cast<int>(pend1Enc.val * (5.0f / 3.0f)) };
+    // gets to 100% at 143 steps
+    const float dutyCycle{ RPC.call("getSimpAngleValue").as<float>() * 0.7f };
     rotate(dutyCycle);
     Serial.print("Duty Cycle: ");
     Serial.print(dutyCycle);
@@ -238,15 +174,109 @@ void resetCart()
             while (true) redBlink(4, 250);
         }
     }
+    // When button has been pressed...
+    RPC.call("resetCartEncVals");
+    buttonOff();  // the order is like this to turn off button instantly and prevent debounce
+    RPC.call("resetCartEncLvlsAndPin");
+    rotate(-USUAL_SPEED);
+    delay(500);  // wait for 0.5 seconds
+    rotate(0.0f);
     stopFlag = false;
 
     // go to center-ish
-    do { rotate(USUAL_SPEED); } while (getPos() < -0.05f);
+    do { rotate(USUAL_SPEED * 1.2f); } while (getPos() < -0.05f);
     rotate(0);
 }
 
-void resetPendulum()
+volatile bool doAngleVelo{ true };
+
+void resetPendulumHandler()
+{
+    doAngleVelo = true;
+}
+
+void resetPendulum1()
 {
     // reset pendulum
-    // create a timer
+    // create a timer with interval in us
+    EnvTimer.attachInterruptInterval(DT_MS * 1000, resetPendulumHandler);
+
+    // wait until it finishes resetting the pendulum
+    while (!stopFlag)
+    {
+        static int cntr{ 0 };
+        static constexpr int cntrMax{ static_cast<int>(1.2f / DT) };
+
+        if (doAngleVelo)
+        {
+            // if no velocity then add 1 to counter
+            (getAngleVelo() < 0.001) ? cntr++ : cntr = 0;
+
+            // if it has been zero velocity for 1.2 seconds then reset
+            stopFlag = (cntr > cntrMax);
+
+            if (stopFlag)
+            {
+                cntr = 0;
+                EnvTimer.stopTimer();
+                EnvTimer.detachInterrupt();
+            }
+
+            doAngleVelo = false;
+        }
+    }
+
+    stopFlag = false;
+    RPC.call("resetPend1EncData");
+}
+
+#ifdef DOUBLE_PENDULUM
+void resetPendulum2()
+{
+    setReset(true);
+    while (getReset()) { delay(20); }
+}
+#endif
+
+void step(const float& mu)  // mu is -1 to 1
+{
+    // scale it to 100%
+    rotate(mu * 100.0f);
+}
+
+void updateObservation(ObservationVector& observation)
+{
+    // Single Pendulum: x, theta, x_dot, theta_dot
+    // Double Pendulum: pos, sin(a1), sin(a2), cos(a1), cos(a2), pos_vel, a1_vel, a2_vel
+#if defined(SINGLE_PENDULUM)
+    observation(0) = getPos();
+    observation(1) = RPC.call("getSimpAngleValue").as<float>() * ANGLE_FACTOR;
+    observation(2) = RPC.call("getCartEncValDiff").as<float>() * POS_VELO_FACTOR;
+    observation(3) = getAngleVelo();
+#elif defined(DOUBLE_PENDULUM)
+    const float angle1{ RPC.call("getSimpAngleValue").as<float>() * ANGLE_FACTOR };
+    getAngleAndVelocity(angle2, angle2Velo);
+    observation(0) = getPos();
+    observation(1) = sin(angle1);
+    observation(2) = sin(angle2);
+    observation(3) = cos(angle1);
+    observation(4) = cos(angle2);
+    observation(5) = RPC.call("getCartEncValDiff").as<float>() * POS_VELO_FACTOR;
+    observation(6) = getAngleVelo();
+    observation(7) = angle2Velo;
+#endif
+}
+
+void reset(ObservationVector& observation)
+{
+#ifdef DEBUG
+    Serial.println("...resetting...");
+#endif
+    resetCart();
+    resetPendulum1();
+#ifdef DOUBLE_PENDULUM
+    resetPendulum2();
+#endif
+    RPC.call("resetCartEncVelocity");
+    updateObservation(observation);
 }

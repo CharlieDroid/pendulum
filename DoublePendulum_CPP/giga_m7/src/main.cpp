@@ -1,120 +1,173 @@
-#include "utils.h"
-#include "bt_comm_rx.h"
-#include "agent.h"
-
 #include <Arduino.h>
-#include <array>
 #include <ArduinoEigenDense.h>
 
-//#define _TIMERINTERRUPT_LOGLEVEL_ 4
+#include "globals.h"
+#include "environment.h"
+#include "utils.h"
+#include "agents.h"
 
-// Can be included as many times as necessary, without `Multiple Definitions` Linker Error
-//#include "Portenta_H7_TimerInterrupt.h"
+#ifdef DOUBLE_PENDULUM
+#include "bt_comm_rx.h"
 
-void timerHandler()
+bool pendulum2Connected{ false };
+#endif
+
+Portenta_H7_Timer GlobalTimer(TIM8);
+static volatile int timesteps{ 0 };
+static volatile bool runningFlag{ false };
+static volatile bool doStep{ false };
+ObservationVector observation{};
+
+void episodeEnd()
 {
-    static bool toggle{ false };
-    (toggle) ? rgbLED(255, 255, 0) : rgbLED(255, 255, 255);
-    toggle = !toggle;
+    rotate(0.0f);
+    timesteps = 0;
+    GlobalTimer.stopTimer();
+    GlobalTimer.detachInterrupt();
+    killEnv();
+    runningFlag = false;
 }
-//Portenta_H7_Timer ITimer0(TIM15);
 
-Agent actor3s{ initActor() };
-Agent actor3b{ initActor() };
-Agent actor2{ initActor() };
-Agent actor1{ initActor() };
-Agent actor0{ initActor() };
-constexpr int ITERATIONS{ 1000 };
-std::array<unsigned long, ITERATIONS> executionTimes = {};
-using namespace Eigen;
+#if defined(DEBUG) && defined(PRECHECK)
+static volatile bool printCurrState{ false };
+
+void episodeHandler()
+{
+    printCurrState = true;
+
+    timesteps++;
+    if (timesteps > (2 * TOTAL_TIMESTEPS)) episodeEnd();
+}
+#elif !defined(PRECHECK)
+void episodeHandler()
+{
+    doStep = true;
+
+    timesteps++;
+    if (timesteps > TOTAL_TIMESTEPS) episodeEnd();
+}
+#endif
 
 void setup()
 {
     ledInit();
+    blueBlink(5, 100);
+#ifdef DEBUG
     Serial.begin(9600);
     while (!Serial) {}
-    blueBlink(5, 100);
     Serial.println("Starting");
+#endif
+    initEnv();
+    rotate(0.0f);  // make sure motor is not moving
+    greenBlink(5, 100);
 
+#ifdef DEBUG_TESTING
+    // Sample Input for Single Pendulum, Last Val is Action
+    // 0.021824982916313303,0.9158823284749271,1.2344219540678782,2.7968668538338433     -0.8724172115325928
+    // Sample Input for Double Pendulum
+    // -0.29252750822761436, 0.9375753648773371, -0.25744433535020583, 0.3477821662695318, 0.9662931305748224, -2.34774561341996, 1.029626542789722, -2.2365320510569275,   0.8682127594947815
+    // 0.29232077165530646,0.9230528327915285,0.309718989993921,-0.384673196201054,-0.9508281375922494,-1.9212146699016848,0.07388261938254895,-0.49556366232830096,       -0.4947131276130676
+
+    observation(0) = 0.29232077165530646;
+    observation(1) = 0.9230528327915285;
+    observation(2) = 0.309718989993921;
+    observation(3) = -0.384673196201054;
+    observation(4) = -0.9508281375922494;
+    observation(5) = -1.9212146699016848;
+    observation(6) = 0.07388261938254895;
+    observation(7) = -0.49556366232830096;
+
+    const float mu0{ feedForward(agents[0], observation) };
+    Serial.print("Mu0: ");
+    Serial.print(mu0, 6);
+    Serial.print("\t");
+
+    const float mu1{ feedForward(agents[1], observation) };
+    Serial.print("Mu1: ");
+    Serial.print(mu1, 6);
+    Serial.print("\t");
+
+    const float mu2{ feedForward(agents[2], observation) };
+    Serial.print("Mu2: ");
+    Serial.print(mu2, 6);
+    Serial.print("\t");
+
+    const float mu3{ feedForward(agents[3], observation) };
+    Serial.print("Mu3: ");
+    Serial.print(mu3, 6);
+    Serial.println();
+
+    while (true) { blueBlink(1, 500); }
+#endif
+
+#ifdef DOUBLE_PENDULUM
     btInit();
-    // last val is action
-    // 0.034260649 -0.361462331 0.927125206	0.932386714	0.37475172	-0.765315233 -1.371879705 19.35203646 1 1 -0.602274238 -0.927081764
-//    static Eigen::Matrix4d foo = (Eigen::Matrix4d() << 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16).finished();
-//    static Vector2f input = (Vector2f() << 0.034260649, -0.361462331, 0.927125206, 0.932386714, 0.37475172, -0.765315233, -1.371879705, 19.35203646, 1, 1).finished();
-    InputVector input{ 0.034260649, -0.361462331, 0.927125206, 0.932386714, 0.37475172, -0.765315233, -1.371879705, 19.35203646, 1, 1 };
+    if (connectPeripheral() && checkCharacteristics())
+        { pendulum2Connected = true; }
+    else
+        { while (true) redBlink(5, 1000); }
+#endif
 
-//    if (ITimer0.attachInterruptInterval(5000 * 1000, timerHandler))
-//    {
-//        Serial.print(F("Starting ITimer0 OK, millis() = "));
-//        delay(50);
-//        Serial.println(millis());
-//    }
-//    else
-//        Serial.println(F("Can't set ITimer0. Select another freq. or timer"));
+#ifndef PRECHECK
+    // initialize environment and get init obs
+    reset(observation);
+#if defined(SINGLE_PENDULUM)
+    const float mu{ feedForward(agents[0], observation) };
+#elif defined(DOUBLE_PENDULUM)
+    const float mu{ feedForward(agents[RPC.call("getPendulumCommand").as<int>()], observation) };
+#endif
+    step(mu);
+#endif
 
-//    timerAttachInterrupt(TIMER1, timerHandler, 1000);
-
-//     unsigned long currentTime;
-//     for (int i{ 0 }; i < ITERATIONS; i++)
-//     {
-//         if (i % 100 == 0) Serial.println(i);
-// //        actor3 = initActor();
-//         currentTime = micros();
-//         float a{ feedForward(actor2, input) };
-//         executionTimes[i] = micros() - currentTime;
-//     }
-//
-//     // Calculate minimum and maximum
-//     unsigned long minLatency = executionTimes[0];
-//     unsigned long maxLatency = executionTimes[0];
-//     for (int i = 1; i < ITERATIONS; i++) {
-//         if (executionTimes[i] < minLatency) {
-//             minLatency = executionTimes[i];
-//         }
-//         if (executionTimes[i] > maxLatency) {
-//             maxLatency = executionTimes[i];
-//         }
-//     }
-//
-//     // Calculate average
-//     unsigned long sum = 0;
-//     for (int i = 0; i < ITERATIONS; i++) {
-//         sum += executionTimes[i];
-//     }
-//     float averageLatency = (float)sum / ITERATIONS;
-//
-//     // Calculate standard deviation
-//     float sumSquares = 0;
-//     for (int i = 0; i < ITERATIONS; i++) {
-//         sumSquares += (executionTimes[i] - averageLatency) * (executionTimes[i] - averageLatency);
-//     }
-//     float stdDevLatency = sqrt((float)sumSquares / ITERATIONS);
-//
-//     // Print statistics
-//     Serial.print("Minimum Execution Time: ");
-//     Serial.print(minLatency / 1000.0, 3);
-//     Serial.println(" ms");
-//     Serial.print("Maximum Execution Time: ");
-//     Serial.print(maxLatency / 1000.0, 3);
-//     Serial.println(" ms");
-//     Serial.print("Average Execution Time: ");
-//     Serial.print(averageLatency / 1000.0, 3);
-//     Serial.println(" ms");
-//     Serial.print("Standard deviation: ");
-//     Serial.print(stdDevLatency, 3);
-//     Serial.println(" us");
+    // start timer and step through the environment
+    runningFlag = true;
+    GlobalTimer.attachInterruptInterval(DT_MS * 1000, episodeHandler);
 }
 
 void loop()
 {
-//    for (int i{ 0 }; i < ((int)(100.0f / 5.0f) + 1); i++)
-//    {
-//        dutycyclePercent = (float)i * 5.0f;
-//        if (dutycyclePercent > 100.0f) dutycyclePercent = 100.0f;
-//        setPWM_DCPercentage_manual(pwm, myPin, dutycyclePercent);
-//        Serial.println(dutycyclePercent);
-//        (dutycyclePercent > 85.0f) ? delay(1000) : delay(100);
-//    }
+#ifndef PRECHECK
+    if (doStep)
+    {
+        doStep = false;
+        updateObservation(observation);
+#if defined(SINGLE_PENDULUM)
+        const float mu{ feedForward(agents[0], observation) };
+#elif defined(DOUBLE_PENDULUM)
+        const float mu{ feedForward(agents[RPC.call("getPendulumCommand").as<int>()], observation) };
+#endif
+        step(mu);
+    }
+#endif
 
-    connectPeripheral();
+    // kill everything if disconnected or stopped
+    // 0 = Stop, 1 = Not clicked
+#if defined(SINGLE_PENDULUM)
+    if (!digitalRead(STOP_PIN))
+    {
+#elif defined(DOUBLE_PENDULUM)
+    if (!digitalRead(STOP_PIN) || (!peripheral.connected() && pendulum2Connected))
+    {
+        angleVelocityCharacteristic.unsubscribe();
+        pendulum2Connected = false;
+#endif
+        timesteps = 2 * TOTAL_TIMESTEPS + 1;
+        killEnv();
+    }
+
+#ifdef DEBUG
+    if (!runningFlag)
+    {
+        Serial.println("Shit ended");
+        delay(1000);
+    }
+#endif
+
+#if defined(DEBUG) && defined(PRECHECK)
+    if (printCurrState)
+    {
+        printCurrState = false;
+        printEncoderValues();
+    }
+#endif
 }
